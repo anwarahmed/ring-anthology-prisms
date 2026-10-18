@@ -99,6 +99,26 @@ await run('controls', '', async (page) => {
   await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.controls'));
 });
 
+// Graphics: open from the title menu, choose a CRT preset, check it is saved and drawn.
+await run('graphics', '', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
+  const tap = async (key, wait = 300) => { await page.keyboard.down(key); await page.waitForTimeout(100); await page.keyboard.up(key); await page.waitForTimeout(wait); };
+  await tap('s');
+  await tap('s');
+  await tap('f');
+  await page.waitForFunction(() => window.__game.scene.isActive('Graphics'), null, { timeout: 5000 });
+  await tap('ArrowDown', 150); // ART STYLE → CRT PRESET
+  await tap('ArrowRight', 150);
+  await tap('ArrowRight', 600); // Off → Subtle → Arcade
+  await page.screenshot({ path: join(shots, 'graphics.png') });
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.graphics') ?? '{}'));
+  if (saved.preset !== 'arcade' || !(saved.scanlines > 0)) throw new Error(`preset not saved: ${JSON.stringify(saved)}`);
+  if (!(await page.evaluate(() => document.getElementById('crt')?.style.display === 'block'))) throw new Error('CRT overlay not shown');
+  await tap('Escape', 600);
+  await page.waitForFunction(() => window.__game.scene.isActive('Title'), null, { timeout: 5000 });
+  await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.graphics'));
+});
+
 // A controller the browser doesn't recognize (like the 8BitDo M30, "6B controller"):
 // any button confirms, and joining runs the one-time guided button setup.
 await run('unknown-pad', '', async (page) => {

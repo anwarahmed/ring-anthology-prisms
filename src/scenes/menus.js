@@ -101,13 +101,13 @@ export class TitleScene extends Phaser.Scene {
     });
 
     // Menu.
-    panel(this, VIEW.w / 2 - 62, 168, 124, 34);
-    this.labels = ['PLAY', 'CONTROLS'];
-    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 178 + i * 14, label, { size: 8 }).setOrigin(0.5));
+    panel(this, VIEW.w / 2 - 62, 164, 124, 42);
+    this.labels = ['PLAY', 'CONTROLS', 'GRAPHICS'];
+    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 173 + i * 12, label, { size: 8 }).setOrigin(0.5));
     this.sel = 0;
     this.blink = null;
     this.refreshMenu();
-    txt(this, VIEW.w / 2, 210, 'An unofficial Halo fan game', { font: 'read', size: 14, color: '#c8d8ff' }).setOrigin(0.5);
+    txt(this, VIEW.w / 2, 216, 'An unofficial Halo fan game', { font: 'read', size: 14, color: '#c8d8ff' }).setOrigin(0.5);
     this.add.rectangle(0, VIEW.h - 22, VIEW.w, 22, 0x05031a, 0.75).setOrigin(0);
     txt(this, VIEW.w / 2, VIEW.h - 2, LEGAL_NOTICE, { font: 'read', size: 11, color: '#8890b8', align: 'center', wrap: VIEW.w - 20, stroke: false }).setOrigin(0.5, 1);
     this.input.once('pointerdown', () => audio.unlock());
@@ -137,7 +137,7 @@ export class TitleScene extends Phaser.Scene {
     audio.unlock();
     if (hit.nav) {
       if (hit.s.pressed.up || hit.s.pressed.down) {
-        this.sel = 1 - this.sel;
+        this.sel = (this.sel + (hit.s.pressed.down ? 1 : this.labels.length - 1)) % this.labels.length;
         audio.sfx('uiMove');
         this.refreshMenu();
       }
@@ -145,6 +145,7 @@ export class TitleScene extends Phaser.Scene {
     }
     audio.sfx('ui');
     if (this.sel === 1) return go(this, 'Controls', { returnTo: 'Title' });
+    if (this.sel === 2) return go(this, 'Graphics', { returnTo: 'Title' });
     audio.playMusic('title', 0);
     go(this, 'Players', { first: hit.device });
   }
@@ -414,10 +415,10 @@ export class PauseScene extends Phaser.Scene {
     this.controls = new Controls(this);
     this.add.rectangle(0, 0, VIEW.w, VIEW.h, 0x000000, 0.7).setOrigin(0);
     txt(this, VIEW.w / 2, 40, 'PAUSED', { size: 16 }).setOrigin(0.5);
-    this.options = ['RESUME', 'RESTART CHECKPOINT', 'CONTROLS', 'QUIT TO TIMELINE'];
+    this.options = ['RESUME', 'RESTART CHECKPOINT', 'CONTROLS', 'GRAPHICS', 'QUIT TO TIMELINE'];
     this.sel = 0;
     this.items = this.options.map((o, i) => txt(this, VIEW.w / 2, 80 + i * 18, o, { size: 8 }).setOrigin(0.5));
-    const help = 'Change any button under CONTROLS.';
+    const help = 'Change buttons under CONTROLS, and screen effects under GRAPHICS.';
     txt(this, VIEW.w / 2, 170, help, { font: 'read', size: 16, color: '#aaa', align: 'center' }).setOrigin(0.5, 0);
     this.ready = this.time.now + 250;
     this.refresh();
@@ -440,9 +441,9 @@ export class PauseScene extends Phaser.Scene {
       return this.scene.resume('Level');
     }
     if (s.pressed.jump || s.pressed.fire) {
-      if (this.sel === 2) {
+      if (this.sel === 2 || this.sel === 3) {
         this.scene.sleep();
-        this.scene.launch('Controls', { returnTo: 'Pause' });
+        this.scene.launch(this.sel === 2 ? 'Controls' : 'Graphics', { returnTo: 'Pause' });
         return;
       }
       this.scene.stop();
