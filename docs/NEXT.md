@@ -1,44 +1,65 @@
 # Where things stand
 
-A handoff note so work can resume in a new session without loss. Update it whenever a
-milestone lands. Everything listed as done is committed.
+A handoff note so work can resume in a new session without loss (the user's token
+quota runs out periodically). **Resume from the first unticked box in "The plan".**
+Tick boxes and commit after each step. Everything ticked is committed.
+
+## The plan (user, 2026-10-18: "Continue 1 to 7. Keep track of progress.")
+
+1. **Restyle every screen** to match the in-game art: painted backdrops, ornate
+   panels, gradient headers, era emblems, glowing selection bars.
+   - [ ] Shared menu art helpers (`src/engine/menuart.js`)
+   - [ ] Title
+   - [ ] Player join (Players)
+   - [ ] Level select (Timeline)
+   - [ ] Archive cards
+   - [ ] Results
+   - [ ] Pause
+   - [ ] Controls
+   - [ ] Graphics
+2. **Richer interiors:** back-wall decoration props (pipes, cables, banners, glyph
+   panels) for indoor themes.
+   - [ ] Decoration kinds in scenery.js, placed on back-wall areas
+   - [ ] Added to indoor themes; screenshots reviewed
+3. **Reliable tests** (keyboard/menu checks fail when the machine is loaded):
+   - [ ] Replace fixed waits with waiting on outcomes; retry key presses
+   - [ ] `--level <id>` runs skip the general checks
+4. **Part II:** bot-finish 2a, 2b, 2c, 2e, 2f (2d done); set `done` in CAMPAIGN.md.
+   - [ ] 2a  - [ ] 2b  - [ ] 2c  - [ ] 2e  - [ ] 2f  - [ ] statuses + commit
+5. **Part III (3a–3m)** with the `new-level` skill. New content: a Jiralhanae (Brute)
+   rig, San'Shyuum Stoics, Lekgolo/Hunter variants, Kig-Yar, Spartan-II trainees,
+   Noble Team, Johnson, Forge, Red Team, Atriox, Decimus, Itho 'Hesiikee, Maccabeus,
+   Choppers; themes for Janjur Qom (2100 BCE), Ulgethon, Rentus, High Charity,
+   Doisac, Reach, Harvest, Trove, Algolis.
+   - [ ] content  - [ ] 3a - [ ] 3b - [ ] 3c - [ ] 3d - [ ] 3e - [ ] 3f - [ ] 3g
+   - [ ] 3h - [ ] 3i - [ ] 3j - [ ] 3k - [ ] 3l - [ ] 3m
+6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
+   in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
+   - [ ] Part IV (4a–4f)  - [ ] Part V (5a–5h)  - [ ] Part VI (6a–6g)
+   - [ ] Part VII (7a–7g)  - [ ] Firefight  - [ ] publish
+7. **Halo 3 chiptune arrangements:** blocked until the user supplies MIDI files
+   (docs/LEGAL.md: Halo 3 music only, into the gitignored home-soundtrack folder).
+   Ask when everything else is done.
 
 ## Done
 
 - **Part I (1a–1f)** built, canon-checked, finished by the bot; statuses `done`.
-- **Part II (2a–2f)** built and validated (`npm test` passes). Statuses still
-  `planned`: the bot finished 2d; 2a, 2b, 2c, 2e and 2f still need a bot run
-  (`node tests/smoke.mjs --level <id> --finish`), and then set `done` in CAMPAIGN.md.
+- **Part II (2a–2f)** built and validated; 2d bot-finished.
 - **Part III research** done and written into the 3a–3m specs (no `(verify)` left).
 - **Engine:** vehicles (Warthog with gunner, Ghost, Banshee), weapon drops, allies
-  avoid hazards, front shields, remappable controls with guided setup, smooth camera
-  and fades, co-op leash that keeps everyone on screen.
-- **Graphics:** HD canvas (960×540, cameras zoomed 2×); three art styles
-  (pre-rendered default, hybrid, pixel) selectable by `?style=`; HD shaded sprites,
-  props and tiles; painted backgrounds (mountains, clouds, ruins, light shafts,
-  industrial, temple, fog, beacons, perspective floor, ringrise for on-ring levels);
-  scenery props, foreground silhouettes, light pools, vignette, ground shadows.
+  avoid hazards and keep their own spots, front shields, remappable controls with
+  guided setup, smooth camera and fades, co-op leash that keeps everyone on screen.
+- **Graphics:** HD canvas (960×540, cameras zoomed 2×, worldView corrected in
+  `hdCamera`); three art styles (pre-rendered default, hybrid, pixel); HD shaded
+  sprites, props and tiles; painted backgrounds; scenery props, ground-standing
+  pillars, light pools, vignette, ground shadows.
 - **GRAPHICS screen** (title and pause menus): art style (saved; reloads), CRT presets
   and individual effects (`src/engine/crt.js`), Show FPS. Comparison shots:
   `node scripts/compare-graphics.mjs`.
-
-## In progress / next (in this order)
-
-1. **Upgrade every screen** to the new style: title, player join, level select,
-   Archive, results, pause, controls, graphics. Painted backdrops, ornate panels,
-   gradient headers, era emblems, glowing selection bars.
-2. **Interiors:** back-wall decoration props (pipes, cables, banners, glyph panels)
-   are still to do; the user approved "richer interiors".
-3. Make `node tests/smoke.mjs --level <id>` skip the general checks (they are
-   timing-sensitive under load); keep them for the no-`--level` run.
-4. Bot-verify 2a, 2b, 2c, 2e, 2f; mark Part II `done`; commit.
-5. Resume levels: **Part III (3a–3m)** with the `new-level` skill. New content needed:
-   a Jiralhanae (Brute) rig, San'Shyuum Stoics, Lekgolo/Hunter variants, Kig-Yar,
-   UNSC Spartan-II trainees, Noble Team, Johnson, Forge, Red Team, Atriox, Decimus,
-   Itho 'Hesiikee, Maccabeus; Choppers; themes for Janjur Qom (2100 BCE), Ulgethon,
-   Rentus, High Charity, Doisac, Reach, Harvest, Trove, Algolis.
-6. Then Parts IV–VII; then publish to GitHub (publish-project skill + a GitHub Pages
-   variant).
+- **Playtest fixes (2026-10-18):** left half of the screen not drawn; CRT overlay
+  drawn black; units falling through the floor; stacked allies; floating arms after
+  defeat; checkpoint restart loop; indoor spawns above the ceiling; level select
+  points at the next level. Each has a smoke check.
 
 ## User decisions to respect
 
@@ -48,3 +69,4 @@ milestone lands. Everything listed as done is committed.
 - Halo rings: when standing on a ring, the far side rises from the horizon
   (`ringrise`); off a ring, show the whole ring (`halo`).
 - The user plays with an 8BitDo M30 ("6B controller"); tests hide real controllers.
+- The user records bugs as screen recordings in ~/Videos; extract frames with ffmpeg.
