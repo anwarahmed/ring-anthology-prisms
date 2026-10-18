@@ -195,25 +195,24 @@ Installation 04 is branded a heretic. *(Source: Halo 2)*
 ## Part III · The Covenant
 
 ### 3a · The Reformists
-- **Era:** Covenant War (era color) · **When/where:** before 938 BCE, Janjur Qom **(verify date)** · **Source:** Halopedia: San'Shyuum
+- **Era:** Covenant War (era color) · **When/where:** 2200–2100 BCE, Janjur Qom · **Source:** Halopedia: Janjur Qom
 - **Players:** P1 and P2 Reformist San'Shyuum (generic)
 - **Echo:** 1e
-- **Story:** The San'Shyuum split between the Reformists, who want to use the Forerunner Dreadnought to find the Great Journey, and the Stoics, who forbid it. The Reformists leave Janjur Qom aboard the Dreadnought.
-- **Enemies:** Stoics **(verify the conflict)**. **Boss:** none.
+- **Story:** The Reformists demand access to the Forerunner Dreadnought; the Stoics, who hold it too sacred to explore, refuse. A century of fighting follows. In 2100 BCE about 1,000 Reformists barricade themselves inside the Dreadnought and activate it, tearing away a piece of the planet. The Stoics cannot bring themselves to destroy the relic, so the Reformists escape into exile.
+- **Enemies:** Stoic San'Shyuum (staging). **Boss:** none (escape as the Dreadnought lifts off).
 - **Status:** planned
 
 ### 3b · Ulgethon
-- **Era:** Covenant War · **When/where:** 938 BCE, Sanghelios · **Source:** Halopedia: Arbiter, Covenant
+- **Era:** Covenant War · **When/where:** 938 BCE, Ulgethon · **Source:** Halopedia: War of Beginnings, Arbiter
 - **Players:** P1 and P2 Sangheili warriors serving Arbiter Vema 'Togad
-- **Echo:** 6e (Sanghelios, 2558)
-- **Story:** The San'Shyuum arrive at Sanghelios. Arbiter Vema 'Togad, a ruler and judge of the clans, starts the War of Beginnings by killing a San'Shyuum delegation. The war lasts 86 years.
-- **Enemies:** San'Shyuum forces, the Dreadnought's defenses **(verify)**. **Boss:** none.
+- **Story:** The San'Shyuum Reformists land on Ulgethon, thinking it uninhabited, and meet the Sangheili. They announce they will dig up Forerunner relics. Arbiter Vema 'Togad, a ruler and judge of the clans, has their delegation killed, and the War of Beginnings starts. The Dreadnought, the *Anodyne Spirit*, is almost impossible to damage; on the ground the Sangheili are stronger. The war lasts 86 years.
+- **Enemies:** San'Shyuum forces; later in the war, Aggressor Sentinels fought for the San'Shyuum (staging). **Boss:** none.
 - **Status:** planned
 
 ### 3c · Writ of Union
-- **Era:** Covenant War · **When/where:** 852 BCE **(verify location)** · **Source:** Halopedia: Covenant
+- **Era:** Covenant War · **When/where:** 852 BCE (the place is not recorded) · **Source:** Halopedia: War of Beginnings, Covenant
 - **Players:** P1 and P2 Sangheili warriors
-- **Story:** The Sangheili surrender. Pelahsar the Strident and Breaking Shadow agree to a truce, and the Writ of Union founds the Covenant. The Hierarchs make the Arbiter a position of power in the military.
+- **Story:** The San'Shyuum send an unarmed delegation. Breaking Shadow and Pelahsar the Strident agree to a truce, and the Writ of Union founds the Covenant: the San'Shyuum as its religious leaders, the Sangheili as its protectors. The Hierarchs make the Arbiter a position of power in the military.
 - **Sacrifice:** The Sangheili give up their independence for the shared faith.
 - **Play:** The final battle of the war ends in the truce.
 - **Enemies:** San'Shyuum forces. **Boss:** none.
@@ -236,9 +235,9 @@ High Charity is built (851–791 BCE).
 - Arbiter Fal 'Chavamee rejects the Covenant's faith (c. 2152). The Prophets turn the title of Arbiter into a mark of shame, given to the disgraced for suicide missions.
 
 ### 3e · Balaho
-- **Era:** Covenant War · **When/where:** 2462, Balaho · **Source:** Halopedia: Unggoy Rebellion
+- **Era:** Covenant War · **When/where:** 2462–2463, High Charity · **Source:** Halopedia: Unggoy Rebellion
 - **Players:** P1 and P2 Unggoy (generic)
-- **Story:** The Unggoy Rebellion. The Unggoy rise up after Kig-Yar shipmasters harm their people. It ends when Arbiter Heki 'Gibadee forces Balaho's surrender (told gently).
+- **Story:** The Unggoy Rebellion, fought in the lower districts of High Charity. Some Kig-Yar secretly harmed the Unggoy's families, and the Covenant barely punished them. The Unggoy, tough and many, rose up. Arbiter Heki 'Gibadee ended it by having the fleet attack Balaho, the Unggoy homeworld; to save it, the Unggoy surrendered (told gently). Afterwards the Unggoy got better training and weapons and fought beside the Sangheili.
 - **Sacrifice:** The Unggoy risk everything for their families.
 - **Play:** Plays from the Unggoy's side. Methane tanks, plasma grenades, and lots of them.
 - **Enemies:** Kig-Yar, Sangheili. **Boss:** none.
@@ -247,24 +246,24 @@ High Charity is built (851–791 BCE).
 ### 3f · Doisac
 - **Era:** Covenant War · **When/where:** 2492, Doisac · **Source:** Halopedia: Jiralhanae
 - **Players:** P1 and P2 Jiralhanae (generic)
-- **Story:** The Covenant finds the Jiralhanae in the middle of a civil war. Some packs join willingly. The rest are defeated and absorbed.
+- **Story:** The Jiralhanae have nearly destroyed themselves in the Great Immolation, a nuclear war between packs, and have only just rediscovered radio and rockets. The Covenant arrives. Some packs, like Chieftain Maccabeus's, join quickly; those who resist are defeated and absorbed.
 - **Enemies:** rival Jiralhanae packs. **Boss:** none.
 - **Status:** planned
 
 ### 3g · The Spartans
 - **Era:** Covenant War · **When/where:** 2517–2525, Reach · **Source:** *Halo: The Fall of Reach*
-- **Players:** P1 John-117 · P2 a Spartan-II trainee
-- **Story:** Dr. Halsey's SPARTAN-II program. John and the other children train under Chief Petty Officer Mendez.
+- **Players:** P1 John-117 · P2 Kelly-087
+- **Story:** Dr. Catherine Halsey's SPARTAN-II program. In 2517, 75 children are taken to Reach and trained under Chief Petty Officer Franklin Mendez (told gently). They grow up to wear MJOLNIR armor.
 - **Play:** A training course that teaches the controls.
 - **Enemies:** training drills. **Boss:** none.
 - **Status:** planned
 
 ### 3h · Contact Harvest
 - **Era:** Covenant War · **When/where:** 2525, Harvest · **Source:** *Halo: Contact Harvest*
-- **Players:** P1 Sgt. Avery Johnson · P2 a Harvest militia soldier
-- **Story:** First contact between humans and the Covenant. The Covenant's Luminaries identify humans as the Forerunners' "Reclaimers". The Prophets hide this and declare war on humanity.
+- **Players:** P1 Staff Sgt. Avery Johnson · P2 Nolan Byrne
+- **Story:** First contact (2525). Johnson trains the Harvest militia. The Jiralhanae chieftain Maccabeus attacks Harvest; at Gladsheim, Johnson and Byrne ram him with a Warthog. The Oracle reveals that the Luminary's readings show humans, the Forerunners' "Reclaimers". Three Covenant leaders (who become the Prophets of Truth, Regret and Mercy) hide this and declare war on humanity. Tartarus later kills the wounded Maccabeus.
 - **Sacrifice:** The Prophets sacrifice the truth to keep their power.
-- **Enemies:** Jiralhanae, Unggoy, Kig-Yar. **Boss:** Maccabeus? **(verify)**
+- **Enemies:** Jiralhanae, Unggoy, Kig-Yar. **Vehicles:** Warthog. **Boss:** Maccabeus (rammed with the Warthog).
 - **Status:** planned
 
 ### 3i · Harvest
@@ -275,35 +274,35 @@ High Charity is built (851–791 BCE).
 - **Status:** planned
 
 ### 3j · The Shield World
-- **Era:** Covenant War · **When/where:** 2531, Trove's shield world · **Source:** *Halo Wars*
+- **Era:** Covenant War · **When/where:** 2531, the shield world Trove · **Source:** *Halo Wars*
 - **Players:** P1 Sgt. Forge · P2 a Spartan of Red Team
 - **Echo:** 5g
-- **Story:** Arbiter Ripa 'Moramee leads the Covenant forces and is killed by Forge. Forge stays behind and overloads the *Spirit of Fire*'s slipspace drive, destroying the shield world and the Covenant fleet (told gently).
+- **Story:** Arbiter Ripa 'Moramee uses Professor Anders to wake a hidden Forerunner fleet. Forge kills the Arbiter with an energy sword. The crew moves the *Spirit of Fire*'s FTL drive into the shield world to detonate it, sending the sun supernova and destroying the fleet. Forge stays behind to set it off (told gently); the ship escapes and drifts, its crew in cryo sleep.
 - **Sacrifice:** Forge gives his life for the crew.
 - **Enemies:** Covenant, Flood. **Boss:** Ripa 'Moramee.
 - **Status:** planned
 
 ### 3k · Rise of Atriox
-- **Era:** Banished (era color) · **When/where:** before 2552 **(verify date)** · **Source:** *Halo Wars 2* backstory ("Rise of Atriox")
+- **Era:** Banished (era color) · **When/where:** 2549, Algolis · **Source:** *Halo Wars 2* backstory; Halopedia: Atriox
 - **Players:** P1 Atriox · P2 a Jiralhanae warrior
 - **Echo:** 5h
-- **Story:** The Covenant sends Brutes on suicide missions. Atriox survives every one. When his Sangheili commanders try to execute him, he rebels and founds the Banished.
+- **Story:** The Covenant sends Atriox's packs on suicide missions; he survives them all and becomes a legend. In 2549, on Algolis, the Sangheili officer Itho 'Hesiikee is sent to execute him. Atriox catches the energy sword and defeats him; Decimus and the other Jiralhanae join him. The Banished are born.
 - **Sacrifice:** The Banished give up the Covenant's protection to be free.
-- **Enemies:** Sangheili. **Vehicles:** Chopper. **Boss:** **(verify which Sangheili commander)**.
+- **Enemies:** Sangheili. **Vehicles:** Chopper. **Boss:** Itho 'Hesiikee.
 - **Status:** planned
 
 ### 3l · Winter Contingency
 - **Era:** Covenant War · **When/where:** 2552, Reach · **Source:** *Halo: Reach*
-- **Players:** P1 Noble Six · P2 a Noble Team Spartan
-- **Story:** The Covenant arrives on Reach.
-- **Enemies:** Covenant. **Vehicles:** Warthog. **Boss:** an Elite Zealot.
+- **Players:** P1 Noble Six · P2 Kat-B320
+- **Story:** July 24, 2552, Visegrád. Noble Team investigates a dead relay and finds the first Covenant ground forces on Reach. Zealots attack; the team restores the relay and declares Winter Contingency.
+- **Enemies:** Covenant (Zealots, Grunts, Jackals, Skirmishers). **Vehicles:** Warthog. **Boss:** Zealots.
 - **Status:** planned
 
 ### 3m · The Pillar of Autumn (Reach)
 - **Era:** Covenant War · **When/where:** 2552, Reach · **Source:** *Halo: Reach*
 - **Players:** P1 Noble Six · P2 Emile
 - **Echo:** 2a
-- **Story:** Noble Six delivers Cortana to the *Pillar of Autumn*. Six stays behind to cover its escape (told gently). The ship goes on to Installation 04, which is Part II.
+- **Story:** August 29–30, 2552. Six and Emile carry Cortana to the *Pillar of Autumn* across the Aszod ship-breaking yards. Emile mans a mass driver against the Covenant until he falls (told gently). When a cruiser threatens the ship, Six takes the gun: "Negative. I have the gun. Good luck, sir." The *Autumn* escapes; Six fights on to the end (told gently). The ship reaches Installation 04, which is Part II.
 - **Sacrifice:** Six gives up any chance of escape so the ship can get away.
 - **Enemies:** Covenant. **Boss:** none (a last stand).
 - **Status:** planned
