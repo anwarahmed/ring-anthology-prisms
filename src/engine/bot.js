@@ -9,11 +9,13 @@ export function makeBot(scene, player) {
   let jumpHeld = 0;
   let stuck = 0;
   let lastX = player.x;
+  // Vehicles the bot got stuck in (a ledge too tall to drive up): it leaves them behind.
+  const abandoned = new Set();
   return () => {
     const s = { x: 1, y: 0, aimX: 0, aimY: 0, stick: false, jump: false, fire: false, ability: false, grenade: false, swap: false, melee: false, pause: false };
     if (!player.alive) return s;
     // Vehicles: climb into a nearby empty seat; once inside, drive right and shoot.
-    const v = scene.vehicles?.find((vh) => vh.alive && vh.seatFor() && Math.abs(vh.x - player.x) < 160);
+    const v = scene.vehicles?.find((vh) => vh.alive && vh.seatFor() && !abandoned.has(vh) && Math.abs(vh.x - player.x) < 160);
     if (!player.vehicle && v) {
       s.x = Math.sign(v.x - player.x);
       s.swap = Math.abs(v.x - player.x) < 30 && Math.random() < 0.5;
@@ -29,8 +31,15 @@ export function makeBot(scene, player) {
       s.melee = n.d < 24;
     }
     if (scene.arena && player.x > scene.arena.x1 - 40) s.x = n ? s.x : -1;
-    stuck = Math.abs(player.x - lastX) < 0.5 ? stuck + 1 : 0;
-    lastX = player.x;
+    const here = (player.vehicle ?? player).x;
+    stuck = Math.abs(here - lastX) < 0.5 ? stuck + 1 : 0;
+    lastX = here;
+    if (player.vehicle && stuck > 150) {
+      abandoned.add(player.vehicle);
+      s.swap = true;
+      stuck = 0;
+      return s;
+    }
     const t = scene.layer.getTileAtWorldXY(player.x + Math.sign(s.x || 1) * 12, player.y);
     // Jump in bursts: hold up to 18 frames, then release for 6 so the next press counts.
     if (jumpHeld <= -6 && ((t && isSolid(t.index)) || stuck > 20 || Math.random() < 0.01)) jumpHeld = 18;

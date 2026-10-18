@@ -171,7 +171,7 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Players:** P1 Master Chief · P2 a Marine
 - **Story:** The Flood is discovered, and 343 Guilty Spark appears. Later, Cortana learns the ring's real purpose and the Chief refuses to fire it.
 - **Enemies:** Flood. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 2e · The Hunt
 - **Era:** Covenant War · **When/where:** September 2552, Installation 04 · **Source:** *Halo: The Flood* (novel); Halopedia: Zuka 'Zamamee
@@ -180,7 +180,7 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Sacrifice:** 'Zamamee gives everything to restore his honor.
 - **Play:** Plasma weapons and Elite melee. The Covenant against the humans of Alpha Base; the Flood is loose on the ring. Ends escaping in a Banshee.
 - **Enemies:** UNSC Marines, Flood **(staging)**. **Vehicles:** Banshee. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 2f · The Maw
 - **Era:** Covenant War · **When/where:** the *Pillar of Autumn* · **Source:** *Halo: Combat Evolved*

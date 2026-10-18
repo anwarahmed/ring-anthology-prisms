@@ -26,7 +26,9 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Replace fixed waits with waiting on outcomes; retry key presses (passes at load 20)
    - [x] `--level <id>` runs skip the general checks; `--checks` runs only them
 4. **Part II:** bot-finish 2a, 2b, 2c, 2e, 2f (2d done); set `done` in CAMPAIGN.md.
-   - [ ] 2a  - [ ] 2b  - [ ] 2c  - [ ] 2e  - [ ] 2f  - [ ] statuses + commit
+   - [ ] 2a  - [ ] 2b  - [ ] 2c  - [x] 2e  - [ ] 2f  - [ ] statuses + commit
+   (Bot runs: `test-results/verify.sh <ids>` runs three at a time; logs in
+   test-results/finish/. If lost: a loop over `node tests/smoke.mjs --level <id> --finish`.)
 5. **Part III (3a–3m)** with the `new-level` skill. New content: a Jiralhanae (Brute)
    rig, San'Shyuum Stoics, Lekgolo/Hunter variants, Kig-Yar, Spartan-II trainees,
    Noble Team, Johnson, Forge, Red Team, Atriox, Decimus, Itho 'Hesiikee, Maccabeus,
