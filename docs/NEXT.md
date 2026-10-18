@@ -26,7 +26,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Replace fixed waits with waiting on outcomes; retry key presses (passes at load 20)
    - [x] `--level <id>` runs skip the general checks; `--checks` runs only them
 4. **Part II:** bot-finish 2a, 2b, 2c, 2e, 2f (2d done); set `done` in CAMPAIGN.md.
-   - [ ] 2a  - [ ] 2b  - [ ] 2c  - [x] 2e  - [ ] 2f  - [ ] statuses + commit
+   - [x] 2a  - [ ] 2b  - [ ] 2c  - [x] 2e  - [x] 2f  - [ ] statuses + commit
    (Write batches of standard levels with `scripts/levelgen.py` + `scripts/genmap.py`.)
    (Bot runs: `test-results/verify.sh <ids>` runs three at a time; logs in
    test-results/finish/. If lost: a loop over `node tests/smoke.mjs --level <id> --finish`.)
@@ -35,7 +35,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    Noble Team, Johnson, Forge, Red Team, Atriox, Decimus, Itho 'Hesiikee, Maccabeus,
    Choppers; themes for Janjur Qom (2100 BCE), Ulgethon, Rentus, High Charity,
    Doisac, Reach, Harvest, Trove, Algolis.
-   - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [ ] 3a - [ ] 3b - [ ] 3c - [ ] 3d - [ ] 3e - [ ] 3f - [ ] 3g
+   - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [x] 3a - [ ] 3b - [x] 3c - [x] 3d - [ ] 3e - [x] 3f - [ ] 3g
    - [ ] 3h - [ ] 3i - [ ] 3j - [ ] 3k - [ ] 3l - [ ] 3m
    Status: all 13 written and committed (validator passes). A box is ticked once the
    bot finishes the level (`node tests/smoke.mjs --level <id> --finish`) and its

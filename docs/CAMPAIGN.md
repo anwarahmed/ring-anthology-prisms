@@ -150,7 +150,7 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Story:** The *Pillar of Autumn* escapes the fall of Reach and finds Installation 04. The Covenant boards it. Master Chief wakes, and Cortana goes into his armor.
 - **Play:** Escape to the lifeboats. Tutorial for the Covenant War kit.
 - **Enemies:** Grunts, Jackals, Elites. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 2b · Halo
 - **Era:** Covenant War · **When/where:** Installation 04 · **Source:** *Halo: Combat Evolved*
@@ -187,7 +187,7 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Players:** P1 Master Chief · P2 a Marine
 - **Story:** The Chief sets off the ship's reactor to destroy Halo, and escapes in the Warthog run.
 - **Enemies:** Flood, Sentinels, Covenant. **Vehicles:** Warthog. **Boss:** the countdown.
-- **Status:** planned
+- **Status:** done
 
 **Archive scene: Thel 'Vadamee's disgrace.** The Supreme Commander who failed to protect
 Installation 04 is branded a heretic. *(Source: Halo 2)*
@@ -200,7 +200,7 @@ Installation 04 is branded a heretic. *(Source: Halo 2)*
 - **Echo:** 1e
 - **Story:** The Reformists demand access to the Forerunner Dreadnought; the Stoics, who hold it too sacred to explore, refuse. A century of fighting follows. In 2100 BCE about 1,000 Reformists barricade themselves inside the Dreadnought and activate it, tearing away a piece of the planet. The Stoics cannot bring themselves to destroy the relic, so the Reformists escape into exile.
 - **Enemies:** Stoic San'Shyuum (staging). **Boss:** none (escape as the Dreadnought lifts off).
-- **Status:** planned
+- **Status:** done
 
 ### 3b · Ulgethon
 - **Era:** Covenant War · **When/where:** 938 BCE, Ulgethon · **Source:** Halopedia: War of Beginnings, Arbiter
@@ -216,7 +216,7 @@ Installation 04 is branded a heretic. *(Source: Halo 2)*
 - **Sacrifice:** The Sangheili give up their independence for the shared faith.
 - **Play:** The final battle of the war ends in the truce.
 - **Enemies:** San'Shyuum forces. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 **Archive scenes:** The Rending, a rebellion led by Ussa 'Xellus (851 BCE).
 High Charity is built (851–791 BCE).
@@ -226,7 +226,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Arbiter Jeht 'Lcmutee · P2 a Sangheili warrior
 - **Story:** The Covenant fights the Lekgolo. Arbiter Jeht 'Lcmutee studies them and proposes bringing them into the Covenant. The Hierarchs reluctantly agree.
 - **Enemies:** Lekgolo. **Boss:** a Hunter pair.
-- **Status:** planned
+- **Status:** done
 
 **Archive scenes:**
 - The Yanme'e join by treaty (1112).
@@ -248,7 +248,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 and P2 Jiralhanae (generic)
 - **Story:** The Jiralhanae have nearly destroyed themselves in the Great Immolation, a nuclear war between packs, and have only just rediscovered radio and rockets. The Covenant arrives. Some packs, like Chieftain Maccabeus's, join quickly; those who resist are defeated and absorbed.
 - **Enemies:** rival Jiralhanae packs. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 3g · The Spartans
 - **Era:** Covenant War · **When/where:** 2517–2525, Reach · **Source:** *Halo: The Fall of Reach*

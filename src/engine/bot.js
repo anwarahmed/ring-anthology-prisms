@@ -11,6 +11,9 @@ export function makeBot(scene, player) {
   let lastX = player.x;
   // Vehicles the bot got stuck in (a ledge too tall to drive up): it leaves them behind.
   const abandoned = new Set();
+  // Progress check: where the bot was once a second for the last few seconds.
+  const trail = [];
+  let frame = 0;
   return () => {
     const s = { x: 1, y: 0, aimX: 0, aimY: 0, stick: false, jump: false, fire: false, ability: false, grenade: false, swap: false, melee: false, pause: false };
     if (!player.alive) return s;
@@ -30,11 +33,22 @@ export function makeBot(scene, player) {
       s.grenade = Math.random() < 0.004;
       s.melee = n.d < 24;
     }
-    if (scene.arena && player.x > scene.arena.x1 - 40) s.x = n ? s.x : -1;
+    // In a locked arena with nobody in range, go after the nearest enemy anywhere in it.
+    if (!n && scene.arena) {
+      const far = nearest(player, scene, 900);
+      if (far) s.x = Math.sign(far.t.x - player.x) || 1;
+      else if (player.x > scene.arena.x1 - 40) s.x = -1;
+    }
     const here = (player.vehicle ?? player).x;
     stuck = Math.abs(here - lastX) < 0.5 ? stuck + 1 : 0;
     lastX = here;
-    if (player.vehicle && stuck > 150) {
+    if (++frame % 60 === 0) {
+      trail.push(here);
+      if (trail.length > 5) trail.shift();
+    }
+    const going = trail.length < 5 || Math.max(...trail) - Math.min(...trail) > 12;
+    if (player.vehicle && (stuck > 150 || !going)) {
+      trail.length = 0;
       abandoned.add(player.vehicle);
       s.swap = true;
       stuck = 0;

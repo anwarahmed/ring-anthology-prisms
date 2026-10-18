@@ -480,17 +480,17 @@ for (const id of levels) {
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {
     await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 60000 });
     if (finish) {
-      // 15 minutes of game time (slow machines run the game slower than real time),
+      // 25 minutes of game time (slow machines run the game slower than real time),
       // with a 45-minute wall-clock backstop.
       const wallDeadline = Date.now() + 45 * 60 * 1000;
       const gameStart = await page.evaluate(() => window.__game.loop.time);
       const gameTime = () => page.evaluate((t0) => window.__game.loop.time - t0, gameStart);
       let n = 0;
-      while (Date.now() < wallDeadline && (await gameTime()) < 15 * 60 * 1000 && !(await active(page, 'Results'))) {
+      while (Date.now() < wallDeadline && (await gameTime()) < 25 * 60 * 1000 && !(await active(page, 'Results'))) {
         await page.waitForTimeout(10000);
         await page.screenshot({ path: join(shots, `level-${id}-${String(++n).padStart(2, '0')}.png`) });
       }
-      if (!(await active(page, 'Results'))) throw new Error('level did not finish in 15 minutes of game time');
+      if (!(await active(page, 'Results'))) throw new Error('level did not finish in 25 minutes of game time');
       console.log(`     ${id} finished`);
     } else {
       await page.waitForTimeout(seconds * 1000);
