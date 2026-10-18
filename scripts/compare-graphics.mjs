@@ -42,7 +42,9 @@ const { CRT_PRESETS } = await server.ssrLoadModule('/src/engine/graphics.js');
 const settings = (style, preset) => ({ style, preset, ...CRT_PRESETS[preset], fps: true });
 const inLevel = async (page) => {
   await page.waitForFunction(() => window.__game.scene.isActive('Level'), null, { timeout: 60000 });
-  await page.waitForTimeout(5000);
+  // Same moment in every shot: the fade-in finished (slow in headless), then 3 s of play.
+  await page.waitForFunction(() => !window.__game.scene.getScene('Level').cameras.main.fadeEffect.isRunning, null, { timeout: 60000 });
+  await page.waitForTimeout(3000);
 };
 
 for (const style of styles) await shot(`style-${style}`, `?level=${level}&bot=1&god=1`, settings(style, 'off'), inLevel);

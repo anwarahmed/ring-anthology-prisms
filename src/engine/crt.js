@@ -63,25 +63,29 @@ void main() {
     }
     col += glow / 25.0 * uBloom * 2.5 * vec3(1.15, 1.0, 0.85);
   }
-  // Scanlines: a dark gap between each game pixel row; bright rows bloom wider.
+  // Scanlines: a dark gap between each game pixel row; bright rows bloom wider. The
+  // beam is scaled so a row averages the same brightness as without scanlines.
   float y = fract(uv.y * uLines);
-  float beam = exp(-pow((y - 0.5) / (0.28 + 0.2 * dot(col, vec3(0.3, 0.5, 0.2))), 2.0));
-  col *= mix(1.0, beam * 1.25, uScan);
-  // Phosphor mask, one triad per three canvas pixels.
+  float w = 0.28 + 0.2 * dot(col, vec3(0.3, 0.5, 0.2));
+  float beam = exp(-pow((y - 0.5) / w, 2.0)) / (w * 1.7);
+  col *= mix(1.0, beam, uScan);
+  // Phosphor mask, one triad per three canvas pixels. Each mask is scaled to average
+  // 1, so it adds texture without darkening the picture.
   vec2 sp = gl_FragCoord.xy;
   vec3 m;
   if (uMaskType < 0.5) {
     float k = mod(sp.x, 3.0);
-    m = k < 1.0 ? vec3(1.0, 0.3, 0.3) : k < 2.0 ? vec3(0.3, 1.0, 0.3) : vec3(0.3, 0.3, 1.0);
+    m = (k < 1.0 ? vec3(1.0, 0.3, 0.3) : k < 2.0 ? vec3(0.3, 1.0, 0.3) : vec3(0.3, 0.3, 1.0)) * 1.875;
   } else if (uMaskType < 1.5) {
     float k = mod(sp.x, 3.0);
     m = k < 1.0 ? vec3(1.0, 0.35, 0.35) : k < 2.0 ? vec3(0.35, 1.0, 0.35) : vec3(0.35, 0.35, 1.0);
     if (mod(sp.y + step(3.0, mod(sp.x, 6.0)) * 2.0, 4.0) < 1.0) m *= 0.4;
+    m *= 2.07;
   } else {
     float k = mod(sp.x + mod(floor(sp.y), 2.0) * 1.5, 3.0);
-    m = k < 1.0 ? vec3(1.0, 0.3, 0.3) : k < 2.0 ? vec3(0.3, 1.0, 0.3) : vec3(0.3, 0.3, 1.0);
+    m = (k < 1.0 ? vec3(1.0, 0.3, 0.3) : k < 2.0 ? vec3(0.3, 1.0, 0.3) : vec3(0.3, 0.3, 1.0)) * 1.875;
   }
-  col *= mix(vec3(1.0), m * 1.6, uMask);
+  col *= mix(vec3(1.0), m, uMask);
   // Vignette and noise.
   vec2 d = uv - 0.5;
   col *= clamp(1.0 - uVig * dot(d, d) * 2.2, 0.0, 1.0);
