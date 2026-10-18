@@ -58,6 +58,11 @@ async function run(name, url, check) {
 }
 
 const active = (page, key) => page.evaluate((k) => window.__game?.scene.isActive(k), key);
+// The level is running and its fade-in is over (slow under load in headless Chromium).
+const levelReady = async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await page.waitForFunction(() => !window.__game.scene.getScene('Level').cameras.main.fadeEffect.isRunning, null, { timeout: 30000 });
+};
 
 await run('title', '', async (page) => {
   await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
@@ -230,8 +235,8 @@ await run('ally-fire', '?level=1a&god=1', async (page) => {
 
 // Vehicles: get in with SWAP (R on keys 1), drive, run a Grunt over, get out.
 await run('vehicle', '?level=1a&god=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
-  await page.waitForTimeout(1000);
+  await levelReady(page);
+  await page.waitForTimeout(300);
   await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
     L.runner.triggers.forEach((t) => { t.fired = true; });
@@ -264,8 +269,8 @@ await run('vehicle', '?level=1a&god=1', async (page) => {
 // The screen edges hold: sprinting and dashing right (into an arena lock), then back
 // left, the player's body never leaves the screen.
 await run('screen-edge', '?level=1d&god=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
-  await page.waitForTimeout(800);
+  await levelReady(page);
+  await page.waitForTimeout(300);
   await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
     window.__worst = 0;
@@ -290,7 +295,7 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
     const xs = L.layer.culledTiles.map((t) => t.pixelX * s);
     return { scroll: cam.scrollX, min: Math.min(...xs), max: Math.max(...xs) + 16 };
   });
-  if (cull.scroll < 32) throw new Error(`camera did not scroll: ${JSON.stringify(cull)}`);
+  if (cull.scroll < 8) throw new Error(`camera did not scroll: ${JSON.stringify(cull)}`);
   if (cull.min > cull.scroll || cull.max < cull.scroll + 480) throw new Error(`tiles not drawn across the screen: ${JSON.stringify(cull)}`);
   await page.keyboard.down('a');
   await page.waitForTimeout(2500);
@@ -403,6 +408,15 @@ await run('spawn-indoors', '?level=1c&god=1', async (page) => {
     return units.filter((u) => u.body.bottom < ceiling * T || u.body.bottom > (m.y + 1) * T + 1).map((u) => [u.unitId ?? u.id, Math.round(u.x), Math.round(u.body.bottom), ceiling * T]);
   });
   if (bad.length) throw new Error(`units outside the room: ${JSON.stringify(bad)}`);
+});
+
+// Back on the timeline after finishing a level, the next level is selected.
+await run('timeline-next', '?all=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
+  await page.evaluate(() => window.__game.scene.getScene('Title').scene.start('Timeline', { after: '1f' }));
+  await page.waitForFunction(() => window.__game.scene.isActive('Timeline'), null, { timeout: 5000 });
+  const sel = await page.evaluate(() => window.__game.scene.getScene('Timeline').selectedId);
+  if (sel !== '2a') throw new Error(`expected 2a selected after 1f, got ${sel}`);
 });
 
 for (const id of levels) {

@@ -223,6 +223,7 @@ export class PlayersScene extends Phaser.Scene {
 // Level select along the history: Parts left/right, levels up/down.
 export class TimelineScene extends Phaser.Scene {
   constructor() { super('Timeline'); }
+  init(data) { this.after = data?.after ?? null; }
   create() {
     hdCamera(this);
     this.leaving = false;
@@ -231,6 +232,8 @@ export class TimelineScene extends Phaser.Scene {
     starfield(this);
     this.partIndex = this.registry.get('partIndex') ?? 0;
     this.levelIndex = this.registry.get('levelIndex') ?? 0;
+    // Back from a finished level: point at the next playable level.
+    if (this.after) this.selectNextAfter(this.after);
     panel(this, 24, 38, VIEW.w - 48, 200);
     this.header = txt(this, VIEW.w / 2, 12, '', { size: 8, color: '#ffe38a' }).setOrigin(0.5, 0);
     this.rows = [];
@@ -239,6 +242,23 @@ export class TimelineScene extends Phaser.Scene {
     this.g = this.add.graphics();
     audio.playMusic('archive', 0);
     this.draw();
+  }
+  get selectedId() {
+    return CAMPAIGN.parts[this.partIndex]?.levels[this.levelIndex]?.id;
+  }
+  selectNextAfter(id) {
+    const i = ORDER.findIndex((l) => l.id === id);
+    const next = ORDER.slice(i + 1).find((l) => LEVELS[l.id] && this.unlocked(l.id));
+    if (i < 0 || !next) return;
+    CAMPAIGN.parts.forEach((part, pi) => {
+      const li = part.levels.findIndex((l) => l.id === next.id);
+      if (li >= 0) {
+        this.partIndex = pi;
+        this.levelIndex = li;
+      }
+    });
+    this.registry.set('partIndex', this.partIndex);
+    this.registry.set('levelIndex', this.levelIndex);
   }
   unlocked(id) {
     if (session.debug.all) return true;
@@ -368,7 +388,7 @@ export class ArchiveScene extends Phaser.Scene {
   }
   next() {
     if (this.which === 'before') go(this, 'Level', { levelId: this.levelId });
-    else go(this, 'Timeline');
+    else go(this, 'Timeline', { after: this.levelId });
   }
 }
 
