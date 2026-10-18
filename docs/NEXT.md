@@ -36,8 +36,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [ ] 3h - [ ] 3i - [ ] 3j - [ ] 3k - [ ] 3l - [ ] 3m
    Status: all 13 written and committed (validator passes). A box is ticked once the
    bot finishes the level (`node tests/smoke.mjs --level <id> --finish`) and its
-   CAMPAIGN.md status is set to done. Map generator: test-results/genmap.py (gitignored;
-   recreate from the 3b–3l maps if lost).
+   CAMPAIGN.md status is set to done. Map generator for standard
+   levels: `python3 scripts/genmap.py SEED [--hazard] [--indoor] [--ceiling]`.
 6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
    - [ ] Part IV (4a–4f)  - [ ] Part V (5a–5h)  - [ ] Part VI (6a–6g)
