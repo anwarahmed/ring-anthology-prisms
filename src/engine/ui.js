@@ -25,3 +25,12 @@ export function bar(g, x, y, w, h, frac, color, back = 0x000000) {
   g.fillStyle(0xffffff, 0.45).fillRect(x, y, fw, 1);
   if (h > 2) g.fillStyle(0x000000, 0.3).fillRect(x, y + h - 1, fw, 1);
 }
+
+// Fades out, then switches scene. Every menu screen fades in on create, so moving
+// between screens never cuts abruptly.
+export function go(scene, key, data) {
+  if (scene.leaving) return;
+  scene.leaving = true;
+  scene.cameras.main.fadeOut(220, 0, 0, 0);
+  scene.cameras.main.once('camerafadeoutcomplete', () => scene.scene.start(key, data));
+}

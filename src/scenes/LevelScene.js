@@ -79,15 +79,13 @@ export class LevelScene extends Phaser.Scene {
       if (e.unit) this.spawnUnit(e.unit, e.x * TILE + 8, (e.y + 1) * TILE, { ally: !!e.ally, entrance: 'none' });
     }
 
-    // Camera follows the middle of the living players.
-    this.focus = this.add.zone(spawn.x, spawn.y, 1, 1);
+    // The camera glides after the middle of the living players (see updateCamera).
+    this.focus = { x: spawn.x, y: spawn.y };
     const cam = this.cameras.main;
-    cam.setBounds(0, 0, W, H);
-    cam.startFollow(this.focus, true, 0.09, 0.09, 0, 20);
-    cam.setDeadzone(40, 50);
+    this.arena = null;
+    this.updateCamera(0, true);
     cam.fadeIn(600);
     gradeCamera(cam, this);
-    this.arena = null;
     this.arenaWalls = [];
 
     this.scene.launch('Hud', { level: this });
@@ -179,21 +177,51 @@ export class LevelScene extends Phaser.Scene {
     if (alive.length) {
       this.focus.x = alive.reduce((s, p) => s + p.x, 0) / alive.length;
       this.focus.y = alive.reduce((s, p) => s + p.y, 0) / alive.length;
-      const v = this.cameras.main.worldView;
-      const lo = this.arena ? this.arena.x0 : v.x;
-      const hi = this.arena ? this.arena.x1 : v.right;
-      for (const p of alive) {
-        // The camera has no view on the first frame; only leash once it does.
-        const nx = v.width > 0 ? Phaser.Math.Clamp(p.x, lo + 6, hi - 6) : p.x;
-        if (nx !== p.x) { p.x = nx; p.body.velocity.x = 0; }
-        if (p.y > this.worldH + 40) p.hurt(9999, 'explosive');
-      }
+      this.leash(alive, dt);
     }
+    this.updateCamera(dt);
     this.runner.update();
     if (this.map.exit && !this.arena && alive.some((p) => Math.abs(p.x - (this.map.exit.x * TILE + 8)) < 12 && Math.abs(p.y - this.map.exit.y * TILE) < 40)) {
       this.endLevel({ result: 'win' });
     }
     this.level.hooks?.update?.(this.api(), dt);
+  }
+
+  // Smooth camera: always eases toward a target framing, so arena locks, unlocks and
+  // co-op shifts scroll continuously instead of snapping.
+  updateCamera(dt, snap = false) {
+    const cam = this.cameras.main;
+    const vw = cam.width, vh = cam.height;
+    const lo = this.arena ? this.arena.x0 : 0;
+    const hi = (this.arena ? this.arena.x1 : this.worldW) - vw;
+    const tx = hi < lo ? (lo + hi) / 2 : Phaser.Math.Clamp(this.focus.x - vw / 2, lo, hi);
+    const ty = Phaser.Math.Clamp(this.focus.y - vh * 0.58, 0, Math.max(0, this.worldH - vh));
+    if (snap) {
+      cam.setScroll(tx, ty);
+      return;
+    }
+    // Ease toward the target, with a speed cap so big reframes are a glide, not a whip.
+    const ease = (from, to, rate, max) => {
+      const step = (to - from) * (1 - Math.exp(-dt * rate));
+      return from + Math.sign(step) * Math.min(Math.abs(step), max * dt);
+    };
+    cam.setScroll(ease(cam.scrollX, tx, this.arena ? 3.5 : 6, 420), ease(cam.scrollY, ty, 4, 260));
+  }
+
+  // Co-op leash: players stay on screen (or inside a locked arena). Someone caught
+  // outside when an arena locks is walked in, not teleported.
+  leash(alive, dt) {
+    const cam = this.cameras.main;
+    const lo = (this.arena ? this.arena.x0 : cam.scrollX) + 6;
+    const hi = (this.arena ? this.arena.x1 : cam.scrollX + cam.width) - 6;
+    for (const p of alive) {
+      if (p.y > this.worldH + 40) p.hurt(9999, 'explosive');
+      const out = p.x < lo ? lo - p.x : p.x > hi ? hi - p.x : 0;
+      if (!out) continue;
+      const step = Math.abs(out) > 24 ? Math.sign(out) * Math.min(Math.abs(out), 320 * dt) : out;
+      p.x += step;
+      p.body.velocity.x = 0;
+    }
   }
 
   hazard(p) {
@@ -270,7 +298,6 @@ export class LevelScene extends Phaser.Scene {
   lockArena(c0, c1) {
     const x0 = c0 * TILE, x1 = (c1 + 1) * TILE;
     this.arena = { x0, x1 };
-    this.cameras.main.setBounds(x0, 0, x1 - x0, this.worldH);
     for (const x of [x0 + 2, x1 - 2]) {
       const wall = this.add.rectangle(x, this.worldH / 2, 3, this.worldH, this.era.color, 0.5).setDepth(25).setBlendMode('ADD');
       this.tweens.add({ targets: wall, alpha: 0.2, duration: 300, yoyo: true, repeat: -1 });
@@ -281,7 +308,6 @@ export class LevelScene extends Phaser.Scene {
 
   unlockArena() {
     this.arena = null;
-    this.cameras.main.setBounds(0, 0, this.worldW, this.worldH);
     this.arenaWalls.forEach((w) => w.destroy());
     this.arenaWalls = [];
     audio.setIntensity(0);

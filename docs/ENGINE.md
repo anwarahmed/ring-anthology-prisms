@@ -74,7 +74,7 @@ Blocking actions finish before the next action starts.
 | `{ music: 'track', intensity: 0 }` | no | Switches track |
 | `{ intensity: 0\|1\|2 }` | no | Calm, combat, or boss layers (the music swell) |
 | `{ wait: 2 }` | yes | Seconds |
-| `{ lock: ['B', 'C'] }` | no | Locks camera and players between two marker columns (arena) |
+| `{ lock: ['B', 'C'] }` | no | Locks camera and players between two marker columns (arena). The camera glides to frame it; players outside are walked in |
 | `{ unlock: true }` | no | Opens the arena; shows "GO >" |
 | `{ checkpoint: true }` | no | Respawn point if everyone goes down |
 | `{ fx: 'shake' \| 'flash' \| 'slowmo' }` | no | Screen effect |
@@ -89,6 +89,14 @@ Blocking actions finish before the next action starts.
 **Group:** `{ unit: 'sentinel', n: 3, from: 'right', gap: 0.35 }`. `from` is `right`
 or `left` (just off screen, on the ground), `sky` (above the screen), or a marker
 letter. Units use their own entrance (teleport, drop, fly, walk).
+
+## Camera and transitions
+
+The level camera is custom (`updateCamera` in LevelScene): it always eases toward the
+middle of the living players, with a speed cap, inside the level or the locked arena.
+Nothing in a level should move the camera instantly. Menu screens fade in and out
+through `go()` in `src/engine/ui.js`; use it instead of `scene.start` for any new
+screen.
 
 ## Hooks API
 

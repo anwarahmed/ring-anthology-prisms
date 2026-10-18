@@ -3,7 +3,7 @@
 
 import Phaser from 'phaser';
 import { VIEW, ERAS, DIFFICULTY, LEGAL_NOTICE } from '../engine/config.js';
-import { txt } from '../engine/ui.js';
+import { txt, go } from '../engine/ui.js';
 import { Controls, bindingStore } from '../engine/input.js';
 import { audio } from '../engine/audio.js';
 import { session } from '../engine/session.js';
@@ -65,6 +65,8 @@ export class BootScene extends Phaser.Scene {
 export class TitleScene extends Phaser.Scene {
   constructor() { super('Title'); }
   create() {
+    this.leaving = false;
+    this.cameras.main.fadeIn(260);
     this.controls = new Controls(this);
     starfield(this);
     gradeCamera(this.cameras.main, this);
@@ -140,9 +142,9 @@ export class TitleScene extends Phaser.Scene {
       return;
     }
     audio.sfx('ui');
-    if (this.sel === 1) return this.scene.start('Controls', { returnTo: 'Title' });
+    if (this.sel === 1) return go(this, 'Controls', { returnTo: 'Title' });
     audio.playMusic('title', 0);
-    this.scene.start('Players', { first: hit.device });
+    go(this, 'Players', { first: hit.device });
   }
 }
 
@@ -150,6 +152,8 @@ export class PlayersScene extends Phaser.Scene {
   constructor() { super('Players'); }
   init(data) { this.first = data.first; }
   create() {
+    this.leaving = false;
+    this.cameras.main.fadeIn(260);
     this.controls = new Controls(this);
     starfield(this);
     this.devices = [this.first];
@@ -203,7 +207,7 @@ export class PlayersScene extends Phaser.Scene {
       session.players = this.devices.map((device) => ({ device }));
       session.difficulty = this.diffs[this.diffIndex];
       audio.sfx('ui');
-      this.scene.start('Timeline');
+      go(this, 'Timeline');
     }
   }
 }
@@ -212,6 +216,8 @@ export class PlayersScene extends Phaser.Scene {
 export class TimelineScene extends Phaser.Scene {
   constructor() { super('Timeline'); }
   create() {
+    this.leaving = false;
+    this.cameras.main.fadeIn(260);
     this.controls = new Controls(this);
     starfield(this);
     this.partIndex = this.registry.get('partIndex') ?? 0;
@@ -277,10 +283,10 @@ export class TimelineScene extends Phaser.Scene {
         audio.sfx('ui');
         this.registry.set('partIndex', this.partIndex);
         this.registry.set('levelIndex', this.levelIndex);
-        return this.scene.start('Archive', { levelId: l.id, which: 'before' });
+        return go(this, 'Archive', { levelId: l.id, which: 'before' });
       }
     } else if (s.pressed.ability) {
-      return this.scene.start('Title');
+      return go(this, 'Title');
     } else {
       return;
     }
@@ -300,6 +306,8 @@ export class ArchiveScene extends Phaser.Scene {
     this.i = 0;
   }
   create() {
+    this.leaving = false;
+    this.cameras.main.fadeIn(260);
     if (!this.cards.length) return this.next();
     this.controls = new Controls(this);
     baseTextures(this);
@@ -328,6 +336,10 @@ export class ArchiveScene extends Phaser.Scene {
     this.typed = 0;
     this.full = c.text;
     this.source.setText(c.source ? `Source: ${c.source}` : '');
+    for (const t of [this.when, this.title, this.body, this.source]) {
+      t.setAlpha(0);
+      this.tweens.add({ targets: t, alpha: 1, duration: 220 });
+    }
     this.more.setText(this.i < this.cards.length - 1 ? 'NEXT >' : this.which === 'before' ? 'BEGIN >' : 'CONTINUE >');
   }
   update(_t, dms) {
@@ -345,8 +357,8 @@ export class ArchiveScene extends Phaser.Scene {
     else this.next();
   }
   next() {
-    if (this.which === 'before') this.scene.start('Level', { levelId: this.levelId });
-    else this.scene.start('Timeline');
+    if (this.which === 'before') go(this, 'Level', { levelId: this.levelId });
+    else go(this, 'Timeline');
   }
 }
 
@@ -354,6 +366,8 @@ export class ResultsScene extends Phaser.Scene {
   constructor() { super('Results'); }
   init(data) { this.data_ = data; }
   create() {
+    this.leaving = false;
+    this.cameras.main.fadeIn(260);
     const { levelId, result, stats } = this.data_;
     const level = LEVELS[levelId];
     const era = ERAS[level.era];
@@ -381,7 +395,7 @@ export class ResultsScene extends Phaser.Scene {
     const hit = anyDevice(this.controls);
     if (hit && !hit.nav && this.time.now > this.ready) {
       audio.sfx('ui');
-      this.scene.start('Archive', { levelId: this.data_.levelId, which: 'after' });
+      go(this, 'Archive', { levelId: this.data_.levelId, which: 'after' });
     }
   }
 }

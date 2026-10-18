@@ -5,7 +5,7 @@
 
 import Phaser from 'phaser';
 import { VIEW } from '../engine/config.js';
-import { txt } from '../engine/ui.js';
+import { txt, go } from '../engine/ui.js';
 import { audio } from '../engine/audio.js';
 import { Controls, ACTIONS, bindingStore, bindingLabel } from '../engine/input.js';
 
@@ -21,6 +21,8 @@ export class ControlsScene extends Phaser.Scene {
   }
 
   create() {
+    this.leaving = false;
+    this.cameras.main.fadeIn(220);
     this.controls = new Controls(this);
     this.add.rectangle(0, 0, VIEW.w, VIEW.h, 0x05070d, 0.96).setOrigin(0);
     txt(this, VIEW.w / 2, 10, this.wizard ? 'SET UP YOUR CONTROLLER' : 'CONTROLS', { size: this.wizard ? 8 : 16 }).setOrigin(0.5, 0);
@@ -111,7 +113,7 @@ export class ControlsScene extends Phaser.Scene {
       this.scene.stop();
       this.scene.wake(this.returnTo);
     } else {
-      this.scene.start(this.returnTo);
+      go(this, this.returnTo);
     }
   }
 
