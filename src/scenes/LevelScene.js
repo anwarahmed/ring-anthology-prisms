@@ -278,16 +278,35 @@ export class LevelScene extends Phaser.Scene {
     return v;
   }
 
-  // y is the feet point for walkers and the center for flyers.
+  // y is the feet point for walkers and the center for flyers. A walker whose spot is
+  // inside solid ground (a raised block, a wall) is lifted to stand on top of it, so it
+  // never gets pushed out through the floor.
   spawnUnit(id, x, y, { ally = false, team = null, entrance } = {}) {
     const def = UNITS[id];
     if (!def) { console.error('Unknown unit', id); return null; }
     const B = BODIES[def.body];
+    if (!B.flying) y = this.standingY(x, y, B.h * (def.scale ?? 1));
     const u = new Unit(this, x, B.flying ? y : y - (B.h / 2) * (def.scale ?? 1) - 1, id, def, { ally, team });
     this.units.push(u);
     const how = entrance ?? def.entrance;
     if (how === 'teleport') this.fx.teleportIn(u, hexNum(def.pal.glow ?? def.puff));
     return u;
+  }
+
+  // The nearest feet point at or above y where a body h tall fits in open space.
+  standingY(x, y, h) {
+    const solid = (row) => {
+      const t = this.layer.getTileAtWorldXY(x, row * TILE + 1);
+      return !!t && t.index >= 0 && !isPlatform(t.index) && t.collides;
+    };
+    const tall = Math.ceil(h / TILE);
+    let row = Math.floor((y - 1) / TILE);
+    for (let n = 0; n < 40 && row > 0; n++, row--) {
+      let clear = true;
+      for (let k = 0; k < tall && clear; k++) if (solid(row - k)) clear = false;
+      if (clear) return Math.min(y, (row + 1) * TILE);
+    }
+    return y;
   }
 
   spawnPoint(from, i, flying) {

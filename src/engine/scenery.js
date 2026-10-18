@@ -127,12 +127,15 @@ export function buildScenery(scene, themeId, theme, map) {
       if (at(x, y) === TILES.hazard && at(x - 1, y) !== TILES.hazard) lightPool(scene, x * TILE + 16, y * TILE + 4, hexNum(theme.tiles.hazard), 2.4, 9);
     }
   }
-  if (theme.foreground) buildForeground(scene, theme.foreground, map.width * TILE);
+  if (theme.foreground) buildForeground(scene, theme.foreground, map.width * TILE, at, map);
   vignette(scene);
 }
 
-// Big dark silhouettes in front of the action, moving faster than the camera.
-function buildForeground(scene, fg, worldW) {
+// Ferns and rubble: big dark silhouettes along the bottom of the screen, in front of
+// the action, moving faster than the camera. Pillars: broken columns standing on the
+// floor behind the action (in front of the screen they looked like holes in the
+// ground).
+function buildForeground(scene, fg, worldW, at, map) {
   const scroll = fg.scroll ?? 1.35;
   const every = (fg.every ?? 900) * 1.6;
   const color = hexRgb(fg.color ?? '#0a0812'), rim = hexRgb(fg.rim ?? '#3a2a4a');
@@ -165,8 +168,30 @@ function buildForeground(scene, fg, worldW) {
       ctx.putImageData(img, 0, 0);
       tex.refresh();
     }
+    if (fg.kind === 'pillars') {
+      const ground = pillarGround(at, map, Math.floor(x / scroll / TILE));
+      if (ground !== null) scene.add.image(x / scroll, ground * TILE + 1, key).setOrigin(0.5, 1).setDepth(9).setScale(0.8);
+      continue;
+    }
     scene.add.image(x, VIEW.h + 4, key).setOrigin(0.5, 1).setScrollFactor(scroll, 0).setDepth(60).setAlpha(fg.alpha ?? 0.55).setScale(0.8);
   }
+}
+
+// The floor row a pillar can stand on at column cx: the highest open floor whose two
+// neighbouring columns are level with it and clear for the pillar's height. Null if
+// there's no such spot (walls, ledges, pits).
+function pillarGround(at, map, cx) {
+  const open = (x, y) => at(x, y) !== TILES.solid && at(x, y) !== TILES.platform;
+  for (let y = 1; y < map.height; y++) {
+    if (at(cx, y) !== TILES.solid || !open(cx, y - 1)) continue;
+    let fits = true;
+    for (const x of [cx - 1, cx, cx + 1]) {
+      if (at(x, y) !== TILES.solid) fits = false;
+      for (let k = 1; k <= 7 && fits; k++) if (!open(x, y - k)) fits = false;
+    }
+    if (fits) return y;
+  }
+  return null;
 }
 
 function vignette(scene) {

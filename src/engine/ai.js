@@ -57,14 +57,31 @@ function tryFire(unit, dt, inRange) {
   }
 }
 
-// Allies with nothing to shoot follow the nearest player.
+// Allies with nothing to shoot follow the nearest player. Each ally keeps its own
+// spot in a loose line behind the player, so allies never stand stacked on each other.
 function followPlayer(unit, scene) {
   const p = scene.players.find((pl) => pl.alive);
   if (!p) return unit.setVelocityX(0);
-  const dx = p.x - unit.x;
-  unit.facing = Math.sign(dx) || unit.facing;
-  unit.setVelocityX(Math.abs(dx) > 50 ? Math.sign(dx) * unit.def.speed * 1.3 : 0);
+  unit.state.slot ??= (scene.allySlots = (scene.allySlots ?? 0) + 1);
+  const spot = p.x - p.facing * (30 + ((unit.state.slot - 1) % 5) * 20);
+  const dx = spot - unit.x;
+  unit.setVelocityX(Math.abs(dx) > 8 ? Math.sign(dx) * unit.def.speed * 1.3 : 0);
+  unit.facing = Math.abs(dx) > 8 ? Math.sign(dx) : p.facing;
   if (unit.body.blocked.down && wallAhead(unit, scene)) unit.setVelocityY(-360);
+}
+
+// Runs after every walking unit's behavior: a unit standing right on top of a
+// teammate steps aside, so a squad never looks like one soldier with several guns.
+export function keepApart(unit, scene) {
+  if (unit.bodyDef.flying || !unit.body.blocked.down) return;
+  for (const o of scene.units) {
+    if (o === unit || !o.alive || o.team !== unit.team || o.bodyDef.flying) continue;
+    const dx = unit.x - o.x;
+    if (Math.abs(dx) > 18 || Math.abs(unit.y - o.y) > 20) continue;
+    const away = dx !== 0 ? Math.sign(dx) : scene.units.indexOf(unit) < scene.units.indexOf(o) ? -1 : 1;
+    if (Math.sign(unit.body.velocity.x) !== away) unit.setVelocityX(away * unit.def.speed * 0.6);
+    return;
+  }
 }
 
 // Runs after every walking unit's behavior: look at the ground ahead and hop over

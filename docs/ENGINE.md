@@ -113,7 +113,7 @@ screen.
 | `marker(k)` | `{ x, y }` in tiles |
 | `spawn(groups, ally)` | Same as the spawn action; resolves to the units |
 | `explode(x, y, radius, damage)` | An explosion that hurts enemies only (orbital strikes, falling debris) |
-| `scene.spawnUnit(id, x, feetY, { team: 'neutral' })` | One unit; `neutral` units (story characters) are never targeted |
+| `scene.spawnUnit(id, x, feetY, { team: 'neutral' })` | One unit; `neutral` units (story characters) are never targeted. A walker placed inside solid ground is lifted to stand on top of it |
 | `tile`, `view` | Tile size, screen size |
 
 Use hooks for set pieces only. Anything two levels need belongs in the engine.

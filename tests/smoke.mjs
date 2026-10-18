@@ -299,6 +299,24 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
   if (worst > 1) throw new Error(`player went ${worst.toFixed(1)} px off screen`);
 });
 
+// Units placed inside a raised block (the 1a surrender line crosses one) stand on top
+// of it instead of being pushed out through the floor.
+await run('spawn-ground', '?level=1a&god=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  const fell = await page.evaluate(async () => {
+    const L = window.__game.scene.getScene('Level'), m = L.map.markers.L, T = 16;
+    const units = [];
+    for (let i = 0; i < 8; i++) {
+      const u = L.spawnUnit('warrior-servant', (m.x - 2 - i * 2.5) * T, (m.y + 1) * T);
+      u.brain = () => u.setVelocityX(0);
+      units.push(u);
+    }
+    await new Promise((r) => setTimeout(r, 1500));
+    return units.filter((u) => u.y > (m.y + 1) * T).map((u) => [Math.round(u.x), Math.round(u.y)]);
+  });
+  if (fell.length) throw new Error(`units fell through the floor: ${JSON.stringify(fell)}`);
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {

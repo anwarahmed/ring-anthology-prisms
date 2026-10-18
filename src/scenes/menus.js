@@ -122,12 +122,16 @@ export class TitleScene extends Phaser.Scene {
     const g = this.beams;
     const { x, y } = this.prism;
     g.clear();
-    g.lineStyle(6, 0xffffff, 0.18).lineBetween(x - 200, y + 26, x - 12, y + 4);
-    g.lineStyle(2, 0xffffff, 0.95).lineBetween(x - 200, y + 26, x - 12, y + 4);
+    // The beams run off both edges of the screen.
+    const reach = VIEW.w / 2 + 16;
+    const inY = y + 4 + (22 / 188) * (reach - 12);
+    g.lineStyle(6, 0xffffff, 0.18).lineBetween(x - reach, inY, x - 12, y + 4);
+    g.lineStyle(2, 0xffffff, 0.95).lineBetween(x - reach, inY, x - 12, y + 4);
     ERA_COLORS.forEach((c, i) => {
-      const ey = y - 30 + i * 14 + Math.sin(t / 700 + i) * 2;
-      g.lineStyle(7, c, 0.22).lineBetween(x + 12, y + 2 + i, x + 210, ey);
-      g.lineStyle(2, c, 1).lineBetween(x + 12, y + 2 + i, x + 210, ey);
+      const y0 = y + 2 + i;
+      const ey = y0 + (y - 30 + i * 14 + Math.sin(t / 700 + i) * 2 - y0) * ((reach - 12) / 198);
+      g.lineStyle(7, c, 0.22).lineBetween(x + 12, y0, x + reach, ey);
+      g.lineStyle(2, c, 1).lineBetween(x + 12, y0, x + reach, ey);
     });
   }
   update(t) {
