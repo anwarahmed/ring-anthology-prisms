@@ -299,19 +299,20 @@ export class LevelScene extends Phaser.Scene {
     return u;
   }
 
-  // The nearest feet point at or above y where a body h tall fits in open space.
+  // The nearest feet point to y where a body h tall fits in open space.
   standingY(x, y, h) {
     const solid = (row) => {
       const t = this.layer.getTileAtWorldXY(x, row * TILE + 1);
       return !!t && t.index >= 0 && !isPlatform(t.index) && t.collides;
     };
     const tall = Math.ceil(h / TILE);
-    let row = Math.floor((y - 1) / TILE);
-    for (let n = 0; n < 40 && row > 0; n++, row--) {
-      let clear = true;
-      for (let k = 0; k < tall && clear; k++) if (solid(row - k)) clear = false;
-      if (clear) return Math.min(y, (row + 1) * TILE);
-    }
+    const start = Math.floor((y - 1) / TILE);
+    const fits = (row) => { for (let k = 0; k < tall; k++) if (solid(row - k)) return false; return true; };
+    if (fits(start)) return y;
+    // Up a few tiles (onto a raised block), else down (out of a ceiling), never through
+    // a ceiling or floor into another room.
+    for (let n = 1; n <= 4 && start - n > 0; n++) if (fits(start - n)) return (start - n + 1) * TILE;
+    for (let n = 1; n <= 12 && start + n < this.map.height; n++) if (fits(start + n)) return (start + n + 1) * TILE;
     return y;
   }
 
@@ -326,9 +327,14 @@ export class LevelScene extends Phaser.Scene {
     else if (from === 'sky') x = v.x + 60 + Math.random() * (v.width - 120);
     else x = v.right + 14 + i * 16;
     x = Phaser.Math.Clamp(x, 8, this.worldW - 8);
-    if (flying || from === 'sky') return { x, y: v.y + 30 };
+    // Start below any ceiling at the top of the view (indoor levels), so nothing
+    // spawns on the roof or inside it.
     const col = Math.floor(x / TILE);
-    const g = groundBelow(this.map.grid, col, Math.floor(v.y / TILE));
+    let open = Math.max(0, Math.floor(v.y / TILE));
+    while (open < this.map.height - 1 && [TILES.solid, TILES.platform].includes(this.map.grid[open]?.[col])) open++;
+    if (flying) return { x, y: Math.max(v.y + 30, open * TILE + 20) };
+    if (from === 'sky') return { x, y: (open + 2) * TILE };
+    const g = groundBelow(this.map.grid, col, open);
     return { x, y: (g ?? this.map.height - 2) * TILE };
   }
 

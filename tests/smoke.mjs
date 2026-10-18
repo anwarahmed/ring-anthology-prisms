@@ -382,6 +382,29 @@ await run('checkpoint', '?level=1b&p2=kb2', async (page) => {
   if (r.ended || r.players.some((p) => !p.alive || !p.down || Math.abs(p.feet - setup.top) > 1)) throw new Error(`restart from checkpoint failed: ${JSON.stringify({ top: setup.top, ...r })}`);
 });
 
+// Indoors (1c's cargo bay), sky and edge spawns land inside the room, never on or
+// above the ceiling where nobody can reach them (the arena could never be cleared).
+await run('spawn-indoors', '?level=1c&god=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  const bad = await page.evaluate(async () => {
+    const L = window.__game.scene.getScene('Level'), T = 16, m = L.map.markers.B;
+    L.runner.triggers.forEach((t) => { t.fired = true; });
+    const p = L.players[0];
+    p.body.reset(m.x * T, (m.y + 1) * T - p.body.height / 2 - 1);
+    L.focus = { x: m.x * T, y: p.y };
+    L.updateCamera(0, true);
+    await new Promise((r) => setTimeout(r, 300));
+    const units = await L.spawnGroup([{ unit: 'flood-infection', n: 6, from: 'sky', gap: 0.05 }, { unit: 'flood-warrior', n: 2, from: 'right', gap: 0.05 }]);
+    for (const u of units) u.brain = () => u.setVelocityX(0);
+    await new Promise((r) => setTimeout(r, 2000));
+    let ceiling = m.y;
+    const solid = (row) => { const i = L.layer.getTileAt(m.x, row)?.index ?? -1; return i >= 0 && i < 32; };
+    while (ceiling > 0 && !solid(ceiling - 1)) ceiling--;
+    return units.filter((u) => u.body.bottom < ceiling * T || u.body.bottom > (m.y + 1) * T + 1).map((u) => [u.unitId ?? u.id, Math.round(u.x), Math.round(u.body.bottom), ceiling * T]);
+  });
+  if (bad.length) throw new Error(`units outside the room: ${JSON.stringify(bad)}`);
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {
