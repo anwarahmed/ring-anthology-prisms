@@ -188,7 +188,8 @@ await run('ally-fire', '?level=1a&god=1', async (page) => {
     L.updateCamera(0, true);
     window.__ally = L.spawnUnit('ancient-human-defender', 82 * 16, 13 * 16, { ally: true, entrance: 'none' });
   });
-  await page.waitForTimeout(6000);
+  // Wait in game terms (slow test machines run the game slower than real time).
+  await page.waitForFunction(() => window.__ally.x / 16 >= 91 || !window.__ally.alive, null, { timeout: 30000 }).catch(() => {});
   const r = await page.evaluate(() => ({ x: Math.round(window.__ally.x / 16), alive: window.__ally.alive, hp: window.__ally.health, shields: Math.round(window.__ally.shields) }));
   if (!r.alive || r.x < 91) throw new Error(`ally did not get past the fire unhurt: ${JSON.stringify(r)}`);
   if (r.hp < 80) throw new Error(`ally was burned: ${JSON.stringify(r)}`);
@@ -215,7 +216,7 @@ await run('vehicle', '?level=1a&god=1', async (page) => {
     window.__g = L.spawnUnit('grunt', window.__v.x + 120, 13 * 16, { entrance: 'none' });
   });
   await page.keyboard.down('d');
-  await page.waitForTimeout(1500);
+  await page.waitForFunction((x0) => window.__v.x - x0 > 160 || !window.__g.alive && window.__v.x - x0 > 80, x0, { timeout: 20000 }).catch(() => {});
   await page.keyboard.up('d');
   const r = await page.evaluate(() => ({ moved: window.__v.x, grunt: window.__g.alive, inside: !!window.__game.scene.getScene('Level').players[0].vehicle }));
   if (!r.inside) throw new Error('thrown out of the Warthog while driving');

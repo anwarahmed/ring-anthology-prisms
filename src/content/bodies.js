@@ -170,6 +170,19 @@ function sentinel(f) {
   return { shapes, shoulder: add(c, [11, 0.5]), w: W, h: H };
 }
 
+// Monitors (e.g. 343 Guilty Spark): a floating metal sphere with a glowing eye.
+function monitor(f) {
+  const W = 26, H = 26;
+  const c = [13, 13 + [0, -0.6, -1, -0.6][f]];
+  const shapes = [
+    { t: 'ell', c, rx: 9, ry: 9, m: 'armor', z: 1 },
+    { t: 'cap', a: add(c, [-9, 0]), b: add(c, [9, 0]), r1: 1.6, r2: 1.6, m: 'trim', z: 2 },
+    { t: 'ell', c: add(c, [4.5, 0]), rx: 4.4, ry: 4.4, m: 'dark', z: 3 },
+    { t: 'ell', c: add(c, [5.5, 0]), rx: 3, ry: 3, m: 'glow', z: 4, hot: true },
+  ];
+  return { shapes, shoulder: add(c, [9, 0]), w: W, h: H };
+}
+
 // Flood infection form: a bouncing sac on wriggling tendrils (goofy, not scary).
 function infection(f) {
   const W = 22, H = 18;
@@ -192,6 +205,7 @@ export const BODIES = {
   forerunner: { w: 44, h: 62, frames: 15, anims: FRAMES, hit: [14, 48], build: forerunner, reach: 10.5, arm: [3, 2.7] },
   sentinel: { w: 36, h: 28, frames: 4, anims: HOVER, hit: [22, 14], build: sentinel, flying: true },
   infection: { w: 22, h: 18, frames: 4, anims: HOVER, hit: [12, 12], build: infection },
+  monitor: { w: 26, h: 26, frames: 4, anims: HOVER, hit: [16, 16], build: monitor, flying: true },
   ...COVENANT_BODIES,
   ...VEHICLE_BODIES,
 };

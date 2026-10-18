@@ -4,6 +4,19 @@
 import { BODIES, armShapes } from '../content/bodies.js';
 import { gunShapes } from '../content/guns.js';
 import { render, material } from './raster.js';
+import { HD, STYLE } from './config.js';
+
+// Characters render smooth at HD, or (pixel style) outlined at 1× and scaled up.
+function draw(shapes, w, h, mats) {
+  if (STYLE !== 'pixel') return render(shapes, w * HD, h * HD, mats, { scale: HD, smooth: true });
+  const lo = render(shapes, w, h, mats);
+  const out = new Uint8ClampedArray(w * HD * h * HD * 4);
+  for (let y = 0; y < h * HD; y++) for (let x = 0; x < w * HD; x++) {
+    const s = (((y / HD) | 0) * w + ((x / HD) | 0)) * 4;
+    out.set(lo.subarray(s, s + 4), (y * w * HD + x) * 4);
+  }
+  return out;
+}
 
 export const AIM_STEPS = 9; // arm frames from straight up (-90°) to straight down (+90°)
 export const ARM_SIZE = 80;
@@ -17,14 +30,14 @@ function darker(hex, amt = 0.22) {
 export function materialsFor(def, gun) {
   const p = def.pal;
   const m = {
-    armor: material(p.armor, { spec: true, contrast: 1.1 }),
+    armor: material(p.armor, { spec: true, contrast: 1.1, texture: 0.15 }),
     helmet: material(p.helmet ?? p.armor, { spec: true, contrast: 1.1 }),
     trim: material(p.trim, { spec: true }),
-    dark: material(p.dark, { contrast: 0.85 }),
+    dark: material(p.dark, { contrast: 0.85, texture: 0.6 }),
     visor: material(p.visor ?? p.glow ?? '#7fd8ff', { spec: true, contrast: 1.3 }),
-    cape: material(p.cape ?? p.dark, { contrast: 0.9 }),
+    cape: material(p.cape ?? p.dark, { contrast: 0.9, texture: 0.8 }),
     glow: material(p.glow ?? p.visor ?? '#7fd8ff', { emissive: true }),
-    skin: material(p.skin ?? '#b07a50', { contrast: 0.9 }),
+    skin: material(p.skin ?? '#b07a50', { contrast: 0.9, texture: 0.4 }),
     skinFar: material(darker(p.skin ?? '#b07a50'), { contrast: 0.85 }),
   };
   m.armorFar = material(darker(p.armor), { contrast: 1 });
@@ -44,7 +57,7 @@ export function bodyFrames(def) {
   const frames = [];
   for (let f = 0; f < body.frames; f++) {
     const { shapes, shoulder } = body.build(f, def);
-    frames.push({ rgba: render(shapes, body.w, body.h, mats), w: body.w, h: body.h, shoulder });
+    frames.push({ rgba: draw(shapes, body.w, body.h, mats), w: body.w * HD, h: body.h * HD, shoulder: [shoulder[0] * HD, shoulder[1] * HD] });
   }
   return frames;
 }
@@ -58,7 +71,8 @@ export function armFrames(def, weapon) {
   for (let i = 0; i < AIM_STEPS; i++) {
     const a = -Math.PI / 2 + (i / (AIM_STEPS - 1)) * Math.PI;
     const { shapes, muzzle } = armShapes(body, def, a, gun, ARM_SIZE);
-    frames.push({ rgba: render(shapes, ARM_SIZE, ARM_SIZE, mats), w: ARM_SIZE, h: ARM_SIZE, muzzle, angle: a });
+    const S = ARM_SIZE * HD;
+    frames.push({ rgba: draw(shapes, ARM_SIZE, ARM_SIZE, mats), w: S, h: S, muzzle: [muzzle[0] * HD, muzzle[1] * HD], angle: a });
   }
   return frames;
 }
@@ -83,5 +97,5 @@ export function gunFrame(weapon) {
     return { ...s, pts: s.pts.map(m) };
   });
   const mats = materialsFor({ pal: { armor: '#888888', dark: '#333333', trim: '#aaaaaa' } }, weapon.gun);
-  return { rgba: render(shapes, w, h, mats), w, h };
+  return { rgba: draw(shapes, w, h, mats), w: w * HD, h: h * HD };
 }

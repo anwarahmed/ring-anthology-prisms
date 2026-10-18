@@ -1,6 +1,13 @@
 // Text and small UI helpers. Two bundled OFL fonts: 'Press Start 2P' for titles and
 // labels, 'VT323' for reading text (Archive cards, subtitles).
 
+import { HD } from './config.js';
+
+// Every scene calls this first: zoom the camera so world units map to HD× pixels.
+export function hdCamera(scene) {
+  scene.cameras.main.setZoom(HD).setOrigin(0, 0);
+}
+
 export const FONT = { pixel: '"Press Start 2P"', read: 'VT323' };
 
 export function txt(scene, x, y, str, { size = 8, color = '#ffffff', font = 'pixel', align = 'left', wrap = 0, stroke = true } = {}) {
@@ -14,7 +21,7 @@ export function txt(scene, x, y, str, { size = 8, color = '#ffffff', font = 'pix
     strokeThickness: stroke ? (font === 'pixel' ? 2 : 3) : 0,
     lineSpacing: font === 'read' ? -2 : 3,
   });
-  t.setResolution(1);
+  t.setResolution(HD);
   return t;
 }
 

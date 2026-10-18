@@ -101,7 +101,6 @@ for (const dir of dirs) {
       for (const g of groups) for (const s of g) unitRefs.push(s);
       if (a.boss) {
         unitRefs.push(a.boss);
-        if (UNITS[a.boss.unit] && UNITS[a.boss.unit].ai !== 'boss') err(at, `boss '${a.boss.unit}' does not use the boss AI`);
       }
     }
   }

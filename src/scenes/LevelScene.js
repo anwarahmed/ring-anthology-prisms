@@ -2,6 +2,7 @@
 // arenas, checkpoints and the end of the level. Levels never need to touch this file.
 
 import Phaser from 'phaser';
+import { hdCamera } from '../engine/ui.js';
 import { LEVELS } from '../../levels/index.js';
 import { CHARACTERS } from '../content/characters.js';
 import { UNITS } from '../content/units.js';
@@ -10,8 +11,9 @@ import { THEMES } from '../content/themes.js';
 import { TILE, ERAS, DIFFICULTY, VIEW } from '../engine/config.js';
 import { parseMap, groundBelow, TILES } from '../engine/mapparse.js';
 import { TILESET, COLLIDES, isPlatform, isHazard } from '../engine/tileset.js';
-import { tilesTexture, baseTextures, hexNum } from '../engine/textures.js';
+import { tilesTexture, baseTextures, hexNum, TILE_PX } from '../engine/textures.js';
 import { buildBackdrop } from '../engine/backdrop.js';
+import { buildScenery } from '../engine/scenery.js';
 import { Fx, gradeCamera } from '../engine/fx.js';
 import { Controls } from '../engine/input.js';
 import { Player, Unit } from '../engine/actors.js';
@@ -42,6 +44,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   create() {
+    hdCamera(this);
     baseTextures(this);
     const L = this.level;
     const theme = THEMES[L.theme];
@@ -54,6 +57,7 @@ export class LevelScene extends Phaser.Scene {
 
     buildBackdrop(this, theme, W);
     this.buildTiles(theme);
+    buildScenery(this, L.theme, theme, this.map);
 
     this.fx = new Fx(this);
     this.actorGroup = this.physics.add.group({ runChildUpdate: false });
@@ -91,7 +95,7 @@ export class LevelScene extends Phaser.Scene {
     this.arena = null;
     this.updateCamera(0, true);
     cam.fadeIn(600);
-    gradeCamera(cam, this);
+    gradeCamera(cam, this, theme.grade);
     this.arenaWalls = [];
 
     this.scene.launch('Hud', { level: this });
@@ -140,16 +144,24 @@ export class LevelScene extends Phaser.Scene {
       main.push(row);
       back.push(brow);
     }
-    const tm = this.make.tilemap({ data: main, tileWidth: TILE, tileHeight: TILE });
-    const ts = tm.addTilesetImage(key, key, TILE, TILE, 0, 0);
-    this.layer = tm.createLayer(0, ts, 0, 0).setDepth(10);
+    // Tile textures may be HD; the layers are scaled so a tile is TILE world units.
+    const tm = this.make.tilemap({ data: main, tileWidth: TILE_PX, tileHeight: TILE_PX });
+    const ts = tm.addTilesetImage(key, key, TILE_PX, TILE_PX, 0, 0);
+    this.layer = tm.createLayer(0, ts, 0, 0).setDepth(10).setScale(TILE / TILE_PX);
     this.layer.setCollision(COLLIDES);
     this.layer.forEachTile((tile) => {
       if (isPlatform(tile.index)) tile.setCollision(false, false, true, false);
+      // Ground darkens with depth below the surface.
+      if (tile.index >= 0 && tile.index < 32) {
+        let d = 0;
+        while (d < 5 && m.grid[tile.y - d - 1]?.[tile.x] === TILES.solid) d++;
+        const k = Math.round(255 * (1 - d * 0.15));
+        tile.tint = (k << 16) | (k << 8) | k;
+      }
     });
-    const bm = this.make.tilemap({ data: back, tileWidth: TILE, tileHeight: TILE });
-    const bts = bm.addTilesetImage(key, key, TILE, TILE, 0, 0);
-    bm.createLayer(0, bts, 0, 0).setDepth(5);
+    const bm = this.make.tilemap({ data: back, tileWidth: TILE_PX, tileHeight: TILE_PX });
+    const bts = bm.addTilesetImage(key, key, TILE_PX, TILE_PX, 0, 0);
+    bm.createLayer(0, bts, 0, 0).setDepth(5).setScale(TILE / TILE_PX);
   }
 
   // Fire licking up from hazard tiles.
@@ -208,7 +220,7 @@ export class LevelScene extends Phaser.Scene {
   // co-op shifts scroll continuously instead of snapping.
   updateCamera(dt, snap = false) {
     const cam = this.cameras.main;
-    const vw = cam.width, vh = cam.height;
+    const vw = VIEW.w, vh = VIEW.h;
     const lo = this.arena ? this.arena.x0 : 0;
     const hi = (this.arena ? this.arena.x1 : this.worldW) - vw;
     const tx = hi < lo ? (lo + hi) / 2 : Phaser.Math.Clamp(this.focus.x - vw / 2, lo, hi);
@@ -234,7 +246,7 @@ export class LevelScene extends Phaser.Scene {
       const o = p.vehicle ?? p;
       if (!p.vehicle && p.y > this.worldH + 40) p.hurt(9999, 'explosive');
       const half = o.body.width / 2 + 3;
-      const vLo = cam.scrollX + half, vHi = cam.scrollX + cam.width - half;
+      const vLo = cam.scrollX + half, vHi = cam.scrollX + VIEW.w - half;
       if (o.x < vLo || o.x > vHi) {
         o.x = Phaser.Math.Clamp(o.x, vLo, vHi);
         o.body.velocity.x = 0;

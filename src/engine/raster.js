@@ -37,25 +37,37 @@ function hslRgb([h, s, l]) {
   return [f(h + 1 / 3), f(h), f(h - 1 / 3)].map((v) => Math.round(Math.min(1, Math.max(0, v)) * 255));
 }
 
-// Hue-shifted ramp in the classic pixel-art way: shadows lean cool, highlights warm.
-// [outline, shadow, base, light, highlight]
+// Hue-shifted 8-tone ramp in the style of late-era SNES art: deep shadows lean toward
+// purple, highlights warm toward yellow, with small steps between tones.
+// [outline, deepest shadow, shadow, mid-shadow, base, light, highlight, glint]
 export function ramp(hex, contrast = 1) {
   const [h, s, l] = rgbHsl(hexRgb(hex));
-  const toward = (target, amt) => { let d = ((target - h + 540) % 360) - 180; return h + d * amt; };
-  // Vivid SNES-style ramp: saturated mid-tones, shadows that shift strongly toward
-  // purple, highlights that warm toward yellow.
-  const sat = Math.min(1, s * 1.18 + 0.04);
+  const toward = (target, amt) => { const d = ((target - h + 540) % 360) - 180; return h + d * amt; };
+  const sat = Math.min(1, s * 1.15 + 0.04);
+  const tone = (t) => {
+    if (t <= 0.5) {
+      const k = 0.5 - t;
+      return hslRgb([toward(255, k * 0.5 * contrast), Math.min(1, sat * (1 + k * 0.3)), l * (1 - k * 1.05 * contrast)]);
+    }
+    const k = (t - 0.5) * 2;
+    return hslRgb([toward(50, k * 0.16 * contrast), sat * (1 - k * 0.35), l + (1 - l) * Math.pow(k, 1.1) * 0.62 * contrast]);
+  };
   return [
-    hslRgb([toward(265, 0.35), Math.min(1, sat * 0.9 + 0.15), l * 0.2]),
-    hslRgb([toward(255, 0.2 * contrast), Math.min(1, sat * 1.1), l * (1 - 0.38 * contrast)]),
-    hslRgb([h, sat, l]),
-    hslRgb([toward(50, 0.1 * contrast), Math.min(1, sat * 1.05), l + (1 - l) * 0.3 * contrast]),
-    hslRgb([toward(50, 0.18 * contrast), sat * 0.75, l + (1 - l) * 0.62 * contrast]),
+    hslRgb([toward(265, 0.35), Math.min(1, sat * 0.9 + 0.15), l * 0.18]),
+    tone(0.02), tone(0.17), tone(0.33), tone(0.5), tone(0.67), tone(0.85),
+    hslRgb([toward(55, 0.2), sat * 0.4, Math.min(0.97, l + (1 - l) * 0.85)]),
   ];
 }
 
+// opts: contrast, emissive (glows, unshaded), spec (glints), texture (0..1 surface grain).
 export function material(hex, opts = {}) {
-  return { ramp: ramp(hex, opts.contrast ?? 1), emissive: !!opts.emissive, spec: !!opts.spec, color: hexRgb(hex) };
+  return { ramp: ramp(hex, opts.contrast ?? 1), emissive: !!opts.emissive, spec: !!opts.spec, texture: opts.texture ?? 0, color: hexRgb(hex) };
+}
+
+function grain(x, y) {
+  let n = (x * 374761393 + y * 668265263) | 0;
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return (((n ^ (n >>> 16)) >>> 0) / 4294967296) - 0.5;
 }
 
 function cover(sh, x, y) {
@@ -123,7 +135,26 @@ function bbox(sh) {
 }
 
 // Renders shapes into a w×h RGBA buffer.
-export function render(shapes, w, h, mats, { outline = true, light = L } = {}) {
+function scaleShape(sh, k) {
+  const pt = ([x, y]) => [x * k, y * k];
+  if (sh.t === 'cap') return { ...sh, a: pt(sh.a), b: pt(sh.b), r1: sh.r1 * k, r2: sh.r2 * k };
+  if (sh.t === 'ell') return { ...sh, c: pt(sh.c), rx: sh.rx * k, ry: sh.ry * k };
+  return { ...sh, pts: sh.pts.map(pt), bevel: (sh.bevel ?? 1.6) * k };
+}
+
+function sampleRamp(r, s) {
+  const v = 1 + Math.max(0, Math.min(1, s)) * 5;
+  const i = Math.min(5, Math.floor(v));
+  const t = v - i;
+  return [0, 1, 2].map((c) => r[i][c] + (r[i + 1][c] - r[i][c]) * t);
+}
+
+// Options: outline (cartoon outlines), light, scale (render at higher pixel density;
+// w and h are already scaled), smooth (continuous shading, no outlines or dithering:
+// the "realistic" look).
+export function render(shapes, w, h, mats, { outline = true, light = L, scale = 1, smooth = false } = {}) {
+  if (scale !== 1) shapes = shapes.map((sh) => scaleShape(sh, scale));
+  if (smooth) return renderSmooth(shapes, w, h, mats, light, scale);
   const order = shapes.map((s, i) => ({ s, i })).sort((a, b) => (a.s.z ?? 0) - (b.s.z ?? 0) || a.i - b.i).map((o) => o.s);
   const id = new Int16Array(w * h).fill(-1);
   const nrm = new Float32Array(w * h * 3);
@@ -141,6 +172,19 @@ export function render(shapes, w, h, mats, { outline = true, light = L } = {}) {
   });
   const out = new Uint8ClampedArray(w * h * 4);
   const put = (p, c, a = 255) => { out[p * 4] = c[0]; out[p * 4 + 1] = c[1]; out[p * 4 + 2] = c[2]; out[p * 4 + 3] = a; };
+  // Soft ambient occlusion: how close (in pixels) a part drawn in front of this one is.
+  const frontNear = (x, y, k, z) => {
+    let best = 9;
+    for (let dy = -2; dy <= 2; dy++) {
+      for (let dx = -2; dx <= 2; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+        const q = id[yy * w + xx];
+        if (q > k && (order[q].z ?? 0) > z && !order[q].noSep) best = Math.min(best, Math.max(Math.abs(dx), Math.abs(dy)));
+      }
+    }
+    return best;
+  };
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const p = y * w + x;
@@ -149,37 +193,89 @@ export function render(shapes, w, h, mats, { outline = true, light = L } = {}) {
       const sh = order[k];
       const m = mats[sh.m];
       if (!m) throw new Error(`unknown material '${sh.m}'`);
-      if (m.emissive) { put(p, sh.hot ? m.ramp[4] : m.ramp[3]); continue; }
+      if (m.emissive) { put(p, sh.hot ? m.ramp[6] : m.ramp[5]); continue; }
       const d = nrm[p * 3] * light[0] + nrm[p * 3 + 1] * light[1] + nrm[p * 3 + 2] * light[2];
-      const s = Math.max(0, Math.min(1, d * 0.8 + 0.28));
-      const v = 1 + s * 3.1;
-      let tone = Math.floor(v + (BAYER[(y & 3) * 4 + (x & 3)] - 0.5) * 0.55);
-      tone = Math.max(1, Math.min(m.spec ? 4 : 3, tone));
-      // Separation line where a part in front overlaps this one.
-      let behind = false;
-      for (const q of [p - 1, p + 1, p - w, p + w]) {
-        if (q >= 0 && q < w * h && id[q] > k && (order[id[q]].z ?? 0) > (sh.z ?? 0) && !order[id[q]].noSep) behind = true;
-      }
-      if (behind) tone = 1;
+      let s = Math.max(0, Math.min(1, d * 0.82 + 0.26 + grain(x, y) * m.texture * 0.35));
+      let tone = Math.floor(1 + s * 5.6 + (BAYER[(y & 3) * 4 + (x & 3)] - 0.5) * 0.4);
+      const near = frontNear(x, y, k, sh.z ?? 0);
+      if (near <= 1) tone -= 2;
+      else if (near === 2) tone -= 1;
+      tone = Math.max(1, Math.min(6, tone));
       put(p, m.ramp[tone]);
-      if (m.spec && s > 0.93 && !behind) put(p, [255, 255, 255]);
+      if (m.spec && s > 0.95 && near > 2) put(p, m.ramp[7]);
     }
   }
   if (outline) {
+    // Selective outline: softer on the lit (upper-left) side, darkest in shadow.
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         const p = y * w + x;
         if (id[p] >= 0) continue;
-        let nb = -1;
-        if (x > 0 && id[p - 1] >= 0) nb = id[p - 1];
-        else if (x < w - 1 && id[p + 1] >= 0) nb = id[p + 1];
+        let nb = -1, lit = false;
+        if (x < w - 1 && id[p + 1] >= 0) { nb = id[p + 1]; lit = true; }
+        else if (y < h - 1 && id[p + w] >= 0) { nb = id[p + w]; lit = true; }
+        else if (x > 0 && id[p - 1] >= 0) nb = id[p - 1];
         else if (y > 0 && id[p - w] >= 0) nb = id[p - w];
-        else if (y < h - 1 && id[p + w] >= 0) nb = id[p + w];
         if (nb < 0) continue;
         const m = mats[order[nb].m];
-        const c = m.ramp[0];
-        put(p, m.emissive ? m.ramp[1] : [c[0] * 0.7, c[1] * 0.7, c[2] * 0.7]);
+        if (m.emissive) { put(p, m.ramp[2]); continue; }
+        const c = lit ? m.ramp[1] : m.ramp[0];
+        put(p, lit ? c : [c[0] * 0.75, c[1] * 0.75, c[2] * 0.75]);
       }
+    }
+  }
+  return out;
+}
+
+// Realistic shading: continuous light, soft occlusion, broad specular highlights, fine
+// surface grain, and a soft darkened rim on the shadow side instead of an outline.
+function renderSmooth(shapes, w, h, mats, light, scale) {
+  const order = shapes.map((s, i) => ({ s, i })).sort((a, b) => (a.s.z ?? 0) - (b.s.z ?? 0) || a.i - b.i).map((o) => o.s);
+  const id = new Int16Array(w * h).fill(-1);
+  const nrm = new Float32Array(w * h * 3);
+  order.forEach((sh, k) => {
+    const [x0, y0, x1, y1] = bbox(sh);
+    for (let y = Math.max(0, Math.floor(y0)); y <= Math.min(h - 1, Math.ceil(y1)); y++) {
+      for (let x = Math.max(0, Math.floor(x0)); x <= Math.min(w - 1, Math.ceil(x1)); x++) {
+        const n = cover(sh, x + 0.5, y + 0.5);
+        if (!n) continue;
+        const p = y * w + x;
+        id[p] = k;
+        nrm[p * 3] = n[0]; nrm[p * 3 + 1] = n[1]; nrm[p * 3 + 2] = n[2];
+      }
+    }
+  });
+  const R = Math.max(2, Math.round(2.5 * scale));
+  const out = new Uint8ClampedArray(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const p = y * w + x;
+      const k = id[p];
+      if (k < 0) continue;
+      const sh = order[k];
+      const m = mats[sh.m];
+      let c;
+      if (m.emissive) {
+        c = sh.hot ? m.ramp[6] : m.ramp[5];
+      } else {
+        const d = nrm[p * 3] * light[0] + nrm[p * 3 + 1] * light[1] + nrm[p * 3 + 2] * light[2];
+        const s = Math.max(0, Math.min(1, d * 0.85 + 0.22 + grain(x, y) * (m.texture * 0.25 + 0.03)));
+        c = sampleRamp(m.ramp, s);
+        // Soft occlusion where a part in front overlaps this one.
+        let near = 99;
+        for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) {
+          const xx = x + dx, yy = y + dy;
+          if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+          const q = id[yy * w + xx];
+          if (q > k && (order[q].z ?? 0) > (sh.z ?? 0) && !order[q].noSep) near = Math.min(near, Math.hypot(dx, dy));
+        }
+        if (near < 99) { const a = (1 - near / (R + 1)) * 0.55; c = c.map((v, i) => v + (m.ramp[1][i] - v) * a); }
+        if (m.spec) { const g = Math.pow(Math.max(0, d), 18) * 0.85; c = c.map((v, i) => v + (m.ramp[7][i] - v) * g); }
+        // Darken the silhouette edge on the shadow side.
+        const edge = (xx, yy) => xx < 0 || yy < 0 || xx >= w || yy >= h || id[yy * w + xx] < 0;
+        if (edge(x + 1, y) || edge(x, y + 1)) c = c.map((v, i) => v + (m.ramp[1][i] - v) * 0.45);
+      }
+      out[p * 4] = c[0]; out[p * 4 + 1] = c[1]; out[p * 4 + 2] = c[2]; out[p * 4 + 3] = 255;
     }
   }
   return out;

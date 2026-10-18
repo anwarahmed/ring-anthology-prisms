@@ -5,7 +5,7 @@
 
 import Phaser from 'phaser';
 import { VIEW } from '../engine/config.js';
-import { txt, go } from '../engine/ui.js';
+import { txt, go, hdCamera } from '../engine/ui.js';
 import { audio } from '../engine/audio.js';
 import { Controls, ACTIONS, bindingStore, bindingLabel } from '../engine/input.js';
 
@@ -21,6 +21,7 @@ export class ControlsScene extends Phaser.Scene {
   }
 
   create() {
+    hdCamera(this);
     this.leaving = false;
     this.cameras.main.fadeIn(220);
     this.controls = new Controls(this);

@@ -30,37 +30,44 @@ function solid(put, t, mask, variant) {
   const S = TILE;
   const base = hexRgb(t.solid);
   const r = rng(91 + mask * 7 + variant * 131);
-  const deep = mask === 0 ? -0.18 : 0;
-  // Stone blocks: two courses per tile, offset like brickwork.
-  const shades = Array.from({ length: 6 }, () => (r() - 0.5) * 0.12);
+  const deep = mask === 0 ? -0.12 : 0;
+  // Stone blocks: two courses per tile, offset like brickwork. Each block is lit from
+  // above with a soft gradient, has its own tint, chipped corners and the odd crack.
+  const tint = Array.from({ length: 6 }, () => (r() - 0.5) * 0.14);
+  const crack = Math.floor(r() * 6);
   for (let y = 0; y < S; y++) {
     const course = y < 8 ? 0 : 1;
     const off = (course + variant) % 2 ? 4 : 0;
     for (let x = 0; x < S; x++) {
       const bx = (x + off) % 8, by = y % 8;
       const brick = Math.floor((x + off) / 8) + course * 3;
-      let c = lit(base, shades[brick % 6] + deep);
-      if (bx === 0 || by === 0) c = lit(base, -0.38 + deep);
-      else if (bx === 1 || by === 1) c = lit(c, 0.1);
-      else if (bx === 7 || by === 7) c = lit(c, -0.14);
-      if (r() < 0.06) c = lit(c, (r() - 0.5) * 0.3);
+      let c = lit(base, tint[brick % 6] + deep + (3.5 - by) * 0.025);
+      if (bx === 0 || by === 0) c = lit(base, -0.42 + deep);
+      else if (by === 1 || bx === 1) c = lit(c, 0.13);
+      else if (by === 7 || bx === 7) c = lit(c, -0.18);
+      if ((bx === 1 || bx === 7) && (by === 1 || by === 7) && r() < 0.6) c = lit(base, -0.3 + deep);
+      if (brick % 6 === crack && bx > 2 && bx < 6 && Math.abs(bx - 2 - (by * 0.6)) < 0.6) c = lit(base, -0.36 + deep);
+      const n = r();
+      if (n < 0.07) c = lit(c, -0.12);
+      else if (n > 0.95) c = lit(c, 0.1);
       put(x, y, c);
     }
   }
   if (mask & 1) {
-    const top = hexRgb(t.top), edge = hexRgb(t.edge);
+    const top = hexRgb(t.top), edge = hexRgb(t.edge), moss = t.moss ? hexRgb(t.moss) : null;
     for (let x = 0; x < S; x++) {
       put(x, 0, edge);
-      put(x, 1, lit(top, 0.15));
-      put(x, 2, top);
-      put(x, 3, lit(top, -0.25));
+      put(x, 1, lit(top, 0.18));
+      put(x, 2, lit(top, 0.05));
+      put(x, 3, lit(top, -0.2));
       if ((x * 7 + variant * 3) % 5 === 0) put(x, 4, lit(top, -0.35));
-      put(x, 4 + ((x + variant) % 3 === 0 ? 1 : 0), lit(base, -0.45));
+      put(x, 4 + ((x + variant) % 3 === 0 ? 1 : 0), lit(base, -0.5));
+      if (moss && r() < 0.55) { put(x, 1, moss); if (r() < 0.5) put(x, 4 + (x % 2), lit(moss, -0.3)); }
     }
   }
-  if (mask & 4) for (let x = 0; x < S; x++) { put(x, S - 1, lit(base, -0.55)); put(x, S - 2, lit(base, -0.3)); }
-  if (mask & 8) for (let y = (mask & 1 ? 1 : 0); y < S; y++) put(0, y, lit(base, 0.22));
-  if (mask & 2) for (let y = (mask & 1 ? 1 : 0); y < S; y++) { put(S - 1, y, lit(base, -0.5)); put(S - 2, y, lit(base, -0.2)); }
+  if (mask & 4) for (let x = 0; x < S; x++) { put(x, S - 1, lit(base, -0.6)); put(x, S - 2, lit(base, -0.35)); }
+  if (mask & 8) for (let y = (mask & 1 ? 1 : 0); y < S; y++) { put(0, y, lit(base, 0.25)); put(1, y, lit(base, 0.08)); }
+  if (mask & 2) for (let y = (mask & 1 ? 1 : 0); y < S; y++) { put(S - 1, y, lit(base, -0.55)); put(S - 2, y, lit(base, -0.25)); }
 }
 
 function platform(put, t, part) {

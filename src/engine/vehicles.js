@@ -11,6 +11,8 @@ import { bodyTexture, hexNum, META } from './textures.js';
 import { fireWeapon, explode } from './combat.js';
 import { aimFrom } from './rules.js';
 import { audio } from './audio.js';
+import { HD } from './config.js';
+import { dropShadow } from './fx.js';
 
 export class Vehicle extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, id) {
@@ -37,12 +39,14 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     scene.actorGroup.add(this);
+    this.setScale(1 / HD);
     const [hw, hh] = this.bodyDef.hit;
-    this.body.setSize(hw, hh).setOffset((this.bodyDef.w - hw) / 2, this.bodyDef.h - hh - 1);
+    this.body.setSize(hw * HD, hh * HD).setOffset(((this.bodyDef.w - hw) / 2) * HD, (this.bodyDef.h - hh - 1) * HD);
     if (def.kind === 'air') this.body.setAllowGravity(false);
     this.body.setDragX(def.kind === 'air' ? 300 : 200);
     this.setDepth(21);
     this.play(`${key}-idle`);
+    this.shadow = dropShadow(scene, this, this.bodyDef.hit[0] * 1.3);
   }
 
   get riders() {
@@ -111,10 +115,11 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
 
   muzzle() {
     const sh = this.meta.shoulders[this.frame.name] ?? this.meta.shoulders[0];
-    return { x: this.x + (sh[0] - this.meta.w / 2) * this.facing, y: this.y + (sh[1] - this.meta.h / 2) };
+    return { x: this.x + ((sh[0] - this.meta.w / 2) * this.facing) / HD, y: this.y + (sh[1] - this.meta.h / 2) / HD };
   }
 
   tick(dt) {
+    this.shadow();
     if (!this.alive) return;
     this.cooldown -= dt;
     this.setFlipX(this.facing < 0);
@@ -146,6 +151,7 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
       r.hurt(30, 'explosive');
     }
     this.disableBody(true, true);
+    this.shadow();
   }
 
   // Run over enemies when moving fast.

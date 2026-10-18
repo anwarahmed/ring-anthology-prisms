@@ -3,7 +3,7 @@
 
 import Phaser from 'phaser';
 import { VIEW } from '../engine/config.js';
-import { txt, bar } from '../engine/ui.js';
+import { txt, bar, hdCamera } from '../engine/ui.js';
 import { hexNum } from '../engine/textures.js';
 
 export class HudScene extends Phaser.Scene {
@@ -16,6 +16,7 @@ export class HudScene extends Phaser.Scene {
   }
 
   create() {
+    hdCamera(this);
     const era = this.level.era;
     this.color = era.color;
     const frame = this.add.graphics();

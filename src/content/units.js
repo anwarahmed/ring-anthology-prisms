@@ -144,4 +144,9 @@ export const UNITS = {
     health: 90, shields: 0, speed: 90, ai: 'charger', melee: 24,
     entrance: 'walk', puff: '#b8e04a', score: 90,
   },
+  'guilty-spark': {
+    name: '343 Guilty Spark', faction: 'forerunners', body: 'monitor',
+    pal: { armor: '#b8c0c8', trim: '#e8ecf0', dark: '#2a3040', glow: '#5ad8ff' },
+    health: 999, shields: 0, speed: 0, ai: 'idle', entrance: 'teleport', puff: '#5ad8ff', score: 0,
+  },
 };

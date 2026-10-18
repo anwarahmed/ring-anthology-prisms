@@ -64,8 +64,8 @@ test('sprite renderer shades, outlines and reports frames', async () => {
   assert.equal(alpha(1, 1), 0);
   assert.equal(alpha(2, 8), 255, 'outline pixel just outside the shape');
   const r = ramp('#8888cc');
-  assert.equal(r.length, 5);
-  assert.ok(r[0][0] < r[2][0] && r[2][0] < r[4][0], 'ramp goes dark to light');
+  assert.equal(r.length, 8);
+  for (let i = 1; i < 7; i++) assert.ok(r[i][0] + r[i][1] + r[i][2] >= r[i - 1][0] + r[i - 1][1] + r[i - 1][2], `tone ${i} is not lighter than tone ${i - 1}`);
 });
 
 test('every body builds all frames and aim angles', async () => {

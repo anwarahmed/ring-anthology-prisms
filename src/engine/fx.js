@@ -94,7 +94,7 @@ export class Fx {
   teleportIn(sprite, color) {
     const s = this.scene;
     const beam = s.add.rectangle(sprite.x, sprite.y, 4, 260, color, 0.9).setOrigin(0.5, 1).setBlendMode('ADD').setDepth(39);
-    beam.y = sprite.y + sprite.height / 2;
+    beam.y = sprite.y + sprite.displayHeight / 2;
     s.tweens.add({ targets: beam, scaleX: 6, alpha: 0, duration: 450, onComplete: () => beam.destroy() });
     this.ring(sprite.x, sprite.y, color, 0.8);
     sprite.setAlpha(0);
@@ -108,9 +108,31 @@ export class Fx {
 }
 
 // The final color grade: a saturation and contrast lift so everything pops (WebGL only).
-export function gradeCamera(cam, scene) {
+// grade: { saturate, contrast, brightness } per theme (defaults below).
+export function gradeCamera(cam, scene, grade = {}) {
   if (scene.renderer.type !== Phaser.WEBGL) return;
   const cm = cam.postFX.addColorMatrix();
-  cm.saturate(0.28);
-  cm.contrast(0.12, true);
+  cm.saturate(grade.saturate ?? 0.1);
+  cm.contrast(grade.contrast ?? 0.12, true);
+  if (grade.brightness) cm.brightness(grade.brightness, true);
+}
+
+// A soft ground shadow under an actor or vehicle. It shrinks and fades with height, so
+// jumps and flying units read clearly. Returns an updater to call each frame.
+export function dropShadow(scene, obj, width) {
+  const img = scene.add.image(obj.x, obj.y, 'shadow').setDepth(11).setVisible(false);
+  const base = width / 32;
+  const update = () => {
+    if (!obj.active || !obj.visible || !obj.body) return img.setVisible(false);
+    let ground = null;
+    for (let i = 0; i < 14 && ground === null; i++) {
+      const t = scene.layer.getTileAtWorldXY(obj.x, obj.body.bottom + i * 16);
+      if (t?.collides) ground = t.getTop();
+    }
+    if (ground === null) return img.setVisible(false);
+    const hgt = Math.max(0, ground - obj.body.bottom);
+    img.setVisible(true).setPosition(obj.x, ground).setAlpha(Math.max(0, 0.7 - hgt / 180)).setScale(base * (1 - Math.min(0.5, hgt / 260)), 1);
+  };
+  update.destroy = () => img.destroy();
+  return update;
 }

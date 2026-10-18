@@ -31,7 +31,7 @@ function forerunner(p) {
         while (dist < 72 && !solidAt(p.scene, p.x + (dx / len) * (dist + 8), p.y + (dy / len) * (dist + 8))) dist += 4;
         for (let i = 0; i < 4; i++) {
           const ghost = p.scene.add.image(p.x + (dx / len) * dist * (i / 4), p.y + (dy / len) * dist * (i / 4), p.texture.key, p.frame.name)
-            .setFlipX(p.flipX).setTintFill(p.shieldColor).setAlpha(0.6).setBlendMode('ADD').setDepth(p.depth - 1);
+            .setFlipX(p.flipX).setScale(p.scaleX).setTintFill(p.shieldColor).setAlpha(0.6).setBlendMode('ADD').setDepth(p.depth - 1);
           p.scene.tweens.add({ targets: ghost, alpha: 0, duration: 300 + i * 60, onComplete: () => ghost.destroy() });
         }
         const vx = p.body.velocity.x;

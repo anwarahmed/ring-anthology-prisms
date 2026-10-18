@@ -92,4 +92,37 @@ export const TRACKS = {
       arp: { wave: 'square', vol: 0.022, level: 2, notes: 'D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 G5:1 B5:1 D5:1 B5:1 G5:1 B5:1 D5:1 B5:1 G5:1 B5:1 D5:1 B5:1 G5:1 B5:1 D5:1 B5:1 B4:1 D5:1 F#5:1 D5:1 B4:1 D5:1 F#5:1 D5:1 B4:1 D5:1 F#5:1 D5:1 B4:1 D5:1 F#5:1 D5:1 A4:1 C#5:1 E5:1 C#5:1 A4:1 C#5:1 E5:1 C#5:1 A4:1 C#5:1 E5:1 C#5:1 A4:1 C#5:1 E5:1 C#5:1' },
     },
   },
+  // 2a, 2f: alarms aboard a starship. Original.
+  'autumn-alarm': {
+    bpm: 132,
+    layers: {
+      bass: { wave: 'square', vol: 0.06, level: 0, notes: 'C2:2 C2:2 C3:2 C2:2 C2:2 C2:2 C3:2 C2:2 C2:2 C2:2 C3:2 C2:2 C2:2 C2:2 C3:2 C2:2 A#1:2 A#1:2 A#2:2 A#1:2 A#1:2 A#1:2 A#2:2 A#1:2 A#1:2 A#1:2 A#2:2 A#1:2 A#1:2 A#1:2 A#2:2 A#1:2' },
+      alarm: { wave: 'square', vol: 0.03, level: 0, notes: 'G5:4 C5:4 -:24 G5:4 C5:4 -:24' },
+      drums: { wave: 'noise', vol: 0.2, level: 1, notes: 'k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2' },
+      lead: { wave: 'triangle', vol: 0.1, level: 1, notes: 'C5:4 D#5:4 G5:6 F5:2 D#5:4 D5:4 C5:8 A#4:4 C5:4 D5:4 F5:4 D#5:8 D5:8' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'C5:1 D#5:1 G5:1 D#5:1 C5:1 D#5:1 G5:1 D#5:1 C5:1 D#5:1 G5:1 D#5:1 C5:1 D#5:1 G5:1 D#5:1 A#4:1 D5:1 F5:1 D5:1 A#4:1 D5:1 F5:1 D5:1 A#4:1 D5:1 F5:1 D5:1 A#4:1 D5:1 F5:1 D5:1' },
+    },
+  },
+  // 2b, 2c: adventure on the ring. Original.
+  'ring-world': {
+    bpm: 108,
+    layers: {
+      bass: { wave: 'triangle', vol: 0.13, level: 0, notes: 'E2:4 B2:4 E3:4 B2:4 C2:4 G2:4 C3:4 G2:4 G2:4 D3:4 G3:4 D3:4 D2:4 A2:4 D3:4 A2:4' },
+      pad: { wave: 'sine', vol: 0.08, level: 0, notes: 'E4+G4+B4:16 C4+E4+G4:16 G3+B3+D4:16 D4+F#4+A4:16' },
+      drums: { wave: 'noise', vol: 0.18, level: 1, notes: 'k:4 h:2 h:2 s:4 h:2 k:2' },
+      lead: { wave: 'triangle', vol: 0.1, level: 1, notes: 'B4:6 A4:2 G4:4 E4:4 G4:6 A4:2 B4:8 D5:6 C5:2 B4:4 G4:4 A4:8 F#4:8' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'E5:1 G5:1 B5:1 G5:1 E5:1 G5:1 B5:1 G5:1 E5:1 G5:1 B5:1 G5:1 E5:1 G5:1 B5:1 G5:1 C5:1 E5:1 G5:1 E5:1 C5:1 E5:1 G5:1 E5:1 C5:1 E5:1 G5:1 E5:1 C5:1 E5:1 G5:1 E5:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1' },
+    },
+  },
+  // 2e: the Covenant hunt. Original, a low chant-like line over drums.
+  'covenant-hunt': {
+    bpm: 96,
+    layers: {
+      drone: { wave: 'sawtooth', vol: 0.03, level: 0, notes: 'D2+A2:32 C2+G2:32' },
+      chant: { wave: 'sine', vol: 0.1, level: 0, vibrato: 4, notes: 'D4:8 F4:8 E4:8 D4:8 C4:8 E4:8 D4:16' },
+      drums: { wave: 'noise', vol: 0.22, level: 1, notes: 'k:4 -:2 k:2 s:4 k:2 h:2' },
+      lead: { wave: 'square', vol: 0.05, level: 1, notes: 'A4:4 C5:4 D5:8 F5:4 E5:4 D5:8 C5:4 A4:4 G4:8 A4:16' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'D5:1 A4:1 F4:1 A4:1 D5:1 A4:1 F4:1 A4:1 D5:1 A4:1 F4:1 A4:1 D5:1 A4:1 F4:1 A4:1 C5:1 G4:1 E4:1 G4:1 C5:1 G4:1 E4:1 G4:1 C5:1 G4:1 E4:1 G4:1 C5:1 G4:1 E4:1 G4:1' },
+    },
+  },
 };

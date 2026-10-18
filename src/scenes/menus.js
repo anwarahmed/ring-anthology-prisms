@@ -3,7 +3,7 @@
 
 import Phaser from 'phaser';
 import { VIEW, ERAS, DIFFICULTY, LEGAL_NOTICE } from '../engine/config.js';
-import { txt, go } from '../engine/ui.js';
+import { txt, go, hdCamera } from '../engine/ui.js';
 import { Controls, bindingStore } from '../engine/input.js';
 import { audio } from '../engine/audio.js';
 import { session } from '../engine/session.js';
@@ -48,6 +48,7 @@ function panel(scene, x, y, w, h, color = 0x45e6ff) {
 export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
   async create() {
+    hdCamera(this);
     baseTextures(this);
     try {
       await Promise.all([document.fonts.load('8px "Press Start 2P"'), document.fonts.load('16px VT323')]);
@@ -65,6 +66,7 @@ export class BootScene extends Phaser.Scene {
 export class TitleScene extends Phaser.Scene {
   constructor() { super('Title'); }
   create() {
+    hdCamera(this);
     this.leaving = false;
     this.cameras.main.fadeIn(260);
     this.controls = new Controls(this);
@@ -152,6 +154,7 @@ export class PlayersScene extends Phaser.Scene {
   constructor() { super('Players'); }
   init(data) { this.first = data.first; }
   create() {
+    hdCamera(this);
     this.leaving = false;
     this.cameras.main.fadeIn(260);
     this.controls = new Controls(this);
@@ -216,6 +219,7 @@ export class PlayersScene extends Phaser.Scene {
 export class TimelineScene extends Phaser.Scene {
   constructor() { super('Timeline'); }
   create() {
+    hdCamera(this);
     this.leaving = false;
     this.cameras.main.fadeIn(260);
     this.controls = new Controls(this);
@@ -306,6 +310,7 @@ export class ArchiveScene extends Phaser.Scene {
     this.i = 0;
   }
   create() {
+    hdCamera(this);
     this.leaving = false;
     this.cameras.main.fadeIn(260);
     if (!this.cards.length) return this.next();
@@ -366,6 +371,7 @@ export class ResultsScene extends Phaser.Scene {
   constructor() { super('Results'); }
   init(data) { this.data_ = data; }
   create() {
+    hdCamera(this);
     this.leaving = false;
     this.cameras.main.fadeIn(260);
     const { levelId, result, stats } = this.data_;
@@ -404,6 +410,7 @@ export class PauseScene extends Phaser.Scene {
   constructor() { super('Pause'); }
   init(data) { this.level = data.level; }
   create() {
+    hdCamera(this);
     this.controls = new Controls(this);
     this.add.rectangle(0, 0, VIEW.w, VIEW.h, 0x000000, 0.7).setOrigin(0);
     txt(this, VIEW.w / 2, 40, 'PAUSED', { size: 16 }).setOrigin(0.5);

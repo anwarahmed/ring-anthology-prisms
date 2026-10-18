@@ -4,6 +4,11 @@
 import { BODIES } from '../content/bodies.js';
 import { bodyFrames, armFrames, gunFrame } from './sprites.js';
 import { tilesetPixels } from './tileset.js';
+import { tilesetPixelsHD } from './tiles3d.js';
+import { STYLE, TILE, HD } from './config.js';
+
+// Pixel size of one tile in the tileset texture (pre-rendered tiles are HD).
+export const TILE_PX = STYLE === 'prerendered' ? TILE * HD : TILE;
 
 function painter(ctx, ox, oy) {
   return {
@@ -46,7 +51,7 @@ export function bodyTexture(scene, id, def) {
   const body = BODIES[def.body];
   const frames = bodyFrames(def);
   rgbaSheet(scene, key, frames);
-  META.set(key, { shoulders: frames.map((f) => f.shoulder), w: body.w, h: body.h });
+  META.set(key, { shoulders: frames.map((f) => f.shoulder), w: frames[0].w, h: frames[0].h });
   const rates = { idle: 5, run: 14, jump: 1, fall: 1, crouch: 1 };
   for (const [name, list] of Object.entries(body.anims)) {
     scene.anims.create({ key: `${key}-${name}`, frames: list.map((frame) => ({ key, frame })), frameRate: body.flying ? 10 : rates[name], repeat: -1 });
@@ -74,7 +79,7 @@ export function armTexture(scene, id, def, weaponId, weapon) {
 export function tilesTexture(scene, themeId, theme) {
   const key = `tiles-${themeId}`;
   if (scene.textures.exists(key)) return key;
-  const { rgba, w, h } = tilesetPixels(theme);
+  const { rgba, w, h } = STYLE === 'prerendered' ? tilesetPixelsHD(theme) : tilesetPixels(theme);
   const tex = scene.textures.createCanvas(key, w, h);
   tex.getContext().putImageData(new ImageData(rgba, w, h), 0, 0);
   tex.refresh();
@@ -113,5 +118,8 @@ export function baseTextures(scene) {
   });
   mk('ring', 64, 64, (g) => g.lineStyle(3, 0xffffff).strokeCircle(32, 32, 30));
   mk('hook', 4, 4, (g) => g.fillStyle(0xffffff).fillRect(0, 0, 4, 4));
+  mk('shadow', 32, 8, (g) => {
+    for (let i = 0; i < 4; i++) g.fillStyle(0x000000, 0.25).fillEllipse(16, 4, 32 - i * 7, 8 - i * 1.6);
+  });
   g.destroy();
 }

@@ -80,12 +80,15 @@ export function ringHalves(scene, R = 230, k = 0.2, band = 0.075, name = 'title-
       for (let x = 0; x < w; x++) {
         const u = (x - cx) / R, v = (y - cy) / (R * k);
         const r = Math.hypot(u, v);
-        // The band is thicker on the near side (we see its wall).
-        const inner = 1 - band * (front ? 1.6 : 1);
+        // The band thickens smoothly toward the near side (we see more of its wall), so
+        // the far and near halves meet without a step at the ends.
+        const inner = 1 - band * (1 + 0.6 * Math.max(0, v));
         if (r > 1 || r < inner || (v >= 0) !== front) continue;
         const th = Math.atan2(v, u);
         const radial = (r - inner) / (1 - inner);
         let c;
+        // Near the ends of the ring both surfaces show, so they blend into each other.
+        const side = Math.max(0, 1 - Math.abs(v) / 0.35);
         if (!front) {
           const n = fbm(th * 18, radial * 3, 11);
           c = n < 0.42 ? land[2] : n < 0.55 ? land[0] : n < 0.7 ? land[1] : land[3];
@@ -96,6 +99,13 @@ export function ringHalves(scene, R = 230, k = 0.2, band = 0.075, name = 'title-
           c = mix(hullDark, hull, lit);
           if (Math.floor(th * 60) % 4 === 0) c = mix(c, hullDark, 0.4);
           if (radial < 0.5 && hash(Math.floor(th * 120), 3, 7) > 0.93) c = [120, 230, 255];
+        }
+        {
+          const lit = 0.5 - 0.5 * Math.cos(th) * 0.8;
+          const hullC = mix(hullDark, hull, lit);
+          const n = fbm(th * 18, radial * 3, 11);
+          const landC = mix(n < 0.42 ? land[2] : n < 0.55 ? land[0] : n < 0.7 ? land[1] : land[3], [10, 10, 40], 0.25 + 0.35 * Math.abs(Math.cos(th)));
+          if (side > 0) c = mix(c, front ? landC : hullC, side * 0.5);
         }
         if (radial > 0.86 || radial < 0.1) c = mix(c, edge, 0.55 * (dither(x, y) < 0.6 ? 1 : 0.5));
         d.set([...c, 255], (y * w + x) * 4);

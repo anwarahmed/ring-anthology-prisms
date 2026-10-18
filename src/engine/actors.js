@@ -11,6 +11,8 @@ import { fireWeapon, throwGrenade, melee } from './combat.js';
 import { makeKit } from './kits.js';
 import { BEHAVIORS, avoidHazards } from './ai.js';
 import { audio } from './audio.js';
+import { HD } from './config.js';
+import { dropShadow } from './fx.js';
 
 const GRENADE_COOLDOWN = 0.8;
 
@@ -31,14 +33,15 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
     scene.actorGroup.add(this);
     this.id = id;
     this.meta = META.get(key);
-    if (def.scale) this.setScale(def.scale);
+    this.setScale((def.scale ?? 1) / HD);
     const [hw, hh] = this.bodyDef.hit;
     const B = this.bodyDef;
-    this.body.setSize(hw, hh).setOffset((B.w - hw) / 2, B.flying ? (B.h - hh) / 2 : B.h - hh - 1);
+    this.body.setSize(hw * HD, hh * HD).setOffset(((B.w - hw) / 2) * HD, (B.flying ? (B.h - hh) / 2 : B.h - hh - 1) * HD);
     if (this.bodyDef.flying) this.body.setAllowGravity(false);
     this.setDepth(team === 'players' ? 20 : 18);
     this.play(`${key}-idle`);
     this.gun = null;
+    this.shadow = dropShadow(scene, this, this.bodyDef.hit[0] * 1.6 * (def.scale ?? 1));
   }
 
   equip(weaponId) {
@@ -73,6 +76,7 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
   }
 
   syncGun() {
+    this.shadow?.();
     if (!this.gun) return;
     const s = this.shoulder();
     const { i, flip } = this.aimPose();
@@ -116,10 +120,12 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
     this.scene.fx.puff(this.x, this.y, this.def.puff ?? this.puffColor ?? '#ffffff', (this.def.scale ?? 1) > 1 || !!this.def.boss);
     if (this.gun) this.gun.setVisible(false);
     this.disableBody(true, true);
+    this.shadow?.();
   }
 
   destroy(fromScene) {
     if (this.gun) this.gun.destroy();
+    this.shadow?.destroy();
     super.destroy(fromScene);
   }
 }
@@ -331,6 +337,7 @@ export class Player extends Actor {
     if (this.gun) this.gun.setVisible(false);
     this.kit.cancel?.();
     this.disableBody(true, true);
+    this.shadow?.();
     this.scene.onPlayerDown(this, from);
   }
 

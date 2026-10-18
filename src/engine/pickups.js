@@ -7,6 +7,7 @@ import { WEAPONS } from '../content/weapons.js';
 import { gunTexture } from './textures.js';
 import { hexNum } from './textures.js';
 import { audio } from './audio.js';
+import { HD } from './config.js';
 
 const DROP_LIFE = 12;
 const BLINK = 3;
@@ -14,7 +15,7 @@ const BLINK = 3;
 export function dropWeapon(scene, x, y, weaponId) {
   const w = WEAPONS[weaponId];
   if (!w?.gun) return;
-  const img = scene.add.image(x, y, gunTexture(scene, weaponId, w)).setDepth(19);
+  const img = scene.add.image(x, y, gunTexture(scene, weaponId, w)).setDepth(19).setScale(1 / HD);
   const glow = scene.add.image(x, y, 'glow').setTint(hexNum(w.color)).setBlendMode('ADD').setAlpha(0.5).setDepth(18);
   scene.pickups ??= [];
   scene.pickups.push({ weaponId, img, glow, x, y, vy: -120, born: scene.time.now, floor: null });
@@ -32,7 +33,7 @@ export function updatePickups(scene, dt) {
       d.y += d.vy * dt;
       const t = scene.layer.getTileAtWorldXY(d.x, d.y + 6);
       if (t && t.collides) {
-        d.floor = t.pixelY - 6;
+        d.floor = t.getTop() - 6;
         d.y = d.floor;
       }
       if (d.y > scene.worldH) return remove(d);

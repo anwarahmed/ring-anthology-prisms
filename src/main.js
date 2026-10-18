@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import '@fontsource/press-start-2p/400.css';
 import '@fontsource/vt323/400.css';
-import { VIEW, GRAVITY } from './engine/config.js';
+import { VIEW, GRAVITY, HD } from './engine/config.js';
 import { LevelScene } from './scenes/LevelScene.js';
 import { HudScene } from './scenes/HudScene.js';
 import { ControlsScene } from './scenes/ControlsScene.js';
@@ -10,8 +10,8 @@ import { BootScene, TitleScene, PlayersScene, TimelineScene, ArchiveScene, Resul
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
-  width: VIEW.w,
-  height: VIEW.h,
+  width: VIEW.w * HD,
+  height: VIEW.h * HD,
   backgroundColor: '#000000',
   pixelArt: true,
   roundPixels: true,
