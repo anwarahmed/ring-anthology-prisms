@@ -481,8 +481,8 @@ for (const id of levels) {
     await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 60000 });
     if (finish) {
       // 25 minutes of game time (slow machines run the game slower than real time),
-      // with a 45-minute wall-clock backstop.
-      const wallDeadline = Date.now() + 45 * 60 * 1000;
+      // with a 75-minute wall-clock backstop.
+      const wallDeadline = Date.now() + 75 * 60 * 1000;
       const gameStart = await page.evaluate(() => window.__game.loop.time);
       const gameTime = () => page.evaluate((t0) => window.__game.loop.time - t0, gameStart);
       let n = 0;
