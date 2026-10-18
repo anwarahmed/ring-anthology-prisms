@@ -15,8 +15,9 @@ import { buildBackdrop } from '../engine/backdrop.js';
 import { Fx, gradeCamera } from '../engine/fx.js';
 import { Controls } from '../engine/input.js';
 import { Player, Unit } from '../engine/actors.js';
-import { setupCombat, updateProjectiles } from '../engine/combat.js';
+import { setupCombat, updateProjectiles, explode } from '../engine/combat.js';
 import { ScriptRunner } from '../engine/script.js';
+import { dropWeapon, updatePickups } from '../engine/pickups.js';
 import { audio } from '../engine/audio.js';
 import { makeBot } from '../engine/bot.js';
 import { session } from '../engine/session.js';
@@ -56,6 +57,7 @@ export class LevelScene extends Phaser.Scene {
     this.actorGroup = this.physics.add.group({ runChildUpdate: false });
     this.units = [];
     this.players = [];
+    this.pickups = [];
     setupCombat(this);
     this.physics.world.setBounds(0, -200, W, H + 400);
     this.physics.add.collider(this.actorGroup, this.layer, null, (a, tile) => {
@@ -76,7 +78,7 @@ export class LevelScene extends Phaser.Scene {
     });
 
     for (const e of this.map.entities) {
-      if (e.unit) this.spawnUnit(e.unit, e.x * TILE + 8, (e.y + 1) * TILE, { ally: !!e.ally, entrance: 'none' });
+      if (e.unit) this.spawnUnit(e.unit, e.x * TILE + 8, (e.y + 1) * TILE, { ally: !!e.ally, team: e.neutral ? 'neutral' : null, entrance: 'none' });
     }
 
     // The camera glides after the middle of the living players (see updateCamera).
@@ -171,6 +173,7 @@ export class LevelScene extends Phaser.Scene {
     for (const u of this.units) u.tick(dt);
     this.units = this.units.filter((u) => u.alive || u.active);
     updateProjectiles(this);
+    updatePickups(this, dt);
 
     // Camera focus and co-op leash.
     const alive = this.players.filter((p) => p.alive);
@@ -235,11 +238,11 @@ export class LevelScene extends Phaser.Scene {
   // --- Spawning -------------------------------------------------------------------
 
   // y is the feet point for walkers and the center for flyers.
-  spawnUnit(id, x, y, { ally = false, entrance } = {}) {
+  spawnUnit(id, x, y, { ally = false, team = null, entrance } = {}) {
     const def = UNITS[id];
     if (!def) { console.error('Unknown unit', id); return null; }
     const B = BODIES[def.body];
-    const u = new Unit(this, x, B.flying ? y : y - (B.h / 2) * (def.scale ?? 1) - 1, id, def, { ally });
+    const u = new Unit(this, x, B.flying ? y : y - (B.h / 2) * (def.scale ?? 1) - 1, id, def, { ally, team });
     this.units.push(u);
     const how = entrance ?? def.entrance;
     if (how === 'teleport') this.fx.teleportIn(u, hexNum(def.pal.glow ?? def.puff));
@@ -269,7 +272,7 @@ export class LevelScene extends Phaser.Scene {
       const def = UNITS[g.unit];
       for (let i = 0; i < (g.n ?? 1); i++) {
         const pt = this.spawnPoint(g.from ?? 'right', i, def?.body === 'sentinel');
-        const u = this.spawnUnit(g.unit, pt.x, pt.y, { ally: ally || g.ally });
+        const u = this.spawnUnit(g.unit, pt.x, pt.y, { ally: ally || g.ally, team: g.neutral ? 'neutral' : null });
         if (u) out.push(u);
         await new Promise((r) => this.time.delayedCall((g.gap ?? 0.35) * 1000, r));
       }
@@ -328,6 +331,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   onUnitDefeated(unit, from) {
+    if (unit.team === 'enemies' && unit.weapon?.gun) dropWeapon(this, unit.x, unit.y, unit.def.weapon);
     if (unit.def.boss) {
       this.fx.slowmo(0.25, 1600);
       this.fx.flash(0xffffff, 400);
@@ -396,6 +400,8 @@ export class LevelScene extends Phaser.Scene {
       scene: this, players: this.players, units: this.units, fx: this.fx, hud: this.hud, audio,
       tile: TILE, view: VIEW, marker: (k) => this.map.markers[k],
       spawn: (list, ally) => this.spawnGroup(list, ally),
+      // An explosion that hurts enemies only (orbital strikes, collapses on the enemy).
+      explode: (x, y, radius = 40, damage = 50) => explode(this, x, y, radius, damage, 'players', null),
     };
   }
 }

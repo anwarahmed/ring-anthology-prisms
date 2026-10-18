@@ -12,7 +12,7 @@ export function setupCombat(scene) {
   const notPlatform = (_obj, tile) => !isPlatform(tile.index);
   scene.physics.add.collider(scene.projectiles, scene.layer, (p) => impact(scene, p), notPlatform);
   scene.physics.add.overlap(scene.projectiles, scene.actorGroup, (p, a) => {
-    if (!p.active || !a.alive || p.team === a.team) return;
+    if (!p.active || !a.alive || p.team === a.team || a.team === 'neutral') return;
     a.hurt(p.damage, p.tech, p.owner);
     impact(scene, p, a);
   });
@@ -107,7 +107,7 @@ export function throwGrenade(scene, thrower, type, dir) {
 export function explode(scene, x, y, radius, damage, team, owner, direct = null) {
   scene.fx.explosion(x, y, radius);
   for (const a of scene.actorList()) {
-    if (!a.alive || a.team === team) continue;
+    if (!a.alive || a.team === team || a.team === 'neutral') continue;
     const d = Phaser.Math.Distance.Between(x, y, a.x, a.y);
     if (d > radius && a !== direct) continue;
     const fall = a === direct ? 1 : 1 - (d / radius) * 0.6;
@@ -122,7 +122,7 @@ export function melee(scene, attacker, reach = 24, damage = 50) {
   let best = null;
   let bestD = reach;
   for (const a of scene.actorList()) {
-    if (!a.alive || a.team === attacker.team) continue;
+    if (!a.alive || a.team === attacker.team || a.team === 'neutral') continue;
     const dx = (a.x - attacker.x) * attacker.facing;
     const d = Math.hypot(a.x - attacker.x, a.y - attacker.y);
     if (dx > -4 && d < bestD + (a.width ?? 0) / 2) {

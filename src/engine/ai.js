@@ -2,10 +2,11 @@
 // Units on the players' team (allies) use the same behaviors against enemies.
 
 import { melee } from './combat.js';
-import { isSolid } from './tileset.js';
+import { isSolid, isHazard } from './tileset.js';
+import { TILE } from './config.js';
 
 export function targetsFor(unit, scene) {
-  return scene.actorList().filter((a) => a.alive && a.team !== unit.team && !a.camo);
+  return scene.actorList().filter((a) => a.alive && a.team !== unit.team && a.team !== 'neutral' && !a.camo);
 }
 
 export function nearest(unit, scene, maxD = 9999) {
@@ -41,6 +42,7 @@ function wallAhead(unit, scene) {
 }
 
 function tryFire(unit, dt, inRange) {
+  if (!unit.weapon) return;
   unit.cooldown -= dt;
   if (inRange && unit.cooldown <= 0) {
     unit.state.burst = unit.state.burst ?? 0;
@@ -65,7 +67,50 @@ function followPlayer(unit, scene) {
   if (unit.body.blocked.down && wallAhead(unit, scene)) unit.setVelocityY(-360);
 }
 
+// Runs after every walking unit's behavior: look at the ground ahead and hop over
+// narrow hazards (fire, energy fields), stop short of wide ones, and jump out of one
+// if standing in it. Keeps allies from walking into fires.
+export function avoidHazards(unit, scene) {
+  const b = unit.body;
+  if (unit.bodyDef.flying || !b.blocked.down) return;
+  const feet = b.bottom - 4;
+  const hazardAt = (x) => { const t = scene.layer.getTileAtWorldXY(x, feet); return !!t && isHazard(t.index); };
+  const vx = b.velocity.x;
+  if (hazardAt(unit.x)) {
+    unit.setVelocity((Math.sign(vx) || unit.facing) * 120, -420);
+    return;
+  }
+  if (Math.abs(vx) < 5) return;
+  const dir = Math.sign(vx);
+  const edge = dir > 0 ? b.right : b.left;
+  if (!hazardAt(edge + dir * 6)) return;
+  let run = 0;
+  while (run < 5 && hazardAt(edge + dir * (6 + run * TILE))) run++;
+  if (run <= 3) unit.setVelocity(dir * Math.max(Math.abs(vx), 120), -420);
+  else unit.setVelocityX(0);
+}
+
 export const BEHAVIORS = {
+  // Small hoppers (Flood infection forms): bound toward a target, pop on contact.
+  swarm(unit, dt, scene) {
+    const n = nearest(unit, scene, 520);
+    if (!n) return unit.setVelocityX(0);
+    unit.facing = n.t.x < unit.x ? -1 : 1;
+    unit.setVelocityX(unit.facing * unit.def.speed);
+    if (unit.body.blocked.down && (wallAhead(unit, scene) || Math.random() < dt * 2.5)) unit.setVelocityY(-230 - Math.random() * 140);
+    if (n.d < 16) {
+      n.t.hurt((unit.def.melee ?? 8) * unit.dmgScale, 'melee', unit);
+      unit.hurt(9999, 'melee');
+    }
+  },
+
+  // Bystanders and story characters: stand still, face the nearest player.
+  idle(unit, dt, scene) {
+    unit.setVelocityX(0);
+    const p = scene.players.find((pl) => pl.alive);
+    if (p) unit.facing = p.x < unit.x ? -1 : 1;
+  },
+
   // Keeps its distance, strafes, fires bursts.
   shooter(unit, dt, scene) {
     const n = nearest(unit, scene, unit.def.range * 1.6);

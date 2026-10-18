@@ -35,14 +35,14 @@ The colors and ability kits are gameplay presentation, not story.
 | c. 107,475–107,472 BCE | The Plague War ends at Charum Hakkor. The San'Shyuum make a secret deal, and humanity surrenders rather than release the Flood. The Didact captures Forthencho. Humanity is devolved and sent to Earth **(verify)** | 1a, 1b |
 | Same age | The Forerunners meet the Flood. Fleets are lost, and they adopt extermination | 1c |
 | c. 98,445 BCE | Faber starts the twelve original Halos at the Greater Ark. The Didact loses the Shield World argument, and the Prometheans are exiled. The Librarian's Conservation Measure is approved | 1d |
-| The ancient past **(verify date)** | Faber uses a Halo to crush a San'Shyuum rebellion on Janjur Qom | 1e |
+| Late in the Forerunner–Flood war | The San'Shyuum rise up; the Master Builder uses a Halo to sterilize Janjur Qom. The San'Shyuum survive through the Librarian's specimens | 1e |
 | c. 97,745 BCE | The Flood returns. A war of about 300 years begins | — |
-| **(verify date)** | Bornstellar wakes the Didact on Earth. Chakas and Riser travel with them | 1f |
+| About 100,000 years ago | Bornstellar, guided by Chakas and Riser, wakes the Didact in his Cryptum in the Djamonkin Crater | 1f |
 | c. 97,495 BCE | Mendicant Bias test-fires Installation 07 near Charum Hakkor and releases the Primordial, a Gravemind. Mendicant turns on the Forerunners | 7a, 7b |
 | Later in the war | The Ur-Didact composes humans into Promethean Knights. The Librarian imprisons him on Requiem. The Endless are imprisoned on Zeta Halo **(verify timing)** | 6a, card |
 | Late in the war | Faber's twelve rings are found to be unstable. Seven smaller rings are built at the lesser Ark. The Greater Ark falls | 5a |
 | 97,445 BCE | The IsoDidact fires the Halo Array from the lesser Ark. The Librarian dies on Earth. Chakas becomes 343 Guilty Spark | 5a, card |
-| Before 938 BCE **(verify)** | The Reformist San'Shyuum leave Janjur Qom aboard the Dreadnought | 3a |
+| 2200–2100 BCE | The Reformist–Stoic conflict; about 1,000 Reformists leave Janjur Qom aboard the Dreadnought | 3a |
 | 938 BCE | The San'Shyuum reach Sanghelios. Arbiter Vema 'Togad starts the War of Beginnings | 3b |
 | 852 BCE | The Writ of Union: Pelahsar the Strident and Breaking Shadow. The Covenant is founded | 3c |
 | 851 BCE | The Rending (Ussa 'Xellus). High Charity is begun, and finished in 791 BCE | card |

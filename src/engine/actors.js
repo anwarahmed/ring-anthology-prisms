@@ -9,7 +9,7 @@ import { bodyTexture, armTexture, hexNum, META } from './textures.js';
 import { aimFrame } from './sprites.js';
 import { fireWeapon, throwGrenade, melee } from './combat.js';
 import { makeKit } from './kits.js';
-import { BEHAVIORS } from './ai.js';
+import { BEHAVIORS, avoidHazards } from './ai.js';
 import { audio } from './audio.js';
 
 const GRENADE_COOLDOWN = 0.8;
@@ -45,8 +45,10 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
     this.weapon = WEAPONS[weaponId];
     if (this.gun) this.gun.destroy();
     this.gun = null;
-    if (this.bodyDef.flying || !this.weapon) return;
-    const key = armTexture(this.scene, this.id, this.def, weaponId, this.weapon);
+    // Armless bodies (drones, Flood forms) have no overlay; unarmed characters still
+    // get their arm drawn, just without a weapon.
+    if (this.bodyDef.flying || !this.bodyDef.reach) return;
+    const key = armTexture(this.scene, this.id, this.def, weaponId ?? 'none', this.weapon ?? null);
     this.armMeta = META.get(key);
     this.gun = this.scene.add.sprite(this.x, this.y, key, 4).setDepth(this.depth + 1).setScale(this.scaleX);
   }
@@ -76,6 +78,11 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
     const { i, flip } = this.aimPose();
     this.gun.setPosition(s.x, s.y).setFrame(i).setFlipX(flip);
     this.gun.setVisible(this.visible).setAlpha(this.alpha);
+  }
+
+  // Plays an animation, falling back to idle for bodies that don't have it.
+  playAnim(name) {
+    this.play(`${this.key}-${this.bodyDef.anims[name] ? name : 'idle'}`, true);
   }
 
   get maxShields() { return this.stats.shields; }
@@ -120,8 +127,9 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
 // --- AI units ----------------------------------------------------------------
 
 export class Unit extends Actor {
-  constructor(scene, x, y, id, def, { ally = false } = {}) {
-    super(scene, x, y, id, def, ally ? 'players' : 'enemies');
+  // team: 'enemies' (default), 'players' (allies), or 'neutral' (bystanders nobody targets).
+  constructor(scene, x, y, id, def, { ally = false, team = null } = {}) {
+    super(scene, x, y, id, def, team ?? (ally ? 'players' : 'enemies'));
     this.id = id;
     this.ally = ally;
     const k = ally ? { enemyHealth: 1 } : scene.diff;
@@ -139,11 +147,12 @@ export class Unit extends Actor {
   tick(dt) {
     if (!this.alive) return;
     this.brain(this, dt, this.scene);
+    avoidHazards(this, this.scene);
     this.setFlipX(this.facing < 0);
     if (!this.bodyDef.flying) {
       const moving = Math.abs(this.body.velocity.x) > 10;
       const anim = !this.body.blocked.down ? (this.body.velocity.y < 0 ? 'jump' : 'fall') : moving ? 'run' : 'idle';
-      this.play(`${this.key}-${anim}`, true);
+      this.playAnim(anim);
     }
     // Shields recharge for AI too.
     if (this.shields < this.stats.shields && this.scene.time.now - this.lastHit > 4000) {
@@ -184,7 +193,7 @@ export class Player extends Actor {
     this.lastGround = -9999;
     this.jumpBuffer = -9999;
     this.kit = makeKit(def.kit ?? era.kit, this, def.extra);
-    this.equip(this.weapons[0].id);
+    this.equip(this.weapons[0]?.id);
     this.setDepth(22 + index);
   }
 
@@ -235,7 +244,7 @@ export class Player extends Actor {
     this.grenadeCooldown -= dt;
     if (s.pressed.swap && this.weapons.length > 1) {
       this.cur = (this.cur + 1) % this.weapons.length;
-      this.equip(this.current.id);
+      this.equip(this.current?.id);
       this.cooldown = 0.2;
       audio.sfx('reload');
     }
@@ -272,7 +281,7 @@ export class Player extends Actor {
     // Animation.
     this.setFlipX(this.facing < 0);
     const anim = this.crouching ? 'crouch' : !onGround ? (b.velocity.y < 0 ? 'jump' : 'fall') : Math.abs(b.velocity.x) > 15 ? 'run' : 'idle';
-    this.play(`${this.key}-${anim}`, true);
+    this.playAnim(anim);
     this.syncGun();
   }
 
@@ -284,7 +293,7 @@ export class Player extends Actor {
     let best = null;
     let bestD = 260;
     for (const u of this.scene.units) {
-      if (!u.alive || u.team === this.team) continue;
+      if (!u.alive || u.team === this.team || u.team === 'neutral') continue;
       const d = Phaser.Math.Distance.Between(this.x, this.y, u.x, u.y);
       const ua = Math.atan2(u.y - this.y, u.x - this.x);
       if (d < bestD && Math.abs(Phaser.Math.Angle.Wrap(ua - ang)) < cone) {
@@ -295,11 +304,22 @@ export class Player extends Actor {
     return best === null ? a : { x: Math.cos(best), y: Math.sin(best) };
   }
 
+  // Adds a picked-up weapon and switches to it. Never the same weapon twice.
+  addWeapon(id) {
+    if (this.weapons.some((w) => w.id === id)) return false;
+    this.weapons.push({ id, def: WEAPONS[id] });
+    this.cur = this.weapons.length - 1;
+    this.equip(id);
+    this.cooldown = 0.2;
+    return true;
+  }
+
   shoot() {
     const w = this.current;
+    if (!w) return;
     const m = this.muzzlePoint();
     fireWeapon(this.scene, this, w.def, m.x, m.y, this.aim, 1);
-    this.cooldown = w.def.rate;
+    this.cooldown = w.def.playerRate ?? w.def.rate;
     if (w.def.splash) this.body.velocity.x -= this.aim.x * 40; // recoil
   }
 
@@ -319,9 +339,9 @@ export class Player extends Actor {
     this.alive = true;
     this.health = this.stats.health;
     this.shields = this.stats.shields;
-    this.invulnUntil = this.scene.time.now + 2000;
+    this.invulnUntil = Math.max(this.invulnUntil ?? 0, this.scene.time.now + 2000);
     this.setVelocity(0, 0);
     this.scene.fx.teleportIn(this, this.shieldColor);
-    this.equip(this.current.id);
+    this.equip(this.current?.id);
   }
 }

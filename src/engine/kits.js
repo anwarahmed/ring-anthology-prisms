@@ -37,7 +37,7 @@ function forerunner(p) {
         const vx = p.body.velocity.x;
         p.body.reset(p.x + (dx / len) * dist, p.y + (dy / len) * dist);
         p.body.velocity.x = vx;
-        p.invulnUntil = p.scene.time.now + 180;
+        p.invulnUntil = Math.max(p.invulnUntil ?? 0, p.scene.time.now + 180);
         p.scene.fx.ring(p.x, p.y, p.shieldColor, 0.6, 250);
         audio.sfx('dash');
         cd = 1.1;

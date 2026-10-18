@@ -47,4 +47,49 @@ export const TRACKS = {
       bell: { wave: 'triangle', vol: 0.05, level: 0, notes: 'A4:4 -:4 D5:4 -:4 C5:4 -:4 A4:8 F4:4 -:4 G4:4 -:4 E4:8 -:8' },
     },
   },
+  // 1b, 1d: Forerunner might. Original.
+  'forerunner-march': {
+    bpm: 112,
+    layers: {
+      bass: { wave: 'square', vol: 0.06, level: 0, notes: 'F2:2 F2:2 C3:2 F2:2 F2:2 F2:2 C3:2 F2:2 G2:2 G2:2 D3:2 G2:2 G2:2 G2:2 D3:2 G2:2 A2:2 A2:2 E3:2 A2:2 A2:2 A2:2 E3:2 A2:2 C3:2 C3:2 G3:2 C3:2 E2:2 E2:2 B2:2 E2:2' },
+      pad: { wave: 'triangle', vol: 0.09, level: 0, notes: 'F3+A3+C4:16 G3+B3+D4:16 A3+C4+E4:16 C3+E3+G3:8 E3+G3+B3:8' },
+      drums: { wave: 'noise', vol: 0.2, level: 1, notes: 'k:4 h:2 h:2 s:4 h:2 k:2 k:4 h:2 h:2 s:4 s:2 s:2' },
+      lead: { wave: 'triangle', vol: 0.11, level: 1, notes: 'C5:4 A4:2 C5:2 D5:6 C5:2 B4:4 G4:4 E5:4 D5:2 C5:2 A4:8 G4:4 E4:4 G4:4 A4:4 B4:8' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'F4:1 A4:1 C5:1 A4:1 F4:1 A4:1 C5:1 A4:1 F4:1 A4:1 C5:1 A4:1 F4:1 A4:1 C5:1 A4:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 A4:1 C5:1 E5:1 C5:1 A4:1 C5:1 E5:1 C5:1 A4:1 C5:1 E5:1 C5:1 A4:1 C5:1 E5:1 C5:1 C5:1 E5:1 G5:1 E5:1 C5:1 E5:1 G5:1 E5:1 C5:1 E5:1 G5:1 E5:1 C5:1 E5:1 G5:1 E5:1' },
+    },
+  },
+  // 1c: the Flood. Original.
+  'flood-dread': {
+    bpm: 84,
+    layers: {
+      drone: { wave: 'sawtooth', vol: 0.03, level: 0, notes: 'E2+B2:32 F2+C3:32' },
+      heart: { wave: 'noise', vol: 0.25, level: 0, notes: 'k:3 k:5 -:8' },
+      pad: { wave: 'sine', vol: 0.09, level: 0, notes: 'E4:8 -:8 F4:8 -:8 E4:8 D#4:8 E4:16' },
+      stabs: { wave: 'square', vol: 0.045, level: 1, notes: '-:12 A#3+E4:4 -:12 B3+F4:4 -:12 A#3+E4:4 -:8 B3:2 C4:2 C#4:2 D4:2' },
+      drums: { wave: 'noise', vol: 0.18, level: 1, notes: 'k:2 h:2 s:2 h:2 k:2 k:2 s:4' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'E5:1 B4:1 G4:1 B4:1 E5:1 B4:1 G4:1 B4:1 E5:1 B4:1 G4:1 B4:1 E5:1 B4:1 G4:1 B4:1 F5:1 C5:1 A4:1 C5:1 F5:1 C5:1 A4:1 C5:1 F5:1 C5:1 A4:1 C5:1 F5:1 C5:1 A4:1 C5:1' },
+    },
+  },
+  // 1e: the race against the ring. Original.
+  'janjur-escape': {
+    bpm: 144,
+    layers: {
+      bass: { wave: 'square', vol: 0.06, level: 0, notes: 'A2:1 A2:1 A3:1 A2:1 A2:1 A2:1 A3:1 A2:1 A2:1 A2:1 A3:1 A2:1 A2:1 A2:1 A3:1 A2:1 F2:1 F2:1 F3:1 F2:1 F2:1 F2:1 F3:1 F2:1 F2:1 F2:1 F3:1 F2:1 F2:1 F2:1 F3:1 F2:1 G2:1 G2:1 G3:1 G2:1 G2:1 G2:1 G3:1 G2:1 G2:1 G2:1 G3:1 G2:1 G2:1 G2:1 G3:1 G2:1 E2:1 E2:1 E3:1 E2:1 E2:1 E2:1 E3:1 E2:1 E2:1 E2:1 E3:1 E2:1 E2:1 E2:1 E3:1 E2:1' },
+      drums: { wave: 'noise', vol: 0.2, level: 0, notes: 'k:2 h:1 h:1 s:2 h:1 h:1 k:1 k:1 h:2 s:2 h:2' },
+      lead: { wave: 'square', vol: 0.05, level: 1, notes: 'A4:2 C5:2 E5:4 D5:2 C5:2 B4:4 C5:2 A4:2 F4:4 G4:4 A4:4 B4:2 D5:2 G5:4 F5:2 E5:2 D5:4 E5:4 B4:4 G#4:4 E4:4' },
+      pad: { wave: 'sawtooth', vol: 0.028, level: 1, notes: 'A3+C4+E4:16 F3+A3+C4:16 G3+B3+D4:16 E3+G#3+B3:16' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'A5:1 E5:1 C5:1 E5:1 A5:1 E5:1 C5:1 E5:1 A5:1 E5:1 C5:1 E5:1 A5:1 E5:1 C5:1 E5:1 F5:1 C5:1 A4:1 C5:1 F5:1 C5:1 A4:1 C5:1 F5:1 C5:1 A4:1 C5:1 F5:1 C5:1 A4:1 C5:1 G5:1 D5:1 B4:1 D5:1 G5:1 D5:1 B4:1 D5:1 G5:1 D5:1 B4:1 D5:1 G5:1 D5:1 B4:1 D5:1 G#5:1 E5:1 B4:1 E5:1 G#5:1 E5:1 B4:1 E5:1 G#5:1 E5:1 B4:1 E5:1 G#5:1 E5:1 B4:1 E5:1' },
+    },
+  },
+  // 1f: ancient Earth. Original.
+  'erde-tyrene': {
+    bpm: 100,
+    layers: {
+      bass: { wave: 'triangle', vol: 0.13, level: 0, notes: 'D2:4 A2:4 D3:4 A2:4 G2:4 D3:4 G3:4 D3:4 B1:4 F#2:4 B2:4 F#2:4 A1:4 E2:4 A2:4 E2:4' },
+      flute: { wave: 'triangle', vol: 0.08, level: 0, vibrato: 5, notes: 'F#5:4 E5:2 D5:2 E5:4 A4:4 B4:4 D5:2 E5:2 F#5:8 E5:4 D5:2 B4:2 A4:4 B4:4 D5:6 E5:2 D5:8' },
+      shaker: { wave: 'noise', vol: 0.12, level: 0, notes: 'k:4 h:2 h:2 s:4 h:2 h:2' },
+      pad: { wave: 'sine', vol: 0.07, level: 1, notes: 'D4+F#4+A4:16 G4+B4+D5:16 B3+D4+F#4:16 A3+C#4+E4:16' },
+      arp: { wave: 'square', vol: 0.022, level: 2, notes: 'D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 D5:1 F#5:1 A5:1 F#5:1 G5:1 B5:1 D5:1 B5:1 G5:1 B5:1 D5:1 B5:1 G5:1 B5:1 D5:1 B5:1 G5:1 B5:1 D5:1 B5:1 B4:1 D5:1 F#5:1 D5:1 B4:1 D5:1 F#5:1 D5:1 B4:1 D5:1 F#5:1 D5:1 B4:1 D5:1 F#5:1 D5:1 A4:1 C#5:1 E5:1 C#5:1 A4:1 C#5:1 E5:1 C#5:1 A4:1 C#5:1 E5:1 C#5:1 A4:1 C#5:1 E5:1 C#5:1' },
+    },
+  },
 };

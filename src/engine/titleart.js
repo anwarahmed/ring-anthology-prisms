@@ -71,7 +71,7 @@ export function spaceSky(scene) {
 
 // A ring megastructure seen at an angle: the far half shows its inner landscape, the
 // near half its metal hull. Two textures so things can sit between the halves.
-export function ringHalves(scene, R = 230, k = 0.2, band = 0.075) {
+export function ringHalves(scene, R = 230, k = 0.2, band = 0.075, name = 'title-ring') {
   const W = R * 2 + 8, H = Math.ceil(R * k * 2 + 30), cx = W / 2, cy = H / 2;
   const land = [hexRgb('#2a9a6a'), hexRgb('#3fc07a'), hexRgb('#2a6fc8'), hexRgb('#c8b070')];
   const hull = hexRgb('#8a9ab8'), hullDark = hexRgb('#3a4466'), edge = hexRgb('#e8f4ff');
@@ -103,8 +103,8 @@ export function ringHalves(scene, R = 230, k = 0.2, band = 0.075) {
     }
   };
   return {
-    back: canvasKey(scene, 'title-ring-back', W, H, paint(false)),
-    front: canvasKey(scene, 'title-ring-front', W, H, paint(true)),
+    back: canvasKey(scene, `${name}-back`, W, H, paint(false)),
+    front: canvasKey(scene, `${name}-front`, W, H, paint(true)),
   };
 }
 

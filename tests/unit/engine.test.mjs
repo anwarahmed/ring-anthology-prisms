@@ -73,12 +73,13 @@ test('every body builds all frames and aim angles', async () => {
   const { CHARACTERS } = await import('../../src/content/characters.js');
   const { UNITS } = await import('../../src/content/units.js');
   const { WEAPONS } = await import('../../src/content/weapons.js');
+  const { BODIES } = await import('../../src/content/bodies.js');
   for (const def of [...Object.values(CHARACTERS), ...Object.values(UNITS)]) {
     const frames = bodyFrames(def);
     assert.ok(frames.length >= 4);
     for (const f of frames) assert.ok(f.rgba.some((v, i) => i % 4 === 3 && v > 0));
-    const w = WEAPONS[def.weapon ?? def.weapons[0]];
-    if (w.gun) assert.equal(armFrames(def, w).length, 9);
+    const w = WEAPONS[def.weapon ?? def.weapons?.[0]];
+    if (BODIES[def.body].reach) assert.equal(armFrames(def, w).length, 9);
   }
   assert.deepEqual(aimFrame(1, 0), { i: 4, flip: false });
   assert.deepEqual(aimFrame(-1, 0), { i: 4, flip: true });

@@ -88,17 +88,17 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Sacrifice:** Humanity gives up its empire rather than unleash the Flood.
 - **Play:** A defense level in three stages: the outer defenses, the city, and Citadel Charum. Allied human soldiers hold each gate. The Forerunner fleet bombards the city in the sky behind.
 - **Enemies:** Forerunner warrior-servants, Sentinels **(staging)**. **Allies:** human soldiers. **Vehicles:** none. **Boss:** none. The level ends in surrender, as in canon.
-- **Status:** building
+- **Status:** done
 
 ### 1b · The Fall of Charum Hakkor
 - **Era:** Forerunner · **When/where:** the same battle · **Source:** Forerunner Saga; Halopedia: Battle of Charum Hakkor
 - **Players:** P1 the Didact · P2 a Forerunner warrior-servant
 - **Echo:** 1a (the same gates, from the attacking side)
-- **Story:** The Didact leads the assault through seven slipspace portals, sacrificing ships in waves to break the human orbital defenses. After the surrender, the human survivors hide their rank insignia, but the Didact finds Forthencho among the captives and meets him as a fellow warrior. The Composers turn the captives into stored data. The Forerunners are searching their minds for the "cure" to the Flood they believe humanity found. Humanity is then devolved and sent to Earth **(verify)**.
+- **Story:** The Didact leads the assault through seven slipspace portals, sacrificing ships in waves to break the human orbital defenses. After the surrender, the human survivors hide their rank insignia, but the Didact finds Forthencho among the captives and meets him as a fellow warrior. The Composers turn the captives into stored data. The Forerunners are searching their minds for the "cure" to the Flood they believe humanity found. Humanity is devolved and exiled to its homeworld, Earth (Erde-Tyrene), which the Librarian is given to watch over.
 - **Sacrifice:** The Forerunners sacrifice ships, and mercy, to end the war.
 - **Play:** The players attack through the gates they defended in 1a. Introduces the hard-light dash.
 - **Enemies:** ancient human soldiers. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 1c · First Contagion
 - **Era:** Forerunner · **When/where:** the same age · **Source:** Halopedia: Forerunner–Flood war
@@ -107,7 +107,7 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Sacrifice:** The Forerunners destroy their own infested fleets.
 - **Play:** Fight through an infested Forerunner fleet **(staging)**.
 - **Enemies:** Flood. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 1d · The Master Builder
 - **Era:** Forerunner · **When/where:** c. 98,445 BCE, the Greater Ark · **Source:** Forerunner Saga; Halopedia: Halo Array
@@ -117,26 +117,26 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Sacrifice:** The Forerunners accept a weapon that can end all life.
 - **Play:** Explore the Greater Ark while the rings are being built. A traversal level across giant ring scaffolds.
 - **Enemies:** Sentinels **(staging)**. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 1e · Janjur Qom
-- **Era:** Forerunner · **When/where:** the ancient past, Janjur Qom **(verify date)** · **Source:** Halopedia: Halo Array
+- **Era:** Forerunner · **When/where:** late in the Forerunner–Flood war, over 100,000 years ago, Janjur Qom · **Source:** Halopedia: Halo Array, Janjur Qom
 - **Players:** P1 and P2 San'Shyuum (generic)
 - **Echo:** 3a (Janjur Qom, when the Reformists leave)
-- **Story:** The San'Shyuum rebel against the Forerunners. Faber uses a Halo to crush the rebellion.
+- **Story:** The San'Shyuum rise up against the Forerunner defenses around their system. The uprising fails, and the Master Builder uses a Halo to sterilize the planet. The San'Shyuum survive only because the Librarian had already saved some of them, and they are returned to Janjur Qom after the war.
 - **Sacrifice:** The San'Shyuum lose their freedom.
-- **Play:** Escape across the planet before the Halo's pulse.
-- **Enemies:** Forerunner Sentinels. **Boss:** none (a race against the pulse).
-- **Status:** planned
+- **Play:** The uprising strikes the Forerunner defenses, then races across the planet as the Halo charges in the sky. The level ends as history records it: the ring fires (shown as a white flash, never as harm).
+- **Enemies:** Forerunner Sentinels, Sentinel Enforcers **(staging)**. **Boss:** none (a race against the ring).
+- **Status:** done
 
 ### 1f · The Cryptum
-- **Era:** Forerunner · **When/where:** Earth (Erde-Tyrene) **(verify date)** · **Source:** *Halo: Cryptum*
+- **Era:** Forerunner · **When/where:** about 100,000 years ago, the Djamonkin Crater on Earth (Erde-Tyrene) · **Source:** *Halo: Cryptum*; Halopedia: Halo: Cryptum
 - **Players:** P1 Bornstellar · P2 Chakas
 - **Echo:** 6b (the Didact's Cryptum on Requiem)
-- **Story:** Bornstellar, a young Forerunner, finds the Didact asleep in a Cryptum on Earth, where he went in his exile, and wakes him. Chakas and Riser, two ancient humans, travel with them.
-- **Play:** Exploration and platforming to reach the Cryptum.
-- **Enemies:** Sentinels **(verify)**. **Boss:** none.
-- **Status:** planned
+- **Story:** Bornstellar, a young Forerunner who refused to become a Builder, comes to Earth looking for Precursor relics. Two humans, Chakas and Riser, guide him. In the Djamonkin Crater they find a Cryptum guarded by ancient war sphinxes; the humans unknowingly carry the code that opens it. The Didact wakes. A Forerunner fleet arrives, and the Didact escapes in a ship grown from beneath the crater, taking them all with him.
+- **Play:** An exploration and platforming level across the crater, then a race to the Didact's ship as the fleet arrives. No fighting: a breather between battles.
+- **Enemies:** none (hazards only). **Boss:** none.
+- **Status:** done
 
 ## Part II · Installation 04
 

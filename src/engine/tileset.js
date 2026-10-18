@@ -1,5 +1,6 @@
 // Tileset layout and tile art. Pure (RGBA output), shared by the game and previews.
 //
+// Solid tile styles (theme.tiles.style): stone (default), metal, rock.
 // Index layout of every theme's tileset:
 //   0–15   solid, by exposed-side mask (1 top, 2 right, 4 bottom, 8 left), variant A
 //   16–31  the same, variant B          32–34  platform: left end, middle, right end
@@ -95,6 +96,8 @@ function hazard(put, t) {
 }
 
 function backwall(put, t, kind) {
+  if (t.style === 'metal') return backwallMetal(put, t, kind);
+  if (t.style === 'rock') return backwallRock(put, t, kind);
   const S = TILE;
   const base = hexRgb(t.back);
   const r = rng(301 + kind * 17);
@@ -120,13 +123,118 @@ function backwall(put, t, kind) {
   }
 }
 
+// Interior hull panels with seams; variant 2 is a light strip.
+function backwallMetal(put, t, kind) {
+  const S = TILE;
+  const base = hexRgb(t.back), glow = hexRgb(t.window ?? t.glow ?? '#45e6ff');
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      let c = lit(base, y < 2 ? 0.08 : y > 13 ? -0.12 : 0);
+      if (y === 0) c = lit(base, -0.3);
+      if (kind === 1 && x === 0) c = lit(base, -0.25);
+      if (kind === 1 && x === 1) c = lit(base, 0.06);
+      if ((x === 2 || x === 13) && (y === 3 || y === 12)) c = lit(base, 0.22);
+      put(x, y, c);
+    }
+  }
+  if (kind === 2) for (let x = 3; x < 13; x++) { put(x, 7, glow); put(x, 8, lit(glow, -0.35)); }
+}
+
+// Rough rock (cave and crater walls); variant 2 is a glowing crack.
+function backwallRock(put, t, kind) {
+  const S = TILE;
+  const base = hexRgb(t.back);
+  const r = rng(401 + kind * 29);
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      const n = r();
+      put(x, y, lit(base, (n - 0.5) * 0.14 + (n > 0.94 ? 0.12 : 0) - (n < 0.06 ? 0.2 : 0)));
+    }
+  }
+  if (kind === 2) {
+    const glow = hexRgb(t.window ?? '#ffd27a');
+    let x = 7;
+    for (let y = 2; y < 14; y++) { put(x, y, glow); x += r() < 0.5 ? -1 : 1; x = Math.max(4, Math.min(11, x)); }
+  }
+}
+
+// Forerunner and starship hulls: smooth beveled plates, seams, glowing inlay lines.
+function solidMetal(put, t, mask, variant) {
+  const S = TILE;
+  const base = hexRgb(t.solid), glow = hexRgb(t.glow ?? t.edge);
+  const deep = mask === 0 ? -0.15 : 0;
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      let c = lit(base, deep + (y < 8 ? 0.04 : -0.03));
+      if (x === 0 || y === 0) c = lit(base, 0.16 + deep);
+      if (x === S - 1 || y === S - 1) c = lit(base, -0.32 + deep);
+      if (variant === 1 && y === 8) c = lit(base, -0.22 + deep);
+      if (variant === 0 && x === 8 && y > 3 && y < 13) c = mix(c, glow, 0.55);
+      if ((x === 3 || x === 12) && (y === 3 || y === 12)) c = lit(base, 0.3);
+      put(x, y, c);
+    }
+  }
+  if (mask & 1) {
+    const top = hexRgb(t.top), edge = hexRgb(t.edge);
+    for (let x = 0; x < S; x++) {
+      put(x, 0, edge);
+      put(x, 1, lit(top, 0.2));
+      put(x, 2, top);
+      put(x, 3, glow.map((v) => Math.round(v * 0.85)));
+      put(x, 4, lit(base, -0.4));
+    }
+  }
+  if (mask & 4) for (let x = 0; x < S; x++) put(x, S - 1, lit(base, -0.6));
+  if (mask & 8) for (let y = 0; y < S; y++) put(0, y, lit(base, 0.3));
+  if (mask & 2) for (let y = 0; y < S; y++) put(S - 1, y, lit(base, -0.55));
+}
+
+// Natural ground: packed earth and rock, with a grassy or sandy top.
+function solidRock(put, t, mask, variant) {
+  const S = TILE;
+  const base = hexRgb(t.solid);
+  const r = rng(53 + mask * 11 + variant * 97);
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      const n = r();
+      let c = lit(base, (n - 0.5) * 0.16 + (mask === 0 ? -0.14 : 0));
+      if (n > 0.93) c = lit(base, 0.22);
+      if (n < 0.05) c = lit(base, -0.3);
+      put(x, y, c);
+    }
+  }
+  // A few embedded stones.
+  for (let k = 0; k < 2; k++) {
+    const cx = 2 + Math.floor(r() * 11), cy = 6 + Math.floor(r() * 8);
+    for (let y = -1; y <= 1; y++) for (let x = -2; x <= 2; x++) if (Math.abs(x) + Math.abs(y) < 3) put(cx + x, cy + y, lit(base, y < 0 ? 0.25 : y > 0 ? -0.25 : 0.08));
+  }
+  if (mask & 1) {
+    const top = hexRgb(t.top), edge = hexRgb(t.edge);
+    for (let x = 0; x < S; x++) {
+      const tuft = (x * 5 + variant * 3) % 7 === 0;
+      if (tuft) put(x, 0, edge);
+      put(x, 1, edge);
+      put(x, 2, lit(top, 0.15));
+      put(x, 3, top);
+      put(x, 4, lit(top, -0.25));
+      if ((x + variant) % 3 === 0) put(x, 5, lit(top, -0.4));
+    }
+  }
+  if (mask & 4) for (let x = 0; x < S; x++) put(x, S - 1, lit(base, -0.5));
+  if (mask & 8) for (let y = 2; y < S; y++) put(0, y, lit(base, 0.18));
+  if (mask & 2) for (let y = 2; y < S; y++) put(S - 1, y, lit(base, -0.4));
+}
+
+const SOLIDS = { stone: solid, metal: solidMetal, rock: solidRock };
+
 // The whole tileset as one RGBA strip (count × TILE wide).
 export function tilesetPixels(theme) {
   const t = theme.tiles;
   const W = TILESET.count * TILE;
   const out = new Uint8ClampedArray(W * TILE * 4);
   const at = (i) => (x, y, c) => { const p = (y * W + i * TILE + x) * 4; out[p] = c[0]; out[p + 1] = c[1]; out[p + 2] = c[2]; out[p + 3] = 255; };
-  for (let v = 0; v < 2; v++) for (let m = 0; m < 16; m++) solid(at(v * 16 + m), t, m, v);
+  const paint = SOLIDS[t.style ?? 'stone'];
+  for (let v = 0; v < 2; v++) for (let m = 0; m < 16; m++) paint(at(v * 16 + m), t, m, v);
   for (let p = 0; p < 3; p++) platform(at(32 + p), t, p);
   hazard(at(35), t);
   for (let k = 0; k < 3; k++) backwall(at(36 + k), t, k);

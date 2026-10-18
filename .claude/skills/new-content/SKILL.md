@@ -40,7 +40,8 @@ The catalogs are plain data in `src/content/`. Their field lists are in
   optionally `boss.summon`), and enough health for a fight of about 60–90 s on Normal.
 - **Weapon** (`weapons.js`): choose `tech` to match the faction (UNSC ballistic,
   Covenant plasma, Forerunner hard-light, Banished mostly ballistic and explosive). Use
-  descriptive names; canon weapon names only for canon weapons.
+  descriptive names; canon weapon names only for canon weapons. Enemy weapons drop
+  when their holder dies, so give a deliberately slow enemy weapon a `playerRate`.
 - **Body** (`bodies.js`): prefer a new `style` on an existing rig (e.g. a new helmet
   for `humanoid`). A new rig is a `build(frame, def)` returning shapes (`cap`, `ell`,
   `poly`, with materials and z order) plus a `shoulder` point. Walkers use `pose(f)`

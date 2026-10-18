@@ -2,7 +2,7 @@
 // shared white textures that projectiles and particles tint.
 
 import { BODIES } from '../content/bodies.js';
-import { bodyFrames, armFrames } from './sprites.js';
+import { bodyFrames, armFrames, gunFrame } from './sprites.js';
 import { tilesetPixels } from './tileset.js';
 
 function painter(ctx, ox, oy) {
@@ -55,6 +55,12 @@ export function bodyTexture(scene, id, def) {
 }
 
 // The arm-and-weapon overlay at every aim angle for one body + weapon pair.
+export function gunTexture(scene, weaponId, weapon) {
+  const key = `gun-${weaponId}`;
+  if (!scene.textures.exists(key)) rgbaSheet(scene, key, [gunFrame(weapon)]);
+  return key;
+}
+
 export function armTexture(scene, id, def, weaponId, weapon) {
   const key = `arm-${id}-${weaponId}`;
   if (scene.textures.exists(key)) return key;

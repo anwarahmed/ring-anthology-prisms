@@ -8,6 +8,7 @@ import { CHARACTERS } from '../src/content/characters.js';
 import { UNITS } from '../src/content/units.js';
 import { WEAPONS } from '../src/content/weapons.js';
 import { bodyFrames, armFrames } from '../src/engine/sprites.js';
+import { BODIES } from '../src/content/bodies.js';
 
 const SCALE = 4;
 const only = process.argv.slice(2);
@@ -16,7 +17,7 @@ const defs = [...Object.entries(CHARACTERS), ...Object.entries(UNITS)].filter(([
 const rows = defs.map(([id, def]) => {
   const frames = bodyFrames(def);
   const weapon = WEAPONS[def.weapon ?? def.weapons?.[0]];
-  const arms = weapon?.gun || def.body !== 'sentinel' ? armFrames(def, weapon) : null;
+  const arms = BODIES[def.body].reach ? armFrames(def, weapon) : null;
   return { id, frames, arms };
 });
 

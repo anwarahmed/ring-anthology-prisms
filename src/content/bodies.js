@@ -5,7 +5,8 @@
 //   shoulder: where the arm-and-weapon overlay attaches (frame pixels), or the
 //   muzzle for bodies without arms.
 // Walking rigs use FRAMES; hovering rigs loop 4 hover frames.
-// Palette keys used: armor, helmet, trim, visor, dark, cape, glow (see src/content/*.js).
+// Palette keys used: armor, helmet, trim, visor, dark, cape, glow, skin.
+// Humanoid styles: spartan, soldier, ancient-lord, primitive, sanshyuum. Forerunner: infected.
 // Sprites face right; the engine mirrors them.
 
 export const FRAMES = { idle: [0, 1, 2, 3], run: [4, 5, 6, 7, 8, 9, 10, 11], jump: [12], fall: [13], crouch: [14] };
@@ -86,6 +87,25 @@ function humanoid(f, def) {
   shapes.push(...legShapes(hip, p.front, L, true, 'armor').shapes);
   shapes.push({ t: 'cap', a: add(neck, [0, 2]), b: neck, r1: 2.6, r2: 2.4, m: 'dark', z: 4 });
 
+  if (st === 'primitive') {
+    // Unarmored ancient human (e.g. Chakas): bare head, hair, simple tunic.
+    shapes.push({ t: 'ell', c: headC, rx: L.head[0] * 0.9, ry: L.head[1] * 0.92, m: 'skin', z: 7 });
+    shapes.push({ t: 'ell', c: add(headC, [-1.2, -2]), rx: L.head[0] * 0.95, ry: L.head[1] * 0.6, m: 'dark', z: 7.2 });
+    shapes.push({ t: 'cap', a: add(headC, [2.6, -0.6]), b: add(headC, [3.4, -0.6]), r1: 0.6, r2: 0.6, m: 'dark', z: 7.4, noSep: true });
+    shapes.push({ t: 'poly', pts: [add(chestC, [-5, 3]), add(chestC, [5, 3]), [hip[0] + 6.5, hip[1] + 5], [hip[0] + 2, hip[1] + 7], [hip[0] - 3, hip[1] + 6], [hip[0] - 6.5, hip[1] + 5]], m: 'armor', z: 6.5, bevel: 2.2, tilt: [0.15, 0] });
+    return { shapes, shoulder: add(neck, [1.5, 3.2]), w: W, h: H };
+  }
+  if (st === 'sanshyuum') {
+    // San'Shyuum: long head and neck, flowing robe over the legs.
+    const hc = add(neck, [2.4, -6.5]);
+    shapes.push({ t: 'cap', a: neck, b: add(neck, [1.6, -3]), r1: 2.2, r2: 2, m: 'skin', z: 6.8 });
+    shapes.push({ t: 'ell', c: hc, rx: 4, ry: 6.2, rot: 0.45, m: 'skin', z: 7 });
+    shapes.push({ t: 'cap', a: add(hc, [1.8, -0.6]), b: add(hc, [3, -0.2]), r1: 0.7, r2: 0.6, m: 'dark', z: 7.4, noSep: true });
+    shapes.push({ t: 'poly', pts: [add(chestC, [-5, -5]), add(chestC, [5.5, -5]), [hip[0] + 7, hip[1] + 8], [hip[0] + 8.5, hip[1] + 13], [hip[0] - 1, hip[1] + 14], [hip[0] - 8, hip[1] + 13], [hip[0] - 6.5, hip[1] + 7]], m: 'cape', z: 6.5, bevel: 2.6, tilt: [0.2, 0] });
+    shapes.push({ t: 'cap', a: add(chestC, [1, -3]), b: [hip[0] + 1.5, hip[1] + 13], r1: 0.9, r2: 1.1, m: 'trim', z: 6.6, noSep: true });
+    shapes.push({ t: 'poly', pts: [add(chestC, [-4, -6.5]), add(chestC, [5, -6.5]), add(chestC, [4, -3.5]), add(chestC, [-3, -3.5])], m: 'trim', z: 6.7, bevel: 1 });
+    return { shapes, shoulder: add(neck, [1.5, 3.2]), w: W, h: H };
+  }
   const hel = 'helmet';
   shapes.push({ t: 'ell', c: headC, rx: L.head[0], ry: L.head[1], m: hel, z: 7 });
   if (st === 'spartan') {
@@ -129,6 +149,13 @@ function forerunner(f, def) {
   shapes.push({ t: 'poly', pts: [add(headC, [4.5, -1]), add(headC, [3.5, -4]), add(headC, [-3, -5]), add(headC, [-11, -7.5]), add(headC, [-5, -1.5]), add(headC, [-3, 3.5]), add(headC, [3.5, 3.2])], m: 'armor', z: 7, bevel: 1.8, tilt: [0.1, -0.2] });
   shapes.push({ t: 'cap', a: add(headC, [-1, -4.6]), b: add(headC, [-10, -7]), r1: 0.7, r2: 0.4, m: 'glow', z: 7.5, noSep: true });
   shapes.push({ t: 'cap', a: add(headC, [0.5, 0]), b: add(headC, [4.3, 0.2]), r1: 0.8, r2: 0.7, m: 'glow', z: 8, hot: true, noSep: true });
+  if (def.style === 'infected') {
+    // A Flood-taken warrior-servant: lumpy growths and a drooping tendril.
+    shapes.push({ t: 'ell', c: add(chestC, [-4, -5]), rx: 5, ry: 4.2, m: 'cape', z: 8 });
+    shapes.push({ t: 'ell', c: add(chestC, [2, 3]), rx: 3.4, ry: 3, m: 'cape', z: 8 });
+    shapes.push({ t: 'ell', c: add(headC, [-4, -2]), rx: 3.6, ry: 3, m: 'cape', z: 8 });
+    shapes.push({ t: 'cap', a: add(chestC, [3, 5]), b: add(chestC, [7, 13 + (f % 4)]), r1: 1.5, r2: 0.6, m: 'cape', z: 8 });
+  }
   const shoulder = add(neck, [1.5, 3.5]);
   return { shapes, shoulder, w: W, h: H };
 }
@@ -153,10 +180,28 @@ function sentinel(f) {
   return { shapes, shoulder: add(c, [11, 0.5]), w: W, h: H };
 }
 
+// Flood infection form: a bouncing sac on wriggling tendrils (goofy, not scary).
+function infection(f) {
+  const W = 22, H = 18;
+  const squash = [0, 0.6, 1, 0.6][f];
+  const c = [11, 9 + squash];
+  const shapes = [
+    { t: 'ell', c, rx: 6.2 + squash * 0.6, ry: 5.2 - squash * 0.6, m: 'armor', z: 2 },
+    { t: 'ell', c: add(c, [-1.6, -1.8]), rx: 2.2, ry: 1.6, m: 'trim', z: 3, noSep: true },
+  ];
+  for (let i = 0; i < 4; i++) {
+    const bx = c[0] - 4 + i * 2.6;
+    const wig = Math.sin((f + i) * 1.6) * 1.8;
+    shapes.push({ t: 'cap', a: [bx, c[1] + 3], b: [bx + wig, H - 2], r1: 1.1, r2: 0.5, m: 'dark', z: 1 });
+  }
+  return { shapes, shoulder: c, w: W, h: H };
+}
+
 export const BODIES = {
   humanoid: { w: 40, h: 52, frames: 15, anims: FRAMES, hit: [13, 40], build: humanoid, reach: 8.5, arm: [2.9, 2.5] },
   forerunner: { w: 44, h: 62, frames: 15, anims: FRAMES, hit: [14, 48], build: forerunner, reach: 10.5, arm: [3, 2.7] },
   sentinel: { w: 36, h: 28, frames: 4, anims: HOVER, hit: [22, 14], build: sentinel, flying: true },
+  infection: { w: 22, h: 18, frames: 4, anims: HOVER, hit: [12, 12], build: infection },
 };
 
 // The front arm, support hand and weapon at aim angle `a` (radians, -π/2 up … π/2 down),

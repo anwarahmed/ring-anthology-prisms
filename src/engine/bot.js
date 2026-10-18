@@ -26,8 +26,10 @@ export function makeBot(scene, player) {
     stuck = Math.abs(player.x - lastX) < 0.5 ? stuck + 1 : 0;
     lastX = player.x;
     const t = scene.layer.getTileAtWorldXY(player.x + Math.sign(s.x || 1) * 12, player.y);
-    if ((t && isSolid(t.index)) || stuck > 20 || Math.random() < 0.01) jumpHeld = 18;
-    if (jumpHeld > 0) { s.jump = true; jumpHeld--; }
+    // Jump in bursts: hold up to 18 frames, then release for 6 so the next press counts.
+    if (jumpHeld <= -6 && ((t && isSolid(t.index)) || stuck > 20 || Math.random() < 0.01)) jumpHeld = 18;
+    if (jumpHeld > 0) s.jump = true;
+    jumpHeld--;
     s.ability = Math.random() < 0.01;
     return s;
   };

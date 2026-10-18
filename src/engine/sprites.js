@@ -24,6 +24,7 @@ export function materialsFor(def, gun) {
     visor: material(p.visor ?? p.glow ?? '#7fd8ff', { spec: true, contrast: 1.3 }),
     cape: material(p.cape ?? p.dark, { contrast: 0.9 }),
     glow: material(p.glow ?? p.visor ?? '#7fd8ff', { emissive: true }),
+    skin: material(p.skin ?? '#b07a50', { contrast: 0.9 }),
   };
   m.armorFar = material(darker(p.armor), { contrast: 1 });
   m.darkFar = material(darker(p.dark), { contrast: 0.8 });
@@ -67,4 +68,19 @@ export function aimFrame(x, y) {
   const a = Math.atan2(y, Math.abs(x));
   const i = Math.round(((a + Math.PI / 2) / Math.PI) * (AIM_STEPS - 1));
   return { i: Math.max(0, Math.min(AIM_STEPS - 1, i)), flip };
+}
+
+// A weapon on its own (for drops on the ground), centered in its frame.
+export function gunFrame(weapon) {
+  const g = gunShapes(weapon.gun.kind, weapon.gun.len);
+  const w = Math.ceil(weapon.gun.len + 22), h = 18;
+  const ox = 10, oy = h / 2;
+  const shapes = g.shapes.map((s) => {
+    const m = ([x, y]) => [x + ox, y + oy];
+    if (s.t === 'cap') return { ...s, a: m(s.a), b: m(s.b) };
+    if (s.t === 'ell') return { ...s, c: m(s.c) };
+    return { ...s, pts: s.pts.map(m) };
+  });
+  const mats = materialsFor({ pal: { armor: '#888888', dark: '#333333', trim: '#aaaaaa' } }, weapon.gun);
+  return { rgba: render(shapes, w, h, mats), w, h };
 }

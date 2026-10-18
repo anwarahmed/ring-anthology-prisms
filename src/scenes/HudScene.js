@@ -27,17 +27,12 @@ export class HudScene extends Phaser.Scene {
         p,
         right,
         name: txt(this, x, 6, `P${i + 1} ${(p.def.short ?? p.def.name).toUpperCase()}`, { size: 8, color: era.css }).setOrigin(right ? 1 : 0, 0),
-        weapon: txt(this, x, 30, p.current.def.name.toUpperCase(), { size: 8 }).setOrigin(right ? 1 : 0, 0),
+        weapon: txt(this, x, 30, (p.current?.def.name ?? '').toUpperCase(), { size: 8 }).setOrigin(right ? 1 : 0, 0),
         kit: txt(this, x, 41, '', { size: 8, color: '#bbbbbb' }).setOrigin(right ? 1 : 0, 0),
       };
     });
-    // Framed panels behind each player's readout, sized to fit its text.
-    for (const pn of this.panels) {
-      const w = Math.max(100, pn.name.width + 8, pn.weapon.width + 8);
-      const x = pn.right ? VIEW.w - 4 - w : 4;
-      frame.fillStyle(0x070520, 0.62).fillRoundedRect(x, 3, w, 56, 3);
-      frame.lineStyle(1, era.color, 0.8).strokeRoundedRect(x + 0.5, 3.5, w - 1, 55, 3);
-    }
+    this.frame = frame;
+    this.drawFrames();
     this.objectiveText = txt(this, VIEW.w / 2, 62, '', { size: 8, align: 'center' }).setOrigin(0.5, 0).setAlpha(0);
     this.subtitle = txt(this, VIEW.w / 2, VIEW.h - 14, '', { font: 'read', size: 16, align: 'center', wrap: VIEW.w - 60 }).setOrigin(0.5, 1).setAlpha(0);
     this.timerText = txt(this, VIEW.w / 2, 74, '', { size: 8, color: '#ffd27a' }).setOrigin(0.5, 0);
@@ -52,6 +47,7 @@ export class HudScene extends Phaser.Scene {
   update() {
     const g = this.g;
     g.clear();
+    this.drawFrames();
     for (const pn of this.panels) {
       const p = pn.p;
       const w = 90;
@@ -61,7 +57,7 @@ export class HudScene extends Phaser.Scene {
       bar(g, x, 17, w, 5, sf, flash ? 0xff3030 : this.color);
       bar(g, x, 24, w, 3, p.health / p.stats.health, p.health / p.stats.health < 0.35 ? 0xff5050 : 0x7fe07f);
       const wpn = p.current;
-      pn.weapon.setText(wpn.def.name.toUpperCase());
+      pn.weapon.setText(wpn ? `${wpn.def.name.toUpperCase()}${p.weapons.length > 1 ? ` ${p.cur + 1}/${p.weapons.length}` : ''}` : '');
       const k = p.kit.hud();
       pn.kit.setText(k.label.toUpperCase());
       pn.kit.setColor(k.ready >= 1 || k.active ? '#ffffff' : '#777777');
@@ -83,6 +79,22 @@ export class HudScene extends Phaser.Scene {
         bar(g, VIEW.w / 2 - 100, VIEW.h - 20, 200, 5, b.health / b.stats.health, 0xff4040);
       }
     }
+  }
+
+  // Framed panels behind each player's readout, sized to fit their text. Redrawn
+  // whenever the text changes width (e.g. after picking up a weapon).
+  drawFrames() {
+    const widths = this.panels.map((pn) => Math.ceil(Math.max(100, pn.name.width + 8, pn.weapon.width + 10, pn.kit.width + 10)));
+    if (this.frameWidths && widths.every((w, i) => w === this.frameWidths[i])) return;
+    this.frameWidths = widths;
+    const f = this.frame;
+    f.clear();
+    this.panels.forEach((pn, i) => {
+      const w = widths[i];
+      const x = pn.right ? VIEW.w - 4 - w : 4;
+      f.fillStyle(0x070520, 0.62).fillRoundedRect(x, 3, w, 56, 3);
+      f.lineStyle(1, this.color, 0.8).strokeRoundedRect(x + 0.5, 3.5, w - 1, 55, 3);
+    });
   }
 
   objective(text) {

@@ -7,6 +7,7 @@ import { VIEW } from './config.js';
 import { audio } from './audio.js';
 import { hexNum } from './textures.js';
 import { render, material, hexRgb } from './raster.js';
+import { ringHalves } from './titleart.js';
 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16);
 let uid = 0;
@@ -88,13 +89,16 @@ export function buildBackdrop(scene, theme, worldW) {
         break;
       }
       case 'halo': {
-        const c = scene.add.container(L.x * VIEW.w, L.y * VIEW.h).setScrollFactor(0.02).setDepth(depth);
-        const g = scene.add.graphics();
-        g.lineStyle(10, hexNum(L.color), 0.15).strokeEllipse(0, 0, L.rx * 2 + 6, L.ry * 2 + 6);
-        g.lineStyle(5, hexNum(L.color), 0.9).strokeEllipse(0, 0, L.rx * 2, L.ry * 2);
-        g.lineStyle(1, 0xffffff, 0.6).strokeEllipse(0, 0, L.rx * 2 - 3, L.ry * 2 - 3);
-        c.add(g);
-        c.rotation = L.tilt ?? 0;
+        // A painted ring (landscape inside, hull outside). Only where canon puts one.
+        const ring = ringHalves(scene, L.r, L.k ?? 0.22, L.band ?? 0.08, `ring-${L.r}-${L.k ?? 0.22}`);
+        for (const key of [ring.back, ring.front]) {
+          scene.add.image(L.x * VIEW.w, L.y * VIEW.h, key).setScrollFactor(L.scroll ?? 0.02).setDepth(depth).setRotation(L.rot ?? 0);
+        }
+        if (L.glow) {
+          const g = scene.add.image(L.x * VIEW.w, L.y * VIEW.h, 'glow').setTint(hexNum(L.glow)).setBlendMode('ADD')
+            .setScale((L.r * 2.4) / 32, (L.r * 0.9) / 32).setAlpha(0.25).setScrollFactor(L.scroll ?? 0.02).setDepth(depth).setRotation(L.rot ?? 0);
+          scene.halos = [...(scene.halos ?? []), g];
+        }
         break;
       }
       case 'ships': {
@@ -199,6 +203,23 @@ export function buildBackdrop(scene, theme, worldW) {
         };
         scene.events.on('update', drift);
         scene.events.once('shutdown', () => scene.events.off('update', drift));
+        break;
+      }
+      case 'hills': {
+        // Rolling hills with a lit rim, from layered sine noise.
+        const H = VIEW.h, base = hexRgb(L.color), rim = hexRgb(L.rim);
+        const seed = rnd.frac() * 100;
+        const key = canvasTex(scene, width, H, (d, w) => {
+          for (let x = 0; x < w; x++) {
+            const hgt = H * L.height * (0.55 + 0.25 * Math.sin(x / 47 + seed) + 0.15 * Math.sin(x / 19 + seed * 2) + 0.05 * Math.sin(x / 7));
+            const top = Math.round(H - hgt);
+            for (let y = Math.max(0, top); y < H; y++) {
+              const c = y - top < 2 ? rim : y - top < 4 && BAYER[(y & 3) * 4 + (x & 3)] < 0.5 ? rim : base;
+              d.set([...c, 255], (y * w + x) * 4);
+            }
+          }
+        });
+        scene.add.image(0, 0, key).setOrigin(0).setScrollFactor(L.scroll, 0).setDepth(depth);
         break;
       }
       case 'haze': {

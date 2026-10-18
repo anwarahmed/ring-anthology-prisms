@@ -19,6 +19,7 @@ await server.listen();
 const executablePath = process.env.CHROMIUM_PATH ?? (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);
 const browser = await chromium.launch({ executablePath, args: ['--use-gl=angle', '--use-angle=swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 960, height: 540 } });
+await page.addInitScript(() => { navigator.getGamepads = () => []; });
 page.on('pageerror', (e) => console.log('PAGE ERROR', e.message));
 page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log(m.type().toUpperCase(), m.text()); });
 await page.goto(`${server.resolvedUrls.local[0]}?level=${level}&bot=1&god=1${p2}&difficulty=${opt('difficulty', 'normal')}`);
@@ -31,7 +32,7 @@ for (let t = 0; t < seconds; t += every) {
     if (!L?.players) return 'no level';
     const fired = L.runner?.triggers.filter((x) => x.fired).map((x) => x.on).join('') ?? '';
     return `t=${Math.round(L.time.now / 1000)}s arena=${L.arena ? `${L.arena.x0}-${L.arena.x1}` : '-'} fired=${fired} ` +
-      `players=${L.players.map((p) => `(${Math.round(p.x)},${Math.round(p.y)} ${p.alive ? 'up' : 'down'} vy${Math.round(p.body.velocity.y)})`).join(' ')} ` +
+      `players=${L.players.map((p) => `(${Math.round(p.x)},${Math.round(p.y)} ${p.alive ? 'up' : 'down'} vy${Math.round(p.body?.velocity.y ?? 0)})`).join(' ')} ` +
       `enemies=${L.units.filter((u) => u.alive && u.team === 'enemies').length} allies=${L.units.filter((u) => u.alive && u.team === 'players').length}`;
   });
   console.log(s);

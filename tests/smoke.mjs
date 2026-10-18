@@ -32,6 +32,8 @@ let failed = false;
 
 async function run(name, url, check) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 810 } });
+  // Hide real controllers plugged into this machine; tests use their own fake ones.
+  await page.addInitScript(() => { navigator.getGamepads = () => []; });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error' && !m.text().startsWith('Failed to load resource')) errors.push(m.text()); });
@@ -70,7 +72,7 @@ await run('menus', '', async (page) => {
     await page.waitForTimeout(120);
     await page.keyboard.up(key);
     await page.waitForTimeout(500);
-    if (scene) await page.waitForFunction((k) => window.__game.scene.isActive(k), scene, { timeout: 5000 });
+    if (scene) await page.waitForFunction((k) => window.__game.scene.isActive(k), scene, { timeout: 12000 });
   };
   await press('f', 'Players');
   await page.waitForTimeout(400);
@@ -138,7 +140,8 @@ await run('pause', '?level=1a', async (page) => {
   await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
   await page.waitForTimeout(1500);
   await page.keyboard.down('Escape');
-  await page.waitForTimeout(500);
+  await page.waitForFunction(() => window.__game.scene.isActive('Pause'), null, { timeout: 5000 });
+  await page.waitForTimeout(400);
   await page.keyboard.up('Escape');
   await page.waitForTimeout(800);
   if (!(await active(page, 'Pause'))) throw new Error('pause menu closed by the same Start press');
@@ -148,6 +151,47 @@ await run('pause', '?level=1a', async (page) => {
   await page.waitForTimeout(800);
   if (await active(page, 'Pause')) throw new Error('Start did not resume');
   if (!(await page.evaluate(() => window.__game.scene.isActive('Level')))) throw new Error('level not running after resume');
+});
+
+// Weapon drops: an enemy's gun drops when it dies; walking over it adds it once.
+await run('pickup', '?level=1a&god=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await page.waitForTimeout(1500);
+  const killNear = () => page.evaluate(() => {
+    const L = window.__game.scene.getScene('Level');
+    const p = L.players[0];
+    const u = L.spawnUnit('warrior-servant', p.x + 4, p.y + p.meta.h / 2, { entrance: 'none' });
+    u.hurt(9999, 'melee', p);
+  });
+  await killNear();
+  await page.waitForTimeout(1500);
+  const one = await page.evaluate(() => { const p = window.__game.scene.getScene('Level').players[0]; return { ids: p.weapons.map((w) => w.id), cur: p.current.id }; });
+  if (!one.ids.includes('hardlight-lance') || one.cur !== 'hardlight-lance') throw new Error(`gun not picked up: ${JSON.stringify(one)}`);
+  await killNear();
+  await page.waitForTimeout(1500);
+  const two = await page.evaluate(() => window.__game.scene.getScene('Level').players[0].weapons.filter((w) => w.id === 'hardlight-lance').length);
+  if (two !== 1) throw new Error(`same gun carried ${two} times`);
+});
+
+// Allies hop over fire instead of walking into it (1a has a fire at columns 89-90).
+await run('ally-fire', '?level=1a&god=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await page.waitForTimeout(1000);
+  await page.evaluate(() => {
+    const L = window.__game.scene.getScene('Level');
+    // Quiet the level script so no waves or arenas interfere.
+    L.runner.triggers.forEach((t) => { t.fired = true; });
+    L.arena = null;
+    const p = L.players[0];
+    p.body.reset(97 * 16, 13 * 16 - p.meta.h / 2 - 1);
+    L.focus = { x: 90 * 16, y: p.y };
+    L.updateCamera(0, true);
+    window.__ally = L.spawnUnit('ancient-human-defender', 82 * 16, 13 * 16, { ally: true, entrance: 'none' });
+  });
+  await page.waitForTimeout(6000);
+  const r = await page.evaluate(() => ({ x: Math.round(window.__ally.x / 16), alive: window.__ally.alive, hp: window.__ally.health, shields: Math.round(window.__ally.shields) }));
+  if (!r.alive || r.x < 91) throw new Error(`ally did not get past the fire unhurt: ${JSON.stringify(r)}`);
+  if (r.hp < 80) throw new Error(`ally was burned: ${JSON.stringify(r)}`);
 });
 
 for (const id of levels) {

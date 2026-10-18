@@ -79,7 +79,7 @@ Blocking actions finish before the next action starts.
 | `{ checkpoint: true }` | no | Respawn point if everyone goes down |
 | `{ fx: 'shake' \| 'flash' \| 'slowmo' }` | no | Screen effect |
 | `{ spawn: [group, ...] }` | no | Spawns enemies |
-| `{ allies: [group, ...] }` | no | Spawns allies |
+| `{ allies: [group, ...] }` | no | Spawns allies (a group with `neutral: true` spawns bystanders nobody targets) |
 | `{ wave: [group, ...] }` | yes | Spawns, then waits until all are defeated |
 | `{ hold: { seconds, every, label, groups: [[group...], ...] } }` | yes | Defense: spawns the groups in turn every `every` seconds until time runs out, then waits for the rest to be defeated |
 | `{ boss: { unit, from, title, subtitle } }` | yes | Letterboxed title card, boss bar; waits until the boss is defeated |
@@ -111,6 +111,8 @@ screen.
 | `audio` | `sfx(name)`, `setIntensity(n)`, `playMusic(id, n)` |
 | `marker(k)` | `{ x, y }` in tiles |
 | `spawn(groups, ally)` | Same as the spawn action; resolves to the units |
+| `explode(x, y, radius, damage)` | An explosion that hurts enemies only (orbital strikes, falling debris) |
+| `scene.spawnUnit(id, x, feetY, { team: 'neutral' })` | One unit; `neutral` units (story characters) are never targeted |
 | `tile`, `view` | Tile size, screen size |
 
 Use hooks for set pieces only. Anything two levels need belongs in the engine.
@@ -123,14 +125,14 @@ Add new entries through the `new-content` skill.
 |---|---|
 | `characters.js` | Playable characters: name (and `short` for the HUD), body, palette, shields, health, speed, jump, weapons, grenade, `kit` override, `extra` |
 | `units.js` | AI units: body, palette, health, shields, speed, `ai`, weapon, range, entrance, puff color, `boss` |
-| `weapons.js` | Weapons (tech, rate, damage, speed, spread, pellets, projectile, splash, gun) and grenades. Ammo and grenades are unlimited: no magazines or reloading, with a 0.8 s grenade cooldown |
-| `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`), `forerunner` (44×62), `sentinel` (36×28, hovering); `armShapes` draws the arm and weapon |
+| `weapons.js` | Weapons (tech, rate, `playerRate`, damage, speed, spread, pellets, projectile, splash, gun) and grenades. Ammo and grenades are unlimited: no magazines or reloading, with a 0.8 s grenade cooldown |
+| `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`, `primitive`, `sanshyuum`), `forerunner` (44×62, style `infected`), `sentinel` (36×28, hovering), `infection` (Flood hopper); `armShapes` draws the arm and weapon. Characters with `weapons: []` are drawn unarmed |
 | `guns.js` | Held-weapon shapes by `kind`: `rifle`, `cannon`, `lance`, `scatter` |
 | `themes.js` | Tile colors (`solid`, `top`, `edge`, `platform`, `hazard`, `back`, `window`) and parallax layers (`gradient`, `stars`, `planet`, `halo`, `ships`, `spires`, `smoke`, `haze`, `embers`) |
 | `music.js` | Chiptune tracks with calm, combat and boss layers |
 
 **AI behaviors:** `shooter` (keeps distance, strafes, bursts), `charger` (rushes,
-melee), `flyer` (hovers above), `walker` (patrols), `turret`, and `boss` (cycles
+melee), `swarm` (hops at targets, pops on contact), `idle` (story characters), `flyer` (hovers above), `walker` (patrols), `turret`, and `boss` (cycles
 `boss.attacks`: `barrage`, `charge`, `summon`, `leap`).
 
 **Tech vs shields:** plasma strips shields, ballistic hurts health, hard-light is
@@ -158,6 +160,15 @@ Everything is drawn in code, in a 16-bit style:
 
 Positions in the engine are feet points: map rows, markers and spawns place a unit's
 feet on the ground, and the sprite is centered above them.
+
+## Weapon drops
+
+An enemy that dies holding a gun (a weapon with `gun` art) drops it
+(`src/engine/pickups.js`). The gun glows on the ground for 12 s, blinking in its last
+3 s. A player who walks over it and doesn't carry that weapon picks it up and switches
+to it. A player can carry any number of weapons, never two of the same; SWAP cycles
+through them, and the HUD shows `2/3`. Give slow enemy weapons a `playerRate`, so a
+picked-up gun fires at a fair player rate.
 
 ## Era kits
 
