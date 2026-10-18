@@ -327,6 +327,9 @@ export class LevelScene extends Phaser.Scene {
     else if (from === 'sky') x = v.x + 60 + Math.random() * (v.width - 120);
     else x = v.right + 14 + i * 16;
     x = Phaser.Math.Clamp(x, 8, this.worldW - 8);
+    // In a locked arena, edge spawns come in just inside its walls: outside them they
+    // could never reach the players, and the wave could never be cleared.
+    if (this.arena) x = Phaser.Math.Clamp(x, this.arena.x0 + 12 + i * 4, this.arena.x1 - 12 - i * 4);
     // Start below any ceiling at the top of the view (indoor levels), so nothing
     // spawns on the roof or inside it.
     const col = Math.floor(x / TILE);

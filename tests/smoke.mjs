@@ -459,6 +459,22 @@ await run('timeline-next', '?all=1', async (page) => {
   if (sel !== '2a') throw new Error(`expected 2a selected after 1f, got ${sel}`);
 });
 
+// In a locked arena, 'left' and 'right' spawns land inside its walls (outside them
+// enemies never reached the players and a wave could never be cleared).
+await run('arena-spawns', '?level=1a&god=1', async (page) => {
+  await levelReady(page);
+  const out = await page.evaluate(async () => {
+    const L = window.__game.scene.getScene('Level'), T = 16, b = L.map.markers.B, c = L.map.markers.C;
+    L.runner.triggers.forEach((t) => { t.fired = true; });
+    for (const p of L.players) p.body.reset((b.x + 4) * T, (b.y + 1) * T - p.body.height / 2 - 1);
+    L.lockArena(b.x, c.x);
+    await window.__gameWait(300);
+    const units = await L.spawnGroup([{ unit: 'warrior-servant', n: 3, from: 'left', gap: 0.05 }, { unit: 'warrior-servant', n: 3, from: 'right', gap: 0.05 }]);
+    return { x0: L.arena.x0, x1: L.arena.x1, xs: units.map((u) => Math.round(u.x)) };
+  });
+  if (out.xs.some((x) => x < out.x0 || x > out.x1)) throw new Error(`units spawned outside the arena: ${JSON.stringify(out)}`);
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {
