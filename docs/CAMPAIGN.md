@@ -485,15 +485,16 @@ High Charity is built (851–791 BCE).
 - **Era:** Forerunner · **When/where:** c. 97,495 BCE, Installation 07 · **Source:** Forerunner Saga; Halopedia: Forerunner–Flood war
 - **Players:** P1 the IsoDidact · P2 a Forerunner warrior-servant
 - **Echo:** 7c–7g (Zeta Halo, 2560)
-- **Story:** The AI Mendicant Bias test-fires Installation 07 near Charum Hakkor and releases the Primordial, which is really a Gravemind. The Primordial turns Mendicant Bias against the Forerunners. The IsoDidact retakes the ring and captures Mendicant Bias.
-- **Enemies:** Sentinels under Mendicant Bias **(verify)**. **Boss:** none.
+- **Story:** The AI Mendicant Bias test-fires Installation 07 (the ring later known as Zeta Halo) in the Charum Hakkor system, and the shot releases the Primordial, an ancient Gravemind left by the Precursors. Set to question it, Bias is turned against the Forerunners. About 43 years later Bias attacks the Forerunner Capital; the IsoDidact stuns it with a control code, and it is shut down with a failsafe code (Archive cards).
+- **Enemies:** the Forerunner machines Bias turns against them (staging: Sentinels). **Boss:** none.
+- **Sources:** Halopedia: Installation 07, Mendicant Bias, Primordial
 - **Status:** planned
 
 ### 7b · The Primordial
-- **Era:** Forerunner · **When/where:** Installation 07 **(verify)** · **Source:** *Halo: Primordium*
+- **Era:** Forerunner · **When/where:** Installation 07 (Zeta Halo) · **Source:** *Halo: Primordium*; Halopedia: Halo: Primordium, Primordial
 - **Players:** P1 Chakas · P2 Riser
-- **Story:** Chakas and Riser on Installation 07. The Primordial's secret about the Flood's origins.
-- **Enemies:** Sentinels **(verify)**. **Boss:** none.
+- **Story:** Chakas, stranded on Installation 07, searches for his companion Riser. The Primordial controls the ring and draws its human captives toward the Flood research facilities. Its secret: the Precursors, defeated by the Forerunners, had turned themselves into particles meant to re-form one day, and that dust became the Flood. The Primordial's body is destroyed, but its mind lives on in the Gravemind.
+- **Enemies:** the Flood, and Mendicant Bias's machines (Sentinels). **Boss:** none.
 - **Status:** planned
 
 **Archive scenes:**
@@ -504,25 +505,27 @@ High Charity is built (851–791 BCE).
 - **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite*
 - **Players:** P1 Master Chief · P2 a Spartan-IV
 - **Story:** The Pilot finds the Chief, who storms the Banished warship.
-- **Enemies:** Banished. **Boss:** **(verify)**.
+- **Enemies:** Banished. **Boss:** none (a fight through the ship).
 - **Status:** planned
 
 ### 7d · The Conservatory
-- **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite*
+- **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite* (mission 7)
 - **Players:** P1 Master Chief · P2 a Spartan-IV
-- **Enemies:** Banished. **Boss:** **(verify)**.
+- **Story:** The Chief reaches the Conservatory, a Forerunner installation on Zeta Halo; the Harbinger is close behind.
+- **Enemies:** Banished. **Boss:** none.
 - **Status:** planned
 
 ### 7e · Spire
-- **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite*
+- **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite* (mission 8)
 - **Players:** P1 Master Chief · P2 a Spartan-IV
-- **Enemies:** Banished. **Boss:** **(verify)**.
+- **Story:** The Chief takes a Banished-held spire. (The Spartan Killers Hyperius and Tovarus are fought in the next mission, Pelican Down: an Archive card.)
+- **Enemies:** Banished. **Boss:** none.
 - **Status:** planned
 
 ### 7f · House of Reckoning
 - **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite*
 - **Players:** P1 Master Chief · P2 a Spartan-IV
-- **Story:** Escharum's last fight (told with dignity).
+- **Story:** Escharum's last fight (told with dignity). The Chief first fights the Blademaster Jega 'Rdomnai.
 - **Sacrifice:** Escharum gives his life for the Banished's legend.
 - **Enemies:** Banished. **Boss:** Escharum.
 - **Status:** planned
