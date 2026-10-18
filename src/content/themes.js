@@ -516,6 +516,66 @@ export const THEMES = {
       { type: 'ruins', color: '#5a5a4a', light: '#d8d0b0', shadow: '#2a2a20', glow: '#8ad8ff', scroll: 0.22, height: 0.4 },
     ],
   },
+  // Part V
+  ark: {
+    tiles: { style: 'rock', solid: '#6a5a44', top: '#b89a5a', edge: '#ffe0a0', platform: '#8a8070', hazard: '#ff7a2a', back: '#4a4034', window: '#7ad8ff', moss: '#8a9a4a' },
+    atmosphere: { color: '#e8c8a0', amount: 0.5 },
+    grade: { saturate: 0.1, contrast: 0.12 },
+    props: [{ kind: 'grass', chance: 0.18, color: '#a89a4a' }, { kind: 'rocks', chance: 0.07, color: '#8a7a5a' }, { kind: 'crystal', chance: 0.03, color: '#8a9098', glow: '#7ad8ff' }],
+    foreground: { kind: 'pillars', color: '#14100a', rim: '#a88a5a', every: 820 },
+    backdrop: [
+      { type: 'gradient', top: '#3a5a9a', bottom: '#f8d8a8' },
+      // The foundry at the Ark's center, with a new ring under construction.
+      { type: 'halo', x: 0.6, y: 0.24, r: 150, k: 0.25, rot: -0.1, glow: '#ffffff' },
+      { type: 'clouds', color: '#f0d8c0', light: '#ffffff', shade: '#a88a7a', y: 0.1, height: 0.3, count: 5, scroll: 0.04 },
+      { type: 'mountains', color: '#8a6a4a', light: '#f0c890', shadow: '#4a3424', scroll: 0.07, height: 0.42 },
+      { type: 'temple', style: 'forerunner', color: '#6a6a6a', light: '#e0dcd0', shadow: '#2a2a2a', glow: '#7ad8ff', scroll: 0.16 },
+      { type: 'hills', color: '#7a6a3a', rim: '#d8b870', scroll: 0.28, height: 0.26 },
+    ],
+  },
+  kenya: {
+    tiles: { style: 'rock', solid: '#4a4434', top: '#3a7a2a', edge: '#9ad860', platform: '#6a6a5a', hazard: '#ff7a2a', back: '#33302a', window: '#ffd27a', moss: '#4a8a3a' },
+    atmosphere: { color: '#a8c8b0', amount: 0.5 },
+    grade: { saturate: 0.12, contrast: 0.12 },
+    props: [{ kind: 'plant', chance: 0.12, color: '#3a7a3a' }, { kind: 'grass', chance: 0.25, color: '#4a8a3a' }, { kind: 'rocks', chance: 0.05, color: '#6a6a5a' }, { kind: 'plant', chance: 0.06, front: true, color: '#2a6a2a' }],
+    foreground: { kind: 'ferns', color: '#081408', rim: '#3a7a3a', every: 700 },
+    backdrop: [
+      { type: 'gradient', top: '#5a8ac8', bottom: '#e0f0e0' },
+      { type: 'clouds', color: '#e8f0f4', light: '#ffffff', shade: '#8aa0a8', y: 0.08, height: 0.3, count: 5, scroll: 0.04 },
+      { type: 'mountains', color: '#4a6a5a', light: '#a8c8b8', shadow: '#1e2e28', scroll: 0.07, height: 0.55 },
+      { type: 'hills', color: '#2a5a2a', rim: '#6a9a4a', scroll: 0.15, height: 0.4 },
+      { type: 'fog', color: '#c8e0d0', alpha: 0.3, y: 0.55, height: 0.3, scroll: 0.2, speed: 0.01 },
+      { type: 'hills', color: '#1a3a1a', rim: '#3a6a2a', scroll: 0.3, height: 0.28 },
+    ],
+  },
+  'high-charity-flood': {
+    tiles: { style: 'metal', solid: '#3a2e4a', top: '#6a8a3a', edge: '#b8e04a', platform: '#5a4a6a', hazard: '#b8e04a', back: '#241c30', window: '#c890ff', glow: '#b8e04a', moss: '#8a9a3a' },
+    atmosphere: { color: '#3a3a2a', amount: 0.55 },
+    grade: { saturate: 0.1, contrast: 0.16 },
+    props: [{ kind: 'growth', chance: 0.16, color: '#8a9a4a' }, { kind: 'debris', chance: 0.05, color: '#4a3a5a' }],
+    decor: [{ kind: 'pipes', chance: 0.08, color: '#5a4a6a', trim: '#2a2236', glow: '#b8e04a' }, { kind: 'banners', chance: 0.05, color: '#4a2a5a', trim: '#8a9a4a' }],
+    foreground: { kind: 'ferns', color: '#0e1008', rim: '#6a7a2a', every: 720 },
+    backdrop: [
+      { type: 'gradient', top: '#0a0810', bottom: '#2e2a1e' },
+      { type: 'industrial', color: '#241c30', rim: '#6a8a3a', light: '#b8e04a', scroll: 0.1, height: 0.7 },
+      { type: 'temple', style: 'stone', color: '#2a2236', light: '#8a9a5a', shadow: '#0e0a14', glow: '#b8e04a', scroll: 0.22 },
+      { type: 'fog', color: '#4a5a2a', alpha: 0.35, y: 0.65, height: 0.35, scroll: 0.3, speed: 0.012 },
+    ],
+  },
+  'installation-08': {
+    tiles: { style: 'metal', solid: '#5a6066', top: '#9aa4ac', edge: '#7ad8ff', platform: '#7a828a', hazard: '#ff8a3a', back: '#3a3e44', window: '#7ad8ff', glow: '#7ad8ff' },
+    atmosphere: { color: '#a8b8d0', amount: 0.5 },
+    grade: { saturate: 0.08, contrast: 0.14 },
+    props: [{ kind: 'debris', chance: 0.08, color: '#6a7078' }, { kind: 'console', chance: 0.04, color: '#5a6066', glow: '#7ad8ff' }],
+    foreground: { kind: 'pillars', color: '#0e1014', rim: '#5a7a9a', every: 800 },
+    backdrop: [
+      { type: 'gradient', top: '#0a0e1e', bottom: '#5a6a8a' },
+      { type: 'stars', count: 90 },
+      { type: 'ringrise', x: 0.5, horizon: 0.74, haze: '#8aa0c0', dim: 0.3 },
+      { type: 'industrial', color: '#2e3238', rim: '#7a8a9a', light: '#7ad8ff', scroll: 0.12, height: 0.5 },
+      { type: 'embers', color: '#ff9a4a' },
+    ],
+  },
 };
 
 // Janjur Qom in 2100 BCE (3a): the same city long after the Forerunners, with no ring
@@ -523,4 +583,10 @@ export const THEMES = {
 THEMES['janjur-qom-reformist'] = {
   ...THEMES['janjur-qom'],
   backdrop: THEMES['janjur-qom'].backdrop.filter((l) => l.type !== 'halo' && l.type !== 'ships'),
+};
+
+// The lesser Ark in 97,445 BCE (5a): before any replacement ring was being built.
+THEMES['ark-ancient'] = {
+  ...THEMES.ark,
+  backdrop: THEMES.ark.backdrop.filter((l) => l.type !== 'halo'),
 };

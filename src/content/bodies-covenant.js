@@ -228,6 +228,24 @@ function scarab(f) {
   return { shapes, shoulder: [187, 74], w: W, h: H };
 }
 
+// Proto-Gravemind: a huge rooted Flood mass with swaying tendrils (goofy, not scary).
+function gravemind(f) {
+  const W = 120, H = 110;
+  const sway = [0, 1.5, 0, -1.5][f % 4];
+  const shapes = [
+    { t: 'ell', c: [60, 92], rx: 56, ry: 18, m: 'dark', z: 0 },
+    { t: 'ell', c: [60, 66], rx: 34, ry: 32, m: 'armor', z: 1 },
+    { t: 'ell', c: [48, 54], rx: 12, ry: 10, m: 'trim', z: 1.5 },
+    { t: 'ell', c: [74, 60], rx: 10, ry: 9, m: 'trim', z: 1.5 },
+    { t: 'ell', c: [60, 74], rx: 8, ry: 5, m: 'glow', z: 1.8, hot: f % 2 === 0 },
+  ];
+  for (const [x, len, dir] of [[26, 46, -1], [94, 46, 1], [40, 56, -0.4], [80, 56, 0.4], [60, 62, 0]]) {
+    shapes.push({ t: 'cap', a: [x, 60], b: [x + dir * 20 + sway * 3, 60 - len], r1: 5, r2: 2, m: 'armor', z: 0.5 });
+    shapes.push({ t: 'ell', c: [x + dir * 20 + sway * 3, 60 - len], rx: 4, ry: 4, m: 'trim', z: 0.6 });
+  }
+  return { shapes, shoulder: [60, 40], w: W, h: H };
+}
+
 // A pop-up training target on a post (Spartan training courses).
 function target(f) {
   const shapes = [
@@ -249,4 +267,5 @@ export const COVENANT_BODIES = {
   brute: { w: 54, h: 66, frames: 15, anims: FRAMES, hit: [20, 52], build: brute, reach: 11, arm: [4, 3.4] },
   target: { w: 28, h: 42, frames: 4, anims: HOVER, hit: [20, 40], build: target },
   scarab: { w: 190, h: 120, frames: 4, anims: HOVER, hit: [150, 70], build: scarab },
+  gravemind: { w: 120, h: 110, frames: 4, anims: HOVER, hit: [90, 90], build: gravemind },
 };

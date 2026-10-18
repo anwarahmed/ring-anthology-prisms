@@ -370,7 +370,7 @@ High Charity is built (851–791 BCE).
 - **Era:** Covenant War · **When/where:** 2552, Kenya · **Source:** *Halo 3*
 - **Players:** P1 Master Chief · P2 the Arbiter
 - **Story:** The Chief returns to Earth. Elites and humans are now allies.
-- **Enemies:** Brutes. **Boss:** Brute Chieftain **(verify)**.
+- **Enemies:** Brutes. **Boss:** none (the level ends with rescuing Sgt. Johnson).
 - **Status:** planned
 
 ### 5c · The Ark
@@ -395,7 +395,7 @@ High Charity is built (851–791 BCE).
 - **Status:** planned
 
 ### 5f · Halo
-- **Era:** Covenant War · **When/where:** the new Installation 04 at the Ark **(verify name)** · **Source:** *Halo 3*
+- **Era:** Covenant War · **When/where:** December 2552, Installation 08 (the unfinished replacement for Installation 04, built at the Ark) · **Source:** *Halo 3*; Halopedia: Installation 08
 - **Players:** P1 Master Chief · P2 the Arbiter
 - **Story:** The Chief fires the unfinished ring to destroy the Flood. 343 Guilty Spark turns on them, and Johnson falls (told gently). The Warthog run follows.
 - **Sacrifice:** Johnson.
@@ -413,12 +413,12 @@ High Charity is built (851–791 BCE).
 - **Enemies:** Banished. **Boss:** Decimus.
 - **Status:** planned
 
-### 5h · The Banished at the Ark
-- **Era:** Banished · **When/where:** 2559, the Ark · **Source:** *Halo Wars 2*
-- **Players:** P1 Atriox · P2 a Jiralhanae warrior
+### 5h · Awakening the Nightmare
+- **Era:** Banished · **When/where:** June 2559, the Ark · **Source:** *Halo Wars 2: Awakening the Nightmare*; Halopedia: Awakening the Nightmare, Voridus
+- **Players:** P1 Pavium · P2 Voridus (Jiralhanae brothers sent by Atriox)
 - **Echo:** 5g, 3k
-- **Story:** The Banished's side of the Ark campaign **(verify the playable Banished events)**.
-- **Enemies:** UNSC. **Vehicles:** Chopper. **Boss:** none.
+- **Story:** Atriox sends the brothers Pavium and Voridus to salvage the remains of High Charity on the Ark. Voridus ignores the quarantine: he shuts down the Sentinel defenses and breaches the quarantine shield, and the Flood break loose across the Ark. The brothers fight the outbreak and destroy the Proto-Gravemind that grew outside High Charity, just before Atriox arrives.
+- **Enemies:** Flood, UNSC. **Vehicles:** Chopper. **Boss:** the Proto-Gravemind.
 - **Status:** planned
 
 ## Part VI · Requiem & the Created

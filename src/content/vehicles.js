@@ -108,12 +108,45 @@ function scorpion(f) {
   return { shapes, shoulder: [91, 16], w: W, h: H };
 }
 
+// UNSC Mongoose: a light two-seat quad bike.
+function mongoose(f) {
+  const W = 50, H = 32;
+  const bob = f % 2 ? 0.4 : 0;
+  const shapes = [
+    ...wheel([10, 25], 6, f, 4),
+    ...wheel([40, 25], 6, f, 4),
+    { t: 'poly', pts: [[4, 18 + bob], [12, 12 + bob], [36, 12 + bob], [48, 17 + bob], [42, 21 + bob], [8, 21 + bob]], m: 'armor', z: 2, bevel: 1.8, tilt: [0, -0.15] },
+    { t: 'cap', a: [34, 12 + bob], b: [40, 6 + bob], r1: 0.9, r2: 0.9, m: 'dark', z: 2.5 },
+    { t: 'ell', c: [47, 17 + bob], rx: 1, ry: 1.2, m: 'glow', z: 3, hot: true },
+  ];
+  return { shapes, shoulder: [44, 12 + bob], w: W, h: H };
+}
+
+// UNSC Hornet: a small VTOL gunship with twin rotors.
+function hornet(f) {
+  const W = 70, H = 40;
+  const bob = [0, -0.6, -1, -0.6][f];
+  const spin = f % 2 ? 1 : -1;
+  const shapes = [
+    { t: 'poly', pts: [[8, 20 + bob], [20, 12 + bob], [50, 12 + bob], [64, 20 + bob], [54, 28 + bob], [16, 28 + bob]], m: 'armor', z: 2, bevel: 2.2, tilt: [0, -0.2] },
+    { t: 'poly', pts: [[44, 13 + bob], [56, 16 + bob], [52, 20 + bob], [42, 18 + bob]], m: 'trim', z: 2.5, bevel: 1 },
+    { t: 'cap', a: [12, 10 + bob], b: [12, 16 + bob], r1: 1, r2: 1, m: 'dark', z: 1.5 },
+    { t: 'cap', a: [58, 10 + bob], b: [58, 16 + bob], r1: 1, r2: 1, m: 'dark', z: 1.5 },
+    { t: 'ell', c: [12, 9 + bob], rx: 12, ry: 1.2 + spin * 0.3, m: 'darkFar', z: 1 },
+    { t: 'ell', c: [58, 9 + bob], rx: 12, ry: 1.2 - spin * 0.3, m: 'darkFar', z: 1 },
+    { t: 'cap', a: [56, 26 + bob], b: [68, 27 + bob], r1: 1.2, r2: 1, m: 'dark', z: 3 },
+  ];
+  return { shapes, shoulder: [68, 27 + bob], w: W, h: H };
+}
+
 export const VEHICLE_BODIES = {
   warthog: { w: 76, h: 40, frames: 4, anims: HOVER, hit: [60, 24], build: warthog, vehicle: true },
   ghost: { w: 58, h: 30, frames: 4, anims: HOVER, hit: [44, 18], build: ghost, vehicle: true },
   banshee: { w: 72, h: 34, frames: 4, anims: HOVER, hit: [52, 20], build: banshee, vehicle: true, flying: true },
   chopper: { w: 70, h: 40, frames: 4, anims: HOVER, hit: [56, 26], build: chopper, vehicle: true },
   scorpion: { w: 92, h: 46, frames: 4, anims: HOVER, hit: [80, 30], build: scorpion, vehicle: true },
+  mongoose: { w: 50, h: 32, frames: 4, anims: HOVER, hit: [40, 20], build: mongoose, vehicle: true },
+  hornet: { w: 70, h: 40, frames: 4, anims: HOVER, hit: [56, 24], build: hornet, vehicle: true, flying: true },
 };
 
 export const VEHICLES = {
@@ -141,5 +174,15 @@ export const VEHICLES = {
     name: 'Scorpion', body: 'scorpion', kind: 'ground', seats: ['driver'],
     pal: { armor: '#56663a', trim: '#8a8a70', dark: '#24241e', glow: '#fff4c0' },
     speed: 150, accel: 300, jump: 0, health: 900, weapon: 'scorpion-cannon', splatter: 140,
+  },
+  mongoose: {
+    name: 'Mongoose', body: 'mongoose', kind: 'ground', seats: ['driver', 'gunner'],
+    pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
+    speed: 290, accel: 700, jump: 320, health: 260, weapon: 'warthog-chaingun', splatter: 60,
+  },
+  hornet: {
+    name: 'Hornet', body: 'hornet', kind: 'air', seats: ['driver'],
+    pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
+    speed: 220, accel: 520, jump: 0, health: 320, weapon: 'warthog-chaingun', splatter: 0,
   },
 };

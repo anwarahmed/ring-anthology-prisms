@@ -163,4 +163,13 @@ export const TRACKS = {
       drums: { wave: 'noise', vol: 0.12, level: 1, notes: 'k:4 h:4 s:4 h:2 h:2 k:4 h:4 s:4 h:2 h:2 k:4 h:4 s:4 h:2 h:2 k:4 h:4 s:4 h:2 h:2' },
     },
   },
+  'warthog-run': {
+    bpm: 150,
+    layers: {
+      bass: { wave: 'square', vol: 0.06, level: 0, notes: 'E2:2 E2:2 E3:2 E2:2 C2:2 C2:2 C3:2 C2:2 D2:2 D2:2 D3:2 D2:2 B1:2 B1:2 B2:2 B1:2 E2:2 E2:2 E3:2 E2:2 C2:2 C2:2 C3:2 C2:2 D2:2 D2:2 D3:2 D2:2 B1:2 B1:2 B2:2 B1:2' },
+      drums: { wave: 'noise', vol: 0.22, level: 0, notes: 'k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2 k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2 k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2 k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2' },
+      lead: { wave: 'square', vol: 0.055, level: 1, notes: 'E5:4 D5:2 B4:2 A4:4 B4:4 G4:4 A4:2 B4:2 D5:8 E5:4 G5:4 F#5:4 D5:4 E5:16' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1' },
+    },
+  },
 };

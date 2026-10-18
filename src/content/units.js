@@ -300,4 +300,43 @@ export const UNITS = {
     health: 4000, shields: 0, speed: 20, ai: 'shooter', weapon: 'scarab-cannon',
     range: 400, entrance: 'walk', puff: '#5ad8ff', score: 0,
   },
+  // Part V
+  'guilty-spark-boss': {
+    name: '343 Guilty Spark', faction: 'forerunners', body: 'monitor', scale: 1.4,
+    pal: { armor: '#b8c0c8', trim: '#e8ecf0', dark: '#2a3040', glow: '#ff5a3a' },
+    health: 900, shields: 0, speed: 90, ai: 'flyer', weapon: 'sentinel-beam',
+    range: 300, entrance: 'teleport', puff: '#ff8a5a', score: 2000,
+  },
+  decimus: {
+    name: 'Decimus', faction: 'banished', body: 'brute', chieftain: true, scale: 1.25,
+    pal: { armor: '#2e2a2e', trim: '#d8b070', dark: '#1e1a1c', skin: '#6a5a4e', glow: '#ff5a3a' },
+    health: 1000, shields: 350, speed: 82, ai: 'boss', weapon: 'gravity-hammer',
+    range: 240, melee: 50, entrance: 'drop', puff: '#ff8a3a', score: 2000,
+    boss: { attacks: ['charge', 'leap', 'summon', 'charge'], summon: 'banished-brute' },
+  },
+  'banished-brute': {
+    name: 'Banished Jiralhanae', faction: 'banished', body: 'brute',
+    pal: { armor: '#4a4a52', trim: '#c83a2e', dark: '#2a2224', skin: '#6a5a4e', glow: '#ff8a3a' },
+    health: 140, shields: 60, speed: 80, ai: 'shooter', weapon: 'spiker',
+    range: 230, melee: 30, entrance: 'drop', puff: '#ff8a3a', score: 150, burst: 4,
+  },
+  'banished-grunt': {
+    name: 'Banished Unggoy', faction: 'banished', body: 'grunt',
+    pal: { armor: '#8a3a2e', trim: '#c8a070', dark: '#3a3028', skin: '#7a8a8a', glow: '#ff8a3a' },
+    health: 30, shields: 0, speed: 72, ai: 'shooter', weapon: 'plasma-pistol',
+    range: 200, entrance: 'drop', puff: '#ff8a3a', score: 30,
+  },
+  'proto-gravemind': {
+    name: 'Proto-Gravemind', faction: 'flood', body: 'gravemind',
+    pal: { armor: '#8a8a4a', trim: '#c8c060', dark: '#4a4a2a', glow: '#b8e04a' },
+    health: 1600, shields: 0, speed: 0, ai: 'boss', weapon: 'flood-spores',
+    range: 360, entrance: 'walk', puff: '#b8e04a', score: 2000,
+    boss: { attacks: ['barrage', 'summon', 'barrage', 'summon'], summon: 'flood-infection' },
+  },
+  'unsc-marine': {
+    name: 'UNSC Marine', faction: 'unsc', body: 'humanoid', style: 'soldier',
+    pal: { armor: '#5a6838', helmet: '#62703c', trim: '#8a8a6a', visor: '#3a3a3a', dark: '#2a2a20' },
+    health: 70, shields: 20, speed: 70, ai: 'shooter', weapon: 'assault-rifle',
+    range: 240, entrance: 'drop', puff: '#c8d870', score: 60,
+  },
 };

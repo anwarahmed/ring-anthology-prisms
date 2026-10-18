@@ -140,6 +140,10 @@ export const WEAPONS = {
     name: 'Scarab Cannon', tech: 'plasma', rate: 0.5, damage: 18, speed: 520, spread: 0.06,
     projectile: 'beam', splash: 22, color: '#7aff5a', sfx: 'beam', gun: null,
   },
+  'flood-spores': {
+    name: 'Flood Spores', tech: 'plasma', rate: 0.9, damage: 14, speed: 260, spread: 0.2,
+    pellets: 3, projectile: 'orb', splash: 18, color: '#b8e04a', sfx: 'cannon', gun: null,
+  },
   // Training rounds (Spartan training on Reach): light, harmless-looking paint bolts.
   'training-rifle': {
     name: 'Training Rifle', tech: 'ballistic', rate: 0.12, damage: 8, speed: 600, spread: 0.04,

@@ -216,4 +216,26 @@ export const CHARACTERS = {
     shields: 0, health: 140, speed: 120, jump: 390,
     weapons: ['battle-rifle', 'silenced-smg'], grenade: 'frag', extra: 'visr',
   },
+  // Part V: the Ark
+  isodidact: {
+    name: 'The IsoDidact', title: 'Bornstellar, the new Didact', faction: 'forerunners',
+    body: 'forerunner',
+    pal: { armor: '#e8ecf4', trim: '#3a7fd0', dark: '#1c2a44', glow: '#7ad8ff' },
+    shields: 140, health: 100, speed: 122, jump: 405,
+    weapons: ['suppressor', 'light-rifle'], grenade: 'pulse',
+  },
+  pavium: {
+    name: 'Pavium', title: 'Jiralhanae war chief of the Banished', faction: 'banished',
+    body: 'brute',
+    pal: { armor: '#3a4a5a', trim: '#c8a070', dark: '#2a2224', skin: '#6a5a4e', glow: '#7ad8ff' },
+    shields: 80, health: 150, speed: 114, jump: 390,
+    weapons: ['spiker', 'brute-shot'], grenade: 'frag',
+  },
+  voridus: {
+    name: 'Voridus', title: 'Jiralhanae war chief of the Banished', faction: 'banished',
+    body: 'brute', bare: true,
+    pal: { armor: '#5a3a2e', trim: '#ff8a3a', dark: '#2a1e18', skin: '#6a5a4e', glow: '#ff8a3a' },
+    shields: 80, health: 150, speed: 118, jump: 390,
+    weapons: ['spiker', 'gravity-hammer'], grenade: 'frag',
+  },
 };
