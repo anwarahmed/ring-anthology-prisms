@@ -317,6 +317,24 @@ await run('spawn-ground', '?level=1a&god=1', async (page) => {
   if (fell.length) throw new Error(`units fell through the floor: ${JSON.stringify(fell)}`);
 });
 
+// When everyone is down, characters stop and their arms stay on their bodies until
+// the checkpoint restart (they used to be left floating while bodies kept moving).
+await run('down-arms', '?level=1a&god=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  const gap = await page.evaluate(async () => {
+    const L = window.__game.scene.getScene('Level'), p = L.players[0];
+    const u = L.spawnUnit('ancient-human-defender', p.x + 40, p.y + 20, { ally: true });
+    await new Promise((r) => setTimeout(r, 400));
+    u.setVelocityX(120);
+    p.invulnUntil = 0;
+    p.die();
+    await new Promise((r) => setTimeout(r, 1200));
+    const s = u.shoulder();
+    return Math.round(Math.hypot(u.gun.x - s.x, u.gun.y - s.y));
+  });
+  if (gap > 2) throw new Error(`arm left ${gap} px from its body after the players went down`);
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {
