@@ -1,0 +1,6 @@
+node_modules/
+dist/
+# Music the user owns, for home play only. Never commit or deploy it (docs/LEGAL.md).
+public/home-soundtrack/*
+!public/home-soundtrack/README.md
+test-results/
