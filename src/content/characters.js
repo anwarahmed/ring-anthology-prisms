@@ -187,4 +187,33 @@ export const CHARACTERS = {
     shields: 120, health: 100, speed: 124, jump: 400,
     weapons: ['shotgun', 'magnum'], grenade: 'frag',
   },
+  // Part IV: the Great Schism
+  arbiter: {
+    name: "Thel 'Vadamee", short: 'The Arbiter', title: 'Arbiter', faction: 'covenant',
+    body: 'elite',
+    pal: { armor: '#8a8e8a', trim: '#c8c4a8', dark: '#2a2a2e', skin: '#5a5048', glow: '#ffb84a' },
+    shields: 130, health: 100, speed: 128, jump: 410,
+    weapons: ['carbine', 'energy-sword'], grenade: 'plasma', extra: 'camo',
+  },
+  'spec-ops-sangheili': {
+    name: 'Spec Ops Sangheili', short: 'Spec Ops', title: 'Special Operations', faction: 'covenant',
+    body: 'elite',
+    pal: { armor: '#2e2e3a', trim: '#6a6a8a', dark: '#1a1a24', skin: '#5a5048', glow: '#ff8a3a' },
+    shields: 120, health: 100, speed: 126, jump: 405,
+    weapons: ['plasma-rifle', 'needler'], grenade: 'plasma', extra: 'camo',
+  },
+  rookie: {
+    name: 'The Rookie', title: 'ODST', faction: 'unsc',
+    body: 'humanoid', style: 'soldier',
+    pal: { armor: '#2e3238', helmet: '#363a42', trim: '#5a6270', visor: '#ff8a3a', dark: '#1a1c20' },
+    shields: 0, health: 140, speed: 120, jump: 390,
+    weapons: ['silenced-smg', 'magnum'], grenade: 'frag', extra: 'visr',
+  },
+  odst: {
+    name: 'ODST', title: 'Orbital Drop Shock Trooper', faction: 'unsc',
+    body: 'humanoid', style: 'soldier',
+    pal: { armor: '#2e3238', helmet: '#363a42', trim: '#8a6a3a', visor: '#ff8a3a', dark: '#1a1c20' },
+    shields: 0, health: 140, speed: 120, jump: 390,
+    weapons: ['battle-rifle', 'silenced-smg'], grenade: 'frag', extra: 'visr',
+  },
 };

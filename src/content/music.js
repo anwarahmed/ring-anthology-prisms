@@ -154,4 +154,13 @@ export const TRACKS = {
       lead: { wave: 'square', vol: 0.06, level: 2, notes: 'C4:4 D#4:4 G4:8 G#4:4 G4:4 D#4:8 F4:4 D#4:4 D4:4 C4:4 B3:8 G3:8' },
     },
   },
+  'mombasa-rain': {
+    bpm: 84,
+    layers: {
+      pad: { wave: 'triangle', vol: 0.14, level: 0, notes: 'A2+E3+C4:16 F2+C3+A3:16 C3+G3+E4:16 G2+D3+B3:16' },
+      keys: { wave: 'sine', vol: 0.1, level: 0, vibrato: 3, notes: 'E5:4 C5:4 A4:8 F4:4 A4:4 C5:8 G4:4 C5:4 E5:8 D5:4 B4:4 G4:8' },
+      bass: { wave: 'triangle', vol: 0.16, level: 1, notes: 'A1:8 A1:8 F1:8 F1:8 C2:8 C2:8 G1:8 G1:8' },
+      drums: { wave: 'noise', vol: 0.12, level: 1, notes: 'k:4 h:4 s:4 h:2 h:2 k:4 h:4 s:4 h:2 h:2 k:4 h:4 s:4 h:2 h:2 k:4 h:4 s:4 h:2 h:2' },
+    },
+  },
 };

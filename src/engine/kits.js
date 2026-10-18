@@ -1,7 +1,9 @@
 // Era ability kits. Same buttons in every era, different powers (docs/LORE.md):
 //   forerunner  Hard-light dash (ability) + hover (hold jump while falling)
 //   covenant    Sprint (hold ability) + cover (crouch takes half damage); extra 'camo'
-//               replaces sprint with active camouflage (the Arbiter)
+//               replaces sprint with active camouflage (the Arbiter); extra 'visr'
+//               replaces it with the ODST VISR: ability toggles night vision, which
+//               brightens the view and outlines enemies red and allies green
 //   created     Thruster dash (ability) + ground pound (hold down + ability in the air)
 //   banished    Grappleshot (ability): pulls you to walls, or to enemies for a melee
 // A kit exposes update(state, dt, onGround) and hud() -> { label, ready (0..1), active }.
@@ -53,6 +55,37 @@ function forerunner(p) {
 }
 
 function covenant(p, extra) {
+  if (extra === 'visr') {
+    let on = false;
+    let fx = null;
+    const cam = p.scene.cameras.main;
+    const paint = () => {
+      for (const u of p.scene.units) if (u.alive) u.setTint(u.team === 'enemies' ? 0xff7a6a : 0x8aff8a);
+    };
+    const off = () => {
+      on = false;
+      if (fx) cam.postFX?.remove(fx);
+      fx = null;
+      for (const u of p.scene.units) if (u.alive) u.clearTint();
+    };
+    return {
+      coverBonus: 0.5,
+      update(s) {
+        if (s.pressed.ability) {
+          audio.sfx('ui');
+          if (on) off();
+          else {
+            on = true;
+            fx = cam.postFX?.addColorMatrix();
+            fx?.brightness(1.7, true);
+          }
+        }
+        if (on) paint();
+      },
+      cancel: off,
+      hud: () => ({ label: 'VISR', ready: 1, active: on }),
+    };
+  }
   if (extra === 'camo') {
     let cd = 0;
     let on = 0;

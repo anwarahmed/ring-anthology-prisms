@@ -126,6 +126,20 @@ export const WEAPONS = {
     projectile: 'bullet', color: '#fff0b0', sfx: 'rifle',
     gun: { kind: 'rifle', len: 19, body: '#4a4e52', dark: '#22242a', accent: '#9ad8ff' },
   },
+  'battle-rifle': {
+    name: 'Battle Rifle', tech: 'ballistic', rate: 0.42, damage: 9, speed: 800, spread: 0.02,
+    pellets: 3, projectile: 'bullet', color: '#fff0b0', sfx: 'rifle',
+    gun: { kind: 'rifle', len: 18, body: '#4a4e46', dark: '#22241e', accent: '#ffd27a' },
+  },
+  'silenced-smg': {
+    name: 'Silenced SMG', tech: 'ballistic', rate: 0.07, damage: 4, speed: 600, spread: 0.08,
+    projectile: 'bullet', color: '#d8e0ff', sfx: 'rifle',
+    gun: { kind: 'pistol', len: 13, body: '#3a3e46', dark: '#1a1c22', accent: '#9ab8ff' },
+  },
+  'scarab-cannon': {
+    name: 'Scarab Cannon', tech: 'plasma', rate: 0.5, damage: 18, speed: 520, spread: 0.06,
+    projectile: 'beam', splash: 22, color: '#7aff5a', sfx: 'beam', gun: null,
+  },
   // Training rounds (Spartan training on Reach): light, harmless-looking paint bolts.
   'training-rifle': {
     name: 'Training Rifle', tech: 'ballistic', rate: 0.12, damage: 8, speed: 600, spread: 0.04,

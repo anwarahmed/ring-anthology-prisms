@@ -201,6 +201,33 @@ function brute(f, def) {
   return { shapes, shoulder: add(neck, [3, 6]), w: W, h: H };
 }
 
+// Scarab: a huge four-legged Covenant walker with a main cannon slung under its nose.
+function scarab(f) {
+  const W = 190, H = 120;
+  const sw = [0, 1, 0, -1][f % 4];
+  const shapes = [];
+  const leg = (hx, foot, near) => {
+    const knee = [hx + (foot - hx) * 0.5, 30];
+    const m = near ? 'armor' : 'armorFar';
+    const z = near ? 5 : 0.5;
+    shapes.push({ t: 'cap', a: [hx, 52], b: knee, r1: 7, r2: 6, m, z });
+    shapes.push({ t: 'cap', a: knee, b: [foot, H - 6], r1: 6, r2: 4.5, m, z: z + 0.1 });
+    shapes.push({ t: 'ell', c: [foot, H - 4], rx: 9, ry: 3.5, m: near ? 'dark' : 'darkFar', z: z + 0.2 });
+  };
+  leg(52, 20 + sw * 6, false);
+  leg(140, 172 - sw * 6, false);
+  // The deck and carapace.
+  shapes.push({ t: 'poly', pts: [[20, 54], [52, 38], [150, 36], [182, 50], [170, 66], [30, 68]], m: 'armor', z: 2, bevel: 4, tilt: [0, -0.25] });
+  shapes.push({ t: 'poly', pts: [[60, 40], [80, 22], [130, 22], [146, 38]], m: 'trim', z: 2.5, bevel: 3, tilt: [0, -0.3] });
+  shapes.push({ t: 'ell', c: [104, 30], rx: 10, ry: 5, m: 'glow', z: 2.8, hot: f % 2 === 0 });
+  // Main cannon under the front.
+  shapes.push({ t: 'cap', a: [160, 64], b: [186, 74], r1: 6, r2: 5, m: 'dark', z: 3 });
+  shapes.push({ t: 'ell', c: [187, 74], rx: 3, ry: 4.5, m: 'glow', z: 3.2, hot: true });
+  leg(60, 34 - sw * 6, true);
+  leg(132, 160 + sw * 6, true);
+  return { shapes, shoulder: [187, 74], w: W, h: H };
+}
+
 // A pop-up training target on a post (Spartan training courses).
 function target(f) {
   const shapes = [
@@ -221,4 +248,5 @@ export const COVENANT_BODIES = {
   hunter: { w: 66, h: 68, frames: 15, anims: FRAMES, hit: [32, 56], build: hunter, frontShield: true },
   brute: { w: 54, h: 66, frames: 15, anims: FRAMES, hit: [20, 52], build: brute, reach: 11, arm: [4, 3.4] },
   target: { w: 28, h: 42, frames: 4, anims: HOVER, hit: [20, 40], build: target },
+  scarab: { w: 190, h: 120, frames: 4, anims: HOVER, hit: [150, 70], build: scarab },
 };

@@ -248,4 +248,56 @@ export const UNITS = {
     health: 80, shields: 20, speed: 70, ai: 'shooter', weapon: 'assault-rifle',
     range: 240, entrance: 'drop', puff: '#c8d870', score: 0,
   },
+  // Part IV
+  'heretic-elite': {
+    name: 'Heretic Sangheili', faction: 'heretics', body: 'elite',
+    pal: { armor: '#8a8aa0', trim: '#d8d0e0', dark: '#2a2a32', skin: '#5a5048', glow: '#7ad8ff' },
+    health: 70, shields: 90, speed: 92, ai: 'shooter', weapon: 'plasma-rifle',
+    range: 240, entrance: 'drop', puff: '#c8c8e0', score: 130, burst: 4,
+  },
+  'heretic-grunt': {
+    name: 'Heretic Unggoy', faction: 'heretics', body: 'grunt',
+    pal: { armor: '#8a8aa0', trim: '#c8b080', dark: '#3a3028', skin: '#7a8a8a', glow: '#5ad8ff' },
+    health: 30, shields: 0, speed: 72, ai: 'shooter', weapon: 'plasma-pistol',
+    range: 200, entrance: 'drop', puff: '#c8c8e0', score: 30,
+  },
+  'sesa-refumee': {
+    name: "Sesa 'Refumee", faction: 'heretics', body: 'elite', scale: 1.1,
+    pal: { armor: '#d8d8e0', trim: '#e8c46a', dark: '#2a2a32', skin: '#5a5048', glow: '#7ad8ff' },
+    health: 650, shields: 300, speed: 105, ai: 'boss', weapon: 'plasma-rifle',
+    range: 260, melee: 38, entrance: 'drop', puff: '#e8e8f0', score: 1000,
+    boss: { attacks: ['barrage', 'summon', 'charge', 'leap'], summon: 'heretic-elite' },
+  },
+  scarab: {
+    name: 'Scarab', faction: 'covenant', body: 'scarab',
+    pal: { armor: '#5a4a7a', trim: '#8a7ab0', dark: '#2a2236', glow: '#7aff5a' },
+    health: 1600, shields: 0, speed: 18, ai: 'boss', weapon: 'scarab-cannon',
+    range: 400, melee: 50, entrance: 'walk', puff: '#7aff5a', score: 2000,
+    boss: { attacks: ['barrage', 'summon', 'barrage'], summon: 'grunt' },
+  },
+  tartarus: {
+    name: 'Tartarus', faction: 'covenant', body: 'brute', chieftain: true, scale: 1.3,
+    pal: { armor: '#6a5a7a', trim: '#e8c46a', dark: '#d8d0c8', skin: '#6a5a4e', glow: '#ff8a3a' },
+    health: 1100, shields: 400, speed: 80, ai: 'boss', weapon: 'gravity-hammer',
+    range: 240, melee: 50, entrance: 'drop', puff: '#e8c46a', score: 2000,
+    boss: { attacks: ['charge', 'leap', 'summon', 'charge'], summon: 'jiralhanae-minor' },
+  },
+  'odst-squadmate': {
+    name: 'ODST', faction: 'unsc', body: 'humanoid', style: 'soldier',
+    pal: { armor: '#2e3238', helmet: '#363a42', trim: '#8a6a3a', visor: '#ff8a3a', dark: '#1a1c20' },
+    health: 110, shields: 0, speed: 72, ai: 'shooter', weapon: 'battle-rifle',
+    range: 250, entrance: 'drop', puff: '#ffb84a', score: 0,
+  },
+  'elite-ally': {
+    name: 'Sangheili', faction: 'sangheili', body: 'elite',
+    pal: { armor: '#3a6ad8', trim: '#8ab0f0', dark: '#2a2a3a', skin: '#5a5048', glow: '#ff8a3a' },
+    health: 90, shields: 100, speed: 90, ai: 'shooter', weapon: 'plasma-rifle',
+    range: 240, entrance: 'drop', puff: '#5ab8ff', score: 0,
+  },
+  'scarab-ally': {
+    name: 'Scarab', faction: 'sangheili', body: 'scarab',
+    pal: { armor: '#4a5a7a', trim: '#7a9ab0', dark: '#222a36', glow: '#5ad8ff' },
+    health: 4000, shields: 0, speed: 20, ai: 'shooter', weapon: 'scarab-cannon',
+    range: 400, entrance: 'walk', puff: '#5ad8ff', score: 0,
+  },
 };
