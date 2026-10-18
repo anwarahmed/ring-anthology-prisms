@@ -55,3 +55,32 @@ test('campaign parsing reads parts, ids, eras and status', () => {
   assert.equal(c.parts.length, 1);
   assert.deepEqual(c.parts[0].levels[0], { id: '1a', title: 'Lord', era: 'forerunner', status: 'building' });
 });
+
+test('sprite renderer shades, outlines and reports frames', async () => {
+  const { render, material, ramp } = await import('../../src/engine/raster.js');
+  const px = render([{ t: 'ell', c: [8, 8], rx: 5, ry: 5, m: 'a' }], 16, 16, { a: material('#8888cc', { spec: true }) });
+  const alpha = (x, y) => px[(y * 16 + x) * 4 + 3];
+  assert.equal(alpha(8, 8), 255);
+  assert.equal(alpha(1, 1), 0);
+  assert.equal(alpha(2, 8), 255, 'outline pixel just outside the shape');
+  const r = ramp('#8888cc');
+  assert.equal(r.length, 5);
+  assert.ok(r[0][0] < r[2][0] && r[2][0] < r[4][0], 'ramp goes dark to light');
+});
+
+test('every body builds all frames and aim angles', async () => {
+  const { bodyFrames, armFrames, aimFrame } = await import('../../src/engine/sprites.js');
+  const { CHARACTERS } = await import('../../src/content/characters.js');
+  const { UNITS } = await import('../../src/content/units.js');
+  const { WEAPONS } = await import('../../src/content/weapons.js');
+  for (const def of [...Object.values(CHARACTERS), ...Object.values(UNITS)]) {
+    const frames = bodyFrames(def);
+    assert.ok(frames.length >= 4);
+    for (const f of frames) assert.ok(f.rgba.some((v, i) => i % 4 === 3 && v > 0));
+    const w = WEAPONS[def.weapon ?? def.weapons[0]];
+    if (w.gun) assert.equal(armFrames(def, w).length, 9);
+  }
+  assert.deepEqual(aimFrame(1, 0), { i: 4, flip: false });
+  assert.deepEqual(aimFrame(-1, 0), { i: 4, flip: true });
+  assert.equal(aimFrame(0.02, -1).i, 0);
+});

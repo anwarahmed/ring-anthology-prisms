@@ -17,7 +17,8 @@ The catalogs are plain data in `src/content/`. Their field lists are in
 
 ```
 - [ ] Canon: the character/unit exists in Halo canon (or is a generic canon role); appearance checked (lore-check)
-- [ ] Original art: drawn in code with a palette; never traced from game art or official renders
+- [ ] Original art: built from shapes in code with a palette; never traced from game art or official renders
+- [ ] Previewed: `node scripts/preview-sprites.mjs <id>` → test-results/sprites.png reviewed (silhouette readable, every frame clean)
 - [ ] Reuse first: an existing body or weapon with a new palette/stats, if it fits
 - [ ] Entry added with every required field (validator lists them)
 - [ ] Kid-friendly: defeat = light puff in the faction color; Flood goofy, not scary
@@ -40,10 +41,14 @@ The catalogs are plain data in `src/content/`. Their field lists are in
 - **Weapon** (`weapons.js`): choose `tech` to match the faction (UNSC ballistic,
   Covenant plasma, Forerunner hard-light, Banished mostly ballistic and explosive). Use
   descriptive names; canon weapon names only for canon weapons.
-- **Body** (`bodies.js`): a painter function using `p.r(x, y, w, h, color)` only, with
-  8 frames (idle ×2, run ×4, jump, crouch) for walkers or 2 for hoverers. Keep it to a
-  readable silhouette at 3× scale. Register it in `BODIES` with `w`, `h`, `frames`,
-  `muzzle` (and `flying`).
+- **Body** (`bodies.js`): prefer a new `style` on an existing rig (e.g. a new helmet
+  for `humanoid`). A new rig is a `build(frame, def)` returning shapes (`cap`, `ell`,
+  `poly`, with materials and z order) plus a `shoulder` point. Walkers use `pose(f)`
+  and `legShapes` for the 15 standard frames. Register it in `BODIES` with `w`, `h`,
+  `frames`, `anims`, `hit` (physics box), `reach`, and `arm` radii (or `flying`).
+  Light comes from the upper left, so give plates a slight `tilt` and a `bevel`.
+- **Gun** (`guns.js`): a new `kind` returns shapes in gun-local coordinates, plus
+  `grip` and `muzzle`. Reference it from the weapon's `gun: { kind, len, body, dark, accent }`.
 - **Theme** (`themes.js`): tile colors plus backdrop layers. A `halo` layer is allowed
   **only where canon puts a ring in the sky**; check before adding one.
 - **Track** (`music.js`): original music, or arrangements of **Halo 3** music only

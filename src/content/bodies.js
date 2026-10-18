@@ -1,82 +1,195 @@
-// Pixel-art body painters. Each body draws its animation frames from a palette, so one
-// body serves many characters. Pure code against a tiny painter API:
-//   p.r(x, y, w, h, color)   filled rectangle
-// Frames for walking bodies: 0-1 idle, 2-5 run, 6 jump, 7 crouch.
-// Sprites face right; the engine flips them for left.
+// Body rigs: each body builds its sprite frames from shapes (src/engine/raster.js),
+// posed by a shared animation set, so one rig serves many characters via palettes.
+//
+// A rig: { w, h, frames, hit: [w, h], build(frame, def) -> { shapes, shoulder } }
+//   shoulder: where the arm-and-weapon overlay attaches (frame pixels), or the
+//   muzzle for bodies without arms.
+// Walking rigs use FRAMES; hovering rigs loop 4 hover frames.
+// Palette keys used: armor, helmet, trim, visor, dark, cape, glow (see src/content/*.js).
+// Sprites face right; the engine mirrors them.
 
-export const FRAMES = { idle: [0, 1], run: [2, 3, 4, 5], jump: [6], crouch: [7] };
+export const FRAMES = { idle: [0, 1, 2, 3], run: [4, 5, 6, 7, 8, 9, 10, 11], jump: [12], fall: [13], crouch: [14] };
+export const HOVER = { idle: [0, 1, 2, 3] };
 
-// Foot positions [backX, frontX, backLift, frontLift] per frame.
-const STRIDE = [
-  [5, 9, 0, 0], [5, 9, 0, 0],
-  [3, 11, 0, 1], [5, 9, 1, 0], [7, 7, 0, 0], [10, 4, 1, 0],
-  [4, 10, 2, 3], [4, 10, 0, 0],
-];
-
-function legs(p, f, hip, foot, w, c, dark) {
-  const [bx, fx, bl, fl] = STRIDE[f];
-  p.r(bx, hip, w, foot - hip - bl, dark);
-  p.r(bx, foot - bl - 1, w + 1, 1, dark);
-  p.r(fx, hip, w, foot - hip - fl, c);
-  p.r(fx, foot - fl - 1, w + 2, 1, c);
-}
-
-// Humans, Spartans, Marines, ancient humans: 16x24.
-function humanoid(p, f, d) {
-  const c = d.pal;
-  const bob = f === 1 || f === 3 || f === 5 ? 1 : 0;
-  const crouch = f === 7 ? 4 : 0;
-  const t = 1 + bob + crouch;
-  legs(p, f, 15 + crouch, 24, 3, c.armor, c.dark);
-  if (c.cape) p.r(3, t + 7, 3, 9, c.cape);
-  p.r(4, t + 7, 9, 8, c.armor); // torso
-  p.r(5, t + 9, 7, 2, c.trim); // chest band
-  p.r(3, t + 6, 11, 2, c.trim); // shoulders
-  p.r(5, t + 15 - 1, 7, 1, c.dark); // belt
-  // head / helmet
-  p.r(5, t, 7, 6, c.helmet ?? c.armor);
-  if (d.style === 'ancient-lord') {
-    p.r(4, t - 1, 3, 2, c.trim);
-    p.r(6, t - 2, 4, 1, c.trim); // crest
+// Leg angles (radians from straight down; + is forward) and knee bend per frame.
+function pose(f) {
+  if (f < 4) {
+    const b = [0, 0.35, 0.7, 0.35][f];
+    return { lean: 0.04, breathe: b, front: [0.14, 0.12], back: [-0.12, 0.16] };
   }
-  if (d.style === 'spartan') p.r(4, t + 1, 1, 4, c.dark);
-  p.r(8, t + 2, 4, 2, c.visor); // visor
-  p.r(11, t + 2, 1, 1, '#ffffff');
+  if (f < 12) {
+    const ph = ((f - 4) / 8) * Math.PI * 2;
+    const leg = (p) => [0.78 * Math.sin(p), 0.22 + 1.05 * Math.max(0, Math.cos(p))];
+    return { lean: 0.16, breathe: 0, front: leg(ph), back: leg(ph + Math.PI) };
+  }
+  if (f === 12) return { lean: 0.1, breathe: 0, front: [0.75, 1.3], back: [-0.25, 0.95], air: true };
+  if (f === 13) return { lean: 0.02, breathe: 0, front: [0.3, 0.45], back: [-0.3, 0.7], air: true };
+  return { lean: 0.22, breathe: 0, front: [1.35, 2.25], back: [0.45, 2.4], crouch: true };
 }
 
-// Forerunner warrior-servants and Prometheans: tall and slender, glowing seams. 18x28.
-function forerunner(p, f, d) {
-  const c = d.pal;
-  const bob = f === 1 || f === 3 || f === 5 ? 1 : 0;
-  const crouch = f === 7 ? 5 : 0;
-  const t = 1 + bob + crouch;
-  legs(p, f + 0, 17 + crouch, 28, 3, c.armor, c.dark);
-  p.r(5, t + 7, 9, 10, c.armor);
-  p.r(9, t + 8, 1, 8, c.glow); // spine light
-  p.r(3, t + 6, 13, 2, c.trim);
-  p.r(2, t + 6, 2, 1, c.glow);
-  p.r(15, t + 6, 2, 1, c.glow);
-  p.r(6, t + 1, 6, 6, c.armor); // helm
-  p.r(3, t - 1, 5, 2, c.trim); // swept crest
-  p.r(2, t - 2, 3, 1, c.glow);
-  p.r(9, t + 3, 4, 1, c.glow); // eye slit
+const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const dirDown = (ang, len) => [Math.sin(ang) * len, Math.cos(ang) * len];
+
+function legShapes(hip, [t, k], L, near, m) {
+  const knee = add(hip, dirDown(t, L.thigh));
+  const ankle = add(knee, dirDown(t - k, L.shin));
+  const z = near ? 6 : 1;
+  const f = near ? '' : 'Far';
+  const out = [
+    { t: 'cap', a: hip, b: knee, r1: L.thighR, r2: L.thighR * 0.8, m: `dark${f}`, z },
+    { t: 'cap', a: hip, b: add(hip, dirDown(t, L.thigh * 0.7)), r1: L.thighR * 0.85, r2: L.thighR * 0.7, m: `${m}${f}`, z: z + 0.2 },
+    { t: 'cap', a: knee, b: ankle, r1: L.shinR, r2: L.shinR * 0.85, m: `${m}${f}`, z: z + 0.1 },
+    { t: 'ell', c: add(knee, [0.6, 0]), rx: L.shinR * 0.95, ry: L.shinR * 0.9, m: `${m}${f}`, z: z + 0.3 },
+    { t: 'ell', c: add(ankle, [1.6, 1.2]), rx: L.foot, ry: 2.1, m: `dark${f}`, z: z + 0.25 },
+  ];
+  if (L.glow) out.push({ t: 'cap', a: add(knee, [0.8, 1.5]), b: add(ankle, [0.8, -1]), r1: 0.55, r2: 0.55, m: `glow`, z: z + 0.4, noSep: true });
+  return { shapes: out, ankle };
 }
 
-// Sentinels: floating drones. 16x12, frames 0-1 hover.
-function sentinel(p, f, d) {
-  const c = d.pal;
-  const w = f % 2 ? 1 : 0;
-  p.r(3, 3, 10, 6, c.armor);
-  p.r(1, 2 - w, 3, 2, c.trim);
-  p.r(12, 2 - w, 3, 2, c.trim);
-  p.r(1, 8 + w, 3, 2, c.trim);
-  p.r(12, 8 + w, 3, 2, c.trim);
-  p.r(5, 4, 6, 4, c.dark);
-  p.r(7, 5, 3, 2, c.glow); // eye
+// Places the hip so the lowest foot rests on the ground line.
+function hipFor(p, L, groundY) {
+  const ay = (leg) => L.thigh * Math.cos(leg[0]) + L.shin * Math.cos(leg[0] - leg[1]);
+  return groundY - 2.6 - Math.max(ay(p.front), ay(p.back));
+}
+
+const HUMAN = {
+  spartan: { thigh: 10, shin: 10.5, thighR: 3.3, shinR: 2.9, foot: 3.6, torso: 13, chest: [6.8, 7.4], head: [5, 5.3], pack: true, pauldron: 4.4 },
+  soldier: { thigh: 9.6, shin: 10, thighR: 2.9, shinR: 2.5, foot: 3.3, torso: 12.5, chest: [6, 6.8], head: [4.6, 5], pack: false, pauldron: 3.6 },
+};
+
+function humanoid(f, def) {
+  const st = def.style ?? 'soldier';
+  const L = HUMAN[st === 'spartan' ? 'spartan' : 'soldier'];
+  const p = pose(f);
+  const W = 40, H = 52;
+  const ground = H - 1;
+  const hipY = hipFor(p, L, ground) + (p.air ? -1 : 0);
+  const hip = [17, hipY];
+  const lean = p.lean;
+  const up = (len, extra = 0) => [Math.sin(lean + extra) * len, -Math.cos(lean + extra) * len];
+  const chestC = add(hip, up(L.torso * 0.62 - p.breathe * 0.4));
+  const neck = add(hip, up(L.torso + 1 - p.breathe * 0.5));
+  const headC = add(neck, [1.2, -L.head[1] + 0.8]);
+  const shapes = [];
+
+  if (def.style === 'ancient-lord') {
+    // Cape: hangs from the shoulders, sways with the stride.
+    const sway = f >= 4 && f < 12 ? Math.sin(((f - 4) / 8) * Math.PI * 2) * 1.5 : 0;
+    shapes.push({ t: 'poly', pts: [add(neck, [-2, 1]), add(neck, [-5, 2]), [hip[0] - 9 - sway, hip[1] + 13], [hip[0] - 2, hip[1] + 10], add(chestC, [-1, 0])], m: 'cape', z: 0, bevel: 2 });
+  }
+  shapes.push(...legShapes([hip[0] - 1, hip[1]], p.back, L, false, 'armor').shapes);
+  shapes.push({ t: 'cap', a: hip, b: chestC, r1: 4.2, r2: 4.6, m: 'dark', z: 2 });
+  if (L.pack) shapes.push({ t: 'poly', pts: [add(chestC, [-8, -4]), add(chestC, [-3, -6]), add(chestC, [-3, 5]), add(chestC, [-8, 4])], m: 'armorFar', z: 2.5 });
+  shapes.push({ t: 'ell', c: chestC, rx: L.chest[0], ry: L.chest[1], rot: lean, m: 'armor', z: 3 });
+  shapes.push({ t: 'poly', pts: [add(chestC, [-1, -3]), add(chestC, [5.5, -2.5]), add(chestC, [5, 2.5]), add(chestC, [0, 3])], m: 'trim', z: 3.4, bevel: 1.2, tilt: [0.15, -0.1] });
+  shapes.push({ t: 'poly', pts: [[hip[0] - 4.5, hip[1] - 3], [hip[0] + 4.5, hip[1] - 3], [hip[0] + 4.8, hip[1] + 0.5], [hip[0] - 4.8, hip[1] + 0.5]], m: 'trim', z: 3.6, bevel: 1 });
+  shapes.push(...legShapes(hip, p.front, L, true, 'armor').shapes);
+  shapes.push({ t: 'cap', a: add(neck, [0, 2]), b: neck, r1: 2.6, r2: 2.4, m: 'dark', z: 4 });
+
+  const hel = 'helmet';
+  shapes.push({ t: 'ell', c: headC, rx: L.head[0], ry: L.head[1], m: hel, z: 7 });
+  if (st === 'spartan') {
+    shapes.push({ t: 'poly', pts: [add(headC, [0.5, -1.8]), add(headC, [5.3, -1.4]), add(headC, [5.4, 1.5]), add(headC, [1, 2])], m: 'visor', z: 8, bevel: 1.4, tilt: [0.3, -0.2] });
+  } else {
+    // Ancient human helm: cheek guard and a glowing eye slit.
+    shapes.push({ t: 'poly', pts: [add(headC, [0, 0.5]), add(headC, [4.6, 0.6]), add(headC, [3.6, 4.6]), add(headC, [0.2, 4.4])], m: 'trim', z: 7.5, bevel: 1.2 });
+    shapes.push({ t: 'cap', a: add(headC, [1.2, -1]), b: add(headC, [4.8, -0.9]), r1: 0.9, r2: 0.8, m: 'visor', z: 8 });
+  }
+  if (st === 'ancient-lord') {
+    shapes.push({ t: 'poly', pts: [add(headC, [-5, -2]), add(headC, [-2, -7.5]), add(headC, [3, -7]), add(headC, [-1, -4.5])], m: 'trim', z: 7.8, bevel: 1.3 });
+    shapes.push({ t: 'cap', a: add(headC, [-2, -7]), b: add(headC, [-8, -3]), r1: 1.6, r2: 0.8, m: 'cape', z: 6.5 });
+  }
+  const shoulder = add(neck, [1.5, 3.2]);
+  return { shapes, shoulder, w: W, h: H };
+}
+
+// Forerunner warrior-servants: tall, slender, angular plates, glowing seams.
+function forerunner(f, def) {
+  const L = { thigh: 12.5, shin: 13.5, thighR: 3.5, shinR: 3.1, foot: 4, glow: true };
+  const p = pose(f);
+  const W = 44, H = 62;
+  const ground = H - 1;
+  const hip = [19, hipFor(p, L, ground) + (p.air ? -1 : 0)];
+  const lean = p.lean * 0.8;
+  const up = (len) => [Math.sin(lean) * len, -Math.cos(lean) * len];
+  const chestC = add(hip, up(11 - p.breathe * 0.4));
+  const neck = add(hip, up(17.5 - p.breathe * 0.5));
+  const headC = add(neck, [1.5, -4]);
+  const shapes = [];
+  shapes.push(...legShapes([hip[0] - 1, hip[1]], p.back, L, false, 'armor').shapes);
+  shapes.push({ t: 'cap', a: hip, b: chestC, r1: 4.2, r2: 4.8, m: 'dark', z: 2 });
+  shapes.push({ t: 'poly', pts: [add(chestC, [-7, -7.5]), add(chestC, [8, -6.5]), add(chestC, [6.5, 4]), add(chestC, [0, 8]), add(chestC, [-7, 4])], m: 'armor', z: 3, bevel: 2.2, tilt: [0.1, -0.15] });
+  shapes.push({ t: 'poly', pts: [add(chestC, [-4, 6]), add(chestC, [4, 6]), add(chestC, [3, 11]), add(chestC, [-3, 11])], m: 'trim', z: 3.1, bevel: 1.2 });
+  shapes.push({ t: 'cap', a: add(chestC, [0.5, 6]), b: add(chestC, [1.5, -5]), r1: 0.6, r2: 0.6, m: 'glow', z: 3.5, noSep: true });
+  shapes.push({ t: 'poly', pts: [add(chestC, [-6, -7]), add(chestC, [-9.5, -8]), add(chestC, [-9, -3]), add(chestC, [-6, -2])], m: 'trim', z: 2.8, bevel: 1.2 });
+  shapes.push({ t: 'poly', pts: [[hip[0] - 4, hip[1] - 2.5], [hip[0] + 4.5, hip[1] - 2.5], [hip[0] + 3.5, hip[1] + 3], [hip[0] - 3.5, hip[1] + 3]], m: 'trim', z: 3.6, bevel: 1.2 });
+  shapes.push(...legShapes(hip, p.front, L, true, 'armor').shapes);
+  shapes.push({ t: 'cap', a: add(neck, [0, 2]), b: neck, r1: 2.6, r2: 2.4, m: 'dark', z: 4 });
+  // Swept-back crested helm with an eye slit.
+  shapes.push({ t: 'poly', pts: [add(headC, [4.5, -1]), add(headC, [3.5, -4]), add(headC, [-3, -5]), add(headC, [-11, -7.5]), add(headC, [-5, -1.5]), add(headC, [-3, 3.5]), add(headC, [3.5, 3.2])], m: 'armor', z: 7, bevel: 1.8, tilt: [0.1, -0.2] });
+  shapes.push({ t: 'cap', a: add(headC, [-1, -4.6]), b: add(headC, [-10, -7]), r1: 0.7, r2: 0.4, m: 'glow', z: 7.5, noSep: true });
+  shapes.push({ t: 'cap', a: add(headC, [0.5, 0]), b: add(headC, [4.3, 0.2]), r1: 0.8, r2: 0.7, m: 'glow', z: 8, hot: true, noSep: true });
+  const shoulder = add(neck, [1.5, 3.5]);
+  return { shapes, shoulder, w: W, h: H };
+}
+
+// Sentinels: floating Forerunner drones with flexing arms and a single eye.
+function sentinel(f) {
+  const W = 36, H = 28;
+  const c = [17, 13 + [0, -0.6, -1, -0.6][f]];
+  const flex = [0, 0.15, 0.3, 0.15][f];
+  const shapes = [
+    { t: 'ell', c: add(c, [0, 2.5]), rx: 9.5, ry: 4.2, m: 'dark', z: 1 },
+    { t: 'ell', c, rx: 11, ry: 6.4, m: 'armor', z: 2 },
+    { t: 'poly', pts: [add(c, [-7, -5]), add(c, [2, -9]), add(c, [6, -5])], m: 'trim', z: 1.5, bevel: 1.2 },
+    { t: 'ell', c: add(c, [8, 0.5]), rx: 3.4, ry: 3, m: 'dark', z: 3 },
+    { t: 'ell', c: add(c, [9, 0.5]), rx: 2.3, ry: 2.1, m: 'glow', z: 4, hot: true },
+  ];
+  for (const [sx, sy, dir] of [[-6, 3, -1], [3, 3, 1]]) {
+    const base = add(c, [sx, sy]);
+    const tip = add(base, [dir * (5 + flex * 4), 6 - flex * 6]);
+    shapes.push({ t: 'cap', a: base, b: tip, r1: 1.6, r2: 1, m: 'trim', z: 0.5 });
+  }
+  return { shapes, shoulder: add(c, [11, 0.5]), w: W, h: H };
 }
 
 export const BODIES = {
-  humanoid: { w: 16, h: 24, frames: 8, draw: humanoid, muzzle: { x: 4, y: -2 } },
-  forerunner: { w: 18, h: 28, frames: 8, draw: forerunner, muzzle: { x: 5, y: -4 } },
-  sentinel: { w: 16, h: 12, frames: 2, draw: sentinel, muzzle: { x: 6, y: 0 }, flying: true },
+  humanoid: { w: 40, h: 52, frames: 15, anims: FRAMES, hit: [13, 40], build: humanoid, reach: 8.5, arm: [2.9, 2.5] },
+  forerunner: { w: 44, h: 62, frames: 15, anims: FRAMES, hit: [14, 48], build: forerunner, reach: 10.5, arm: [3, 2.7] },
+  sentinel: { w: 36, h: 28, frames: 4, anims: HOVER, hit: [22, 14], build: sentinel, flying: true },
 };
+
+// The front arm, support hand and weapon at aim angle `a` (radians, -π/2 up … π/2 down),
+// around a pivot at the frame center. gun: { shapes, grip, muzzle } from src/content/guns.js.
+export function armShapes(body, def, a, gun, S) {
+  const C = [S / 2, S / 2];
+  const d = [Math.cos(a), Math.sin(a)];
+  const perp = [-d[1], d[0]];
+  const H = add(add(C, [d[0] * body.reach, d[1] * body.reach]), [0, 2]);
+  const E = add([(C[0] + H[0]) / 2, (C[1] + H[1]) / 2], [perp[0] * 2.4, perp[1] * 2.4 + 1]);
+  const rot = ([x, y]) => [H[0] + x * d[0] - y * d[1], H[1] + x * d[1] + y * d[0]];
+  const shapes = [];
+  if (gun) {
+    for (const s of gun.shapes) {
+      if (s.t === 'cap') shapes.push({ ...s, a: rot(s.a), b: rot(s.b), z: 7 + (s.z ?? 0) });
+      else if (s.t === 'ell') shapes.push({ ...s, c: rot(s.c), rot: (s.rot ?? 0) + a, z: 7 + (s.z ?? 0) });
+      else shapes.push({ ...s, pts: s.pts.map(rot), z: 7 + (s.z ?? 0) });
+    }
+    const F = rot([gun.grip, 1]);
+    shapes.push({ t: 'cap', a: add(C, [-1.5, 5.5]), b: F, r1: body.arm[1], r2: body.arm[1] * 0.9, m: 'armorFar', z: 3 });
+    shapes.push({ t: 'ell', c: F, rx: 1.9, ry: 1.9, m: 'darkFar', z: 8.5 });
+  }
+  const [r1, r2] = body.arm;
+  shapes.push({ t: 'cap', a: C, b: E, r1, r2, m: 'armor', z: 5 });
+  shapes.push({ t: 'cap', a: E, b: H, r1: r2, r2: r2 * 0.9, m: 'armor', z: 6 });
+  shapes.push({ t: 'ell', c: H, rx: 2.1, ry: 2.1, m: 'dark', z: 8 });
+  if (def.body === 'forerunner') {
+    shapes.push({ t: 'cap', a: add(E, [d[0], d[1]]), b: add(H, [-d[0] * 2, -d[1] * 2]), r1: 0.5, r2: 0.5, m: 'glow', z: 6.5, noSep: true });
+    shapes.push({ t: 'poly', pts: [add(C, [-5.5, -2.5]), add(C, [4, -5]), add(C, [5.5, 1.5]), add(C, [-4, 4])], m: 'trim', z: 9, bevel: 1.6 });
+  } else {
+    const r = def.style === 'spartan' ? 4.4 : 3.7;
+    shapes.push({ t: 'ell', c: add(C, [0.2, -0.6]), rx: r, ry: r * 0.85, m: def.style === 'ancient-lord' ? 'trim' : 'armor', z: 9 });
+  }
+  const muzzle = gun ? rot(gun.muzzle) : H;
+  return { shapes, muzzle: [muzzle[0] - C[0], muzzle[1] - C[1]] };
+}

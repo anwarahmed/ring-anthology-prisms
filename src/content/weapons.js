@@ -1,28 +1,28 @@
 // Weapon catalog. tech sets damage vs shields/health (src/engine/rules.js).
 // rate: seconds between shots; mag: shots before reload (Infinity for no reload);
 // projectile: bullet | bolt | beam | orb; splash: explosion radius in px.
-// gun: how the held weapon is drawn (length in px, colors).
+// gun: how the held weapon is drawn: kind (src/content/guns.js), length in px, colors.
 
 export const WEAPONS = {
   'ancient-rifle': {
     name: 'Ancient Rifle', tech: 'ballistic', rate: 0.14, damage: 9, speed: 560, spread: 0.035,
     mag: 40, reload: 1.3, projectile: 'bullet', color: '#ffd27a', sfx: 'rifle',
-    gun: { len: 11, body: '#5b4a30', accent: '#ffd27a' },
+    gun: { kind: 'rifle', len: 16, body: '#7a6a4a', dark: '#3a3226', accent: '#ffd27a' },
   },
   'ancient-cannon': {
     name: 'Ancient Cannon', tech: 'explosive', rate: 0.85, damage: 40, speed: 360, spread: 0,
     mag: 6, reload: 2, projectile: 'orb', splash: 28, color: '#ff9a3d', sfx: 'cannon',
-    gun: { len: 13, body: '#4a3a28', accent: '#ff9a3d' },
+    gun: { kind: 'cannon', len: 17, body: '#8a6d3b', dark: '#3a2c1c', accent: '#ff9a3d' },
   },
   'hardlight-lance': {
     name: 'Hard-Light Lance', tech: 'hardlight', rate: 1.1, damage: 12, speed: 320, spread: 0.05,
     mag: Infinity, projectile: 'beam', color: '#7fd8ff', sfx: 'hardlight',
-    gun: { len: 12, body: '#9fb0bf', accent: '#7fd8ff' },
+    gun: { kind: 'lance', len: 17, body: '#c3ccd6', dark: '#56687a', accent: '#7fd8ff' },
   },
   'hardlight-scatter': {
     name: 'Hard-Light Scatter', tech: 'hardlight', rate: 1.6, damage: 7, speed: 300, spread: 0.3,
     pellets: 5, mag: Infinity, projectile: 'bolt', color: '#a8e6ff', sfx: 'hardlight',
-    gun: { len: 10, body: '#9fb0bf', accent: '#a8e6ff' },
+    gun: { kind: 'scatter', len: 13, body: '#d0d8e0', dark: '#3d6f96', accent: '#bdf0ff' },
   },
   'sentinel-beam': {
     name: 'Sentinel Beam', tech: 'hardlight', rate: 0.5, damage: 6, speed: 380, spread: 0.06,

@@ -5,9 +5,11 @@ import Phaser from 'phaser';
 import { LEVELS } from '../../levels/index.js';
 import { CHARACTERS } from '../content/characters.js';
 import { UNITS } from '../content/units.js';
+import { BODIES } from '../content/bodies.js';
 import { THEMES } from '../content/themes.js';
 import { TILE, ERAS, DIFFICULTY, VIEW } from '../engine/config.js';
 import { parseMap, groundBelow, TILES } from '../engine/mapparse.js';
+import { TILESET, COLLIDES, isPlatform, isHazard } from '../engine/tileset.js';
 import { tilesTexture, baseTextures, hexNum } from '../engine/textures.js';
 import { buildBackdrop } from '../engine/backdrop.js';
 import { Fx } from '../engine/fx.js';
@@ -57,22 +59,24 @@ export class LevelScene extends Phaser.Scene {
     setupCombat(this);
     this.physics.world.setBounds(0, -200, W, H + 400);
     this.physics.add.collider(this.actorGroup, this.layer, null, (a, tile) => {
-      if (tile.index === 3 && a.team === 'players') this.hazard(a);
-      return !(tile.index === 2 && a.dropping > this.time.now);
+      if (isHazard(tile.index) && a.team === 'players') this.hazard(a);
+      return !(isPlatform(tile.index) && a.dropping > this.time.now);
     });
 
     this.controls = new Controls(this);
-    const spawn = this.cp ?? { x: this.map.spawn.x * TILE + 8, y: this.map.spawn.y * TILE };
+    // Positions are feet (ground) points; sprites are centered above them.
+    const spawn = this.cp ?? { x: this.map.spawn.x * TILE + 8, y: (this.map.spawn.y + 1) * TILE };
     session.players.forEach((sp, i) => {
       const charId = L.players[i] ?? L.players[0];
-      const p = new Player(this, spawn.x - i * 20, spawn.y, i, charId, CHARACTERS[charId], sp.device, this.era);
+      const ch = CHARACTERS[charId];
+      const p = new Player(this, spawn.x - i * 20, spawn.y - BODIES[ch.body].h / 2 - 1, i, charId, ch, sp.device, this.era);
       if (session.debug.god) p.invulnUntil = Infinity;
       this.players.push(p);
       if (session.debug.bot) this.controls.bots[sp.device] = makeBot(this, p);
     });
 
     for (const e of this.map.entities) {
-      if (e.unit) this.spawnUnit(e.unit, e.x * TILE + 8, e.y * TILE, { ally: !!e.ally, entrance: 'none' });
+      if (e.unit) this.spawnUnit(e.unit, e.x * TILE + 8, (e.y + 1) * TILE, { ally: !!e.ally, entrance: 'none' });
     }
 
     // Camera follows the middle of the living players.
@@ -96,7 +100,16 @@ export class LevelScene extends Phaser.Scene {
 
   buildTiles(theme) {
     const m = this.map;
-    const key = tilesTexture(this, this.level.theme, theme.tiles);
+    const key = tilesTexture(this, this.level.theme, theme);
+    const at = (x, y) => (x < 0 || y < 0 || x >= m.width || y >= m.height ? TILES.solid : m.grid[y][x]);
+    const open = (x, y) => at(x, y) !== TILES.solid;
+    // Back walls continue behind platforms, markers and entities set into them: two
+    // passes fill any open cell with at least two wall neighbors.
+    let backFill = m.grid.map((row) => row.map((t) => t === TILES.back));
+    for (let pass = 0; pass < 2; pass++) {
+      backFill = backFill.map((row, y) => row.map((b, x) => b || (m.grid[y][x] !== TILES.solid &&
+        [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => backFill[y + dy]?.[x + dx]).length >= 2)));
+    }
     const main = [];
     const back = [];
     for (let y = 0; y < m.height; y++) {
@@ -104,12 +117,20 @@ export class LevelScene extends Phaser.Scene {
       const brow = [];
       for (let x = 0; x < m.width; x++) {
         const t = m.grid[y][x];
-        const above = y > 0 ? m.grid[y - 1][x] : TILES.air;
-        if (t === TILES.solid) row.push(above === TILES.solid ? 0 : 1);
-        else if (t === TILES.platform) row.push(2);
-        else if (t === TILES.hazard) row.push(3);
-        else row.push(-1);
-        brow.push(t === TILES.back ? 4 : -1);
+        const hash = (x * 73856093) ^ (y * 19349663);
+        if (t === TILES.solid) {
+          const mask = (open(x, y - 1) ? 1 : 0) | (open(x + 1, y) ? 2 : 0) | (open(x, y + 1) ? 4 : 0) | (open(x - 1, y) ? 8 : 0);
+          row.push(TILESET.solid + (hash & 1) * 16 + mask);
+        } else if (t === TILES.platform) {
+          const l = at(x - 1, y) === TILES.platform, r = at(x + 1, y) === TILES.platform;
+          row.push(TILESET.platform + (!l ? 0 : !r ? 2 : 1));
+        } else if (t === TILES.hazard) {
+          row.push(TILESET.hazard);
+          if (at(x, y - 1) !== TILES.hazard) this.flames(x, y);
+        } else {
+          row.push(-1);
+        }
+        brow.push(backFill[y][x] ? TILESET.back + ((hash >>> 3) % 23 === 0 ? 2 : hash & 1) : -1);
       }
       main.push(row);
       back.push(brow);
@@ -117,13 +138,23 @@ export class LevelScene extends Phaser.Scene {
     const tm = this.make.tilemap({ data: main, tileWidth: TILE, tileHeight: TILE });
     const ts = tm.addTilesetImage(key, key, TILE, TILE, 0, 0);
     this.layer = tm.createLayer(0, ts, 0, 0).setDepth(10);
-    this.layer.setCollision([0, 1, 2, 3]);
+    this.layer.setCollision(COLLIDES);
     this.layer.forEachTile((tile) => {
-      if (tile.index === 2) tile.setCollision(false, false, true, false);
+      if (isPlatform(tile.index)) tile.setCollision(false, false, true, false);
     });
     const bm = this.make.tilemap({ data: back, tileWidth: TILE, tileHeight: TILE });
     const bts = bm.addTilesetImage(key, key, TILE, TILE, 0, 0);
-    bm.createLayer(0, bts, 0, 0).setDepth(5).setAlpha(0.85);
+    bm.createLayer(0, bts, 0, 0).setDepth(5);
+  }
+
+  // Fire licking up from hazard tiles.
+  flames(x, y) {
+    const color = hexNum(THEMES[this.level.theme].tiles.hazard);
+    this.add.particles(x * TILE + 8, y * TILE + 4, 'px', {
+      x: { min: -7, max: 7 }, speedY: { min: -50, max: -20 }, speedX: { min: -6, max: 6 },
+      lifespan: { min: 300, max: 700 }, frequency: 70, scale: { start: 1.4, end: 0 },
+      alpha: { start: 1, end: 0 }, tint: [color, 0xffd27a, 0xffffff], blendMode: 'ADD',
+    }).setDepth(12);
   }
 
   actorList() {
@@ -174,10 +205,12 @@ export class LevelScene extends Phaser.Scene {
 
   // --- Spawning -------------------------------------------------------------------
 
+  // y is the feet point for walkers and the center for flyers.
   spawnUnit(id, x, y, { ally = false, entrance } = {}) {
     const def = UNITS[id];
     if (!def) { console.error('Unknown unit', id); return null; }
-    const u = new Unit(this, x, y, id, def, { ally });
+    const B = BODIES[def.body];
+    const u = new Unit(this, x, B.flying ? y : y - (B.h / 2) * (def.scale ?? 1) - 1, id, def, { ally });
     this.units.push(u);
     const how = entrance ?? def.entrance;
     if (how === 'teleport') this.fx.teleportIn(u, hexNum(def.pal.glow ?? def.puff));
@@ -188,7 +221,7 @@ export class LevelScene extends Phaser.Scene {
     const v = this.cameras.main.worldView;
     if (this.map.markers[from]) {
       const m = this.map.markers[from];
-      return { x: m.x * TILE + 8 + (i % 2 ? 1 : -1) * Math.ceil(i / 2) * 18, y: flying ? m.y * TILE - 30 : m.y * TILE };
+      return { x: m.x * TILE + 8 + (i % 2 ? 1 : -1) * Math.ceil(i / 2) * 18, y: flying ? m.y * TILE - 30 : (m.y + 1) * TILE };
     }
     let x;
     if (from === 'left') x = v.x - 14 - i * 16;
@@ -198,7 +231,7 @@ export class LevelScene extends Phaser.Scene {
     if (flying || from === 'sky') return { x, y: v.y + 30 };
     const col = Math.floor(x / TILE);
     const g = groundBelow(this.map.grid, col, Math.floor(v.y / TILE));
-    return { x, y: (g ?? this.map.height - 2) * TILE - 16 };
+    return { x, y: (g ?? this.map.height - 2) * TILE };
   }
 
   async spawnGroup(list, ally = false) {
@@ -256,7 +289,7 @@ export class LevelScene extends Phaser.Scene {
 
   checkpoint(index) {
     const p = this.players.find((pl) => pl.alive) ?? this.players[0];
-    this.cp = { index, x: p.x, y: p.y - 4 };
+    this.cp = { index, x: p.x, y: p.y + p.meta.h / 2 };
     for (const pl of this.players) pl.grenadeCount = Math.max(pl.grenadeCount, 3);
     audio.sfx('checkpoint');
     this.hud.announce('CHECKPOINT', '#ffffff', true);

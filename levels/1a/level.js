@@ -131,7 +131,7 @@ export default {
       const m = api.marker('L');
       for (let i = 0; i < 8; i++) {
         scene.time.delayedCall(i * 180, () => {
-          const u = scene.spawnUnit('warrior-servant', (m.x - 2 - i * 2.5) * api.tile, m.y * api.tile);
+          const u = scene.spawnUnit('warrior-servant', (m.x - 2 - i * 2.5) * api.tile, (m.y + 1) * api.tile);
           if (u) u.brain = () => u.setVelocityX(0);
         });
       }

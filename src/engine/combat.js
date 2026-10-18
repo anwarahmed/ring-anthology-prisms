@@ -4,11 +4,12 @@ import Phaser from 'phaser';
 import { GRENADES } from '../content/weapons.js';
 import { audio } from './audio.js';
 import { hexNum } from './textures.js';
+import { isPlatform } from './tileset.js';
 
 export function setupCombat(scene) {
   scene.projectiles = scene.physics.add.group({ classType: Phaser.Physics.Arcade.Image, maxSize: 500, allowGravity: false });
   scene.grenades = scene.physics.add.group({ classType: Phaser.Physics.Arcade.Image, maxSize: 40 });
-  const notPlatform = (_obj, tile) => tile.index !== 2;
+  const notPlatform = (_obj, tile) => !isPlatform(tile.index);
   scene.physics.add.collider(scene.projectiles, scene.layer, (p) => impact(scene, p), notPlatform);
   scene.physics.add.overlap(scene.projectiles, scene.actorGroup, (p, a) => {
     if (!p.active || !a.alive || p.team === a.team) return;

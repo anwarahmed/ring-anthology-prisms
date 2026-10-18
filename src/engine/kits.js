@@ -7,12 +7,13 @@
 // A kit exposes update(state, dt, onGround) and hud() -> { label, ready (0..1), active }.
 
 import { TILE } from './config.js';
+import { isSolid } from './tileset.js';
 import { audio } from './audio.js';
 import { explode, melee } from './combat.js';
 
 function solidAt(scene, x, y) {
   const t = scene.layer.getTileAtWorldXY(x, y);
-  return !!t && (t.index === 0 || t.index === 1);
+  return !!t && isSolid(t.index);
 }
 
 function forerunner(p) {

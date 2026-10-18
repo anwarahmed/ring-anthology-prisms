@@ -29,6 +29,9 @@ npm start
 | Keys 2 | Arrows | L | K | ; | P | O | M | Backspace |
 | Gamepad | Sticks / d-pad | A | RT / X | LT / B | LB | Y | RB | Start |
 
+Every button can be changed on the **Controls** screen (title menu or pause menu).
+Settings are saved per controller.
+
 **Home soundtrack:** music you own can be dropped into `public/home-soundtrack/` (see
 the README there). It plays on your machine only and is never committed.
 

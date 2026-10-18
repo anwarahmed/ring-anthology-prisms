@@ -4,7 +4,7 @@
 import Phaser from 'phaser';
 import { VIEW, ERAS, DIFFICULTY, LEGAL_NOTICE } from '../engine/config.js';
 import { txt } from '../engine/ui.js';
-import { Controls, deviceLabel } from '../engine/input.js';
+import { Controls } from '../engine/input.js';
 import { audio } from '../engine/audio.js';
 import { session } from '../engine/session.js';
 import { baseTextures, hexNum } from '../engine/textures.js';
@@ -60,7 +60,9 @@ function prismLogo(scene, cx, cy) {
     g.fillStyle(0x0b0f1e, 1).fillTriangle(cx - 22, cy + 18, cx + 22, cy + 18, cx, cy - 22);
     g.lineStyle(2, 0xdff4ff, 1).strokeTriangle(cx - 22, cy + 18, cx + 22, cy + 18, cx, cy - 22);
   };
-  scene.events.on('update', (t) => draw(t));
+  const tick = (t) => draw(t);
+  scene.events.on('update', tick);
+  scene.events.once('shutdown', () => scene.events.off('update', tick));
   draw(0);
 }
 
@@ -78,21 +80,37 @@ export class TitleScene extends Phaser.Scene {
     txt(this, VIEW.w / 2, 120, 'RING ANTHOLOGY', { size: 8, color: '#bfd8ff' }).setOrigin(0.5);
     const title = txt(this, VIEW.w / 2, 144, 'PRISMS', { size: 24 }).setOrigin(0.5);
     this.tweens.add({ targets: title, alpha: 0.8, duration: 1200, yoyo: true, repeat: -1 });
-    const press = txt(this, VIEW.w / 2, 190, 'PRESS START', { size: 8 }).setOrigin(0.5);
-    this.tweens.add({ targets: press, alpha: 0, duration: 600, yoyo: true, repeat: -1 });
+    // PLAY / CONTROLS. Up/down to choose; any jump/fire/start to confirm.
+    this.items = ['PLAY', 'CONTROLS'].map((label, i) => txt(this, VIEW.w / 2, 182 + i * 13, label, { size: 8 }).setOrigin(0.5));
+    this.sel = 0;
+    this.blink = this.tweens.add({ targets: this.items[0], alpha: 0.35, duration: 500, yoyo: true, repeat: -1 });
+    this.refreshMenu();
     txt(this, VIEW.w / 2, 206, 'An unofficial Halo fan game', { font: 'read', size: 16, color: '#9aa' }).setOrigin(0.5);
     txt(this, VIEW.w / 2, VIEW.h - 6, LEGAL_NOTICE, { font: 'read', size: 12, color: '#778', align: 'center', wrap: VIEW.w - 30, stroke: false }).setOrigin(0.5, 1);
     this.input.once('pointerdown', () => audio.unlock());
     audio.playMusic('title', 0).catch(() => {});
   }
+  refreshMenu() {
+    this.items.forEach((t, i) => t.setText(i === this.sel ? `> ${['PLAY', 'CONTROLS'][i]} <` : ['PLAY', 'CONTROLS'][i]).setAlpha(1));
+    this.blink.remove();
+    this.blink = this.tweens.add({ targets: this.items[this.sel], alpha: 0.35, duration: 500, yoyo: true, repeat: -1 });
+  }
   update() {
     const hit = anyDevice(this.controls);
-    if (hit && !hit.nav) {
-      audio.unlock();
-      audio.playMusic('title', 0);
-      audio.sfx('ui');
-      this.scene.start('Players', { first: hit.device });
+    if (!hit) return;
+    audio.unlock();
+    if (hit.nav) {
+      if (hit.s.pressed.up || hit.s.pressed.down) {
+        this.sel = 1 - this.sel;
+        audio.sfx('uiMove');
+        this.refreshMenu();
+      }
+      return;
     }
+    audio.sfx('ui');
+    if (this.sel === 1) return this.scene.start('Controls', { returnTo: 'Title' });
+    audio.playMusic('title', 0);
+    this.scene.start('Players', { first: hit.device });
   }
 }
 
@@ -117,7 +135,7 @@ export class PlayersScene extends Phaser.Scene {
   refresh() {
     this.slots.forEach((t, i) => {
       const d = this.devices[i];
-      t.setText(d ? `P${i + 1}  ${deviceLabel(d).toUpperCase()}` : `P${i + 1}  (PRESS TO JOIN)`).setColor(d ? '#ffffff' : '#666666');
+      t.setText(d ? `P${i + 1}  ${this.controls.label(d).toUpperCase()}` : `P${i + 1}  (PRESS TO JOIN)`).setColor(d ? '#ffffff' : '#666666');
     });
     this.diffText.setText(`< ${DIFFICULTY[this.diffs[this.diffIndex]].label.toUpperCase()} >`);
   }
@@ -319,12 +337,11 @@ export class PauseScene extends Phaser.Scene {
     this.controls = new Controls(this);
     this.add.rectangle(0, 0, VIEW.w, VIEW.h, 0x000000, 0.7).setOrigin(0);
     txt(this, VIEW.w / 2, 40, 'PAUSED', { size: 16 }).setOrigin(0.5);
-    this.options = ['RESUME', 'RESTART CHECKPOINT', 'QUIT TO TIMELINE'];
+    this.options = ['RESUME', 'RESTART CHECKPOINT', 'CONTROLS', 'QUIT TO TIMELINE'];
     this.sel = 0;
     this.items = this.options.map((o, i) => txt(this, VIEW.w / 2, 80 + i * 18, o, { size: 8 }).setOrigin(0.5));
-    const help = 'MOVE/AIM  JUMP  FIRE  ABILITY  GRENADE  SWAP  MELEE\n' +
-      'KEYS 1: WASD  G  F  H  T  R  V\nKEYS 2: ARROWS  L  K  ;  P  O  M\nPAD: STICKS  A  RT/X  LT/B  LB  Y  RB';
-    txt(this, VIEW.w / 2, 150, help, { font: 'read', size: 16, color: '#aaa', align: 'center' }).setOrigin(0.5, 0);
+    const help = 'Change any button under CONTROLS.';
+    txt(this, VIEW.w / 2, 170, help, { font: 'read', size: 16, color: '#aaa', align: 'center' }).setOrigin(0.5, 0);
     this.ready = this.time.now + 250;
     this.refresh();
   }
@@ -337,7 +354,7 @@ export class PauseScene extends Phaser.Scene {
     if (!hit) return;
     const s = hit.s;
     if (s.pressed.up || s.pressed.down) {
-      this.sel = (this.sel + (s.pressed.down ? 1 : 2)) % 3;
+      this.sel = (this.sel + (s.pressed.down ? 1 : this.options.length - 1)) % this.options.length;
       audio.sfx('uiMove');
       return this.refresh();
     }
@@ -346,6 +363,11 @@ export class PauseScene extends Phaser.Scene {
       return this.scene.resume('Level');
     }
     if (s.pressed.jump || s.pressed.fire) {
+      if (this.sel === 2) {
+        this.scene.sleep();
+        this.scene.launch('Controls', { returnTo: 'Pause' });
+        return;
+      }
       this.scene.stop();
       if (this.sel === 1) return this.level.restart();
       this.scene.stop('Hud');

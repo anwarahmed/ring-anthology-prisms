@@ -2,6 +2,7 @@
 // Units on the players' team (allies) use the same behaviors against enemies.
 
 import { melee } from './combat.js';
+import { isSolid } from './tileset.js';
 
 export function targetsFor(unit, scene) {
   return scene.actorList().filter((a) => a.alive && a.team !== unit.team && !a.camo);
@@ -21,7 +22,7 @@ export function lineOfSight(scene, x1, y1, x2, y2) {
   const steps = Math.ceil(Math.hypot(x2 - x1, y2 - y1) / 8);
   for (let i = 1; i < steps; i++) {
     const t = scene.layer.getTileAtWorldXY(x1 + ((x2 - x1) * i) / steps, y1 + ((y2 - y1) * i) / steps);
-    if (t && (t.index === 0 || t.index === 1)) return false;
+    if (t && isSolid(t.index)) return false;
   }
   return true;
 }
@@ -36,7 +37,7 @@ function aimAt(unit, t) {
 
 function wallAhead(unit, scene) {
   const t = scene.layer.getTileAtWorldXY(unit.x + unit.facing * 12, unit.y);
-  return !!t && (t.index === 0 || t.index === 1);
+  return !!t && isSolid(t.index);
 }
 
 function tryFire(unit, dt, inRange) {
@@ -61,7 +62,7 @@ function followPlayer(unit, scene) {
   const dx = p.x - unit.x;
   unit.facing = Math.sign(dx) || unit.facing;
   unit.setVelocityX(Math.abs(dx) > 50 ? Math.sign(dx) * unit.def.speed * 1.3 : 0);
-  if (unit.body.blocked.down && wallAhead(unit, scene)) unit.setVelocityY(-300);
+  if (unit.body.blocked.down && wallAhead(unit, scene)) unit.setVelocityY(-360);
 }
 
 export const BEHAVIORS = {
@@ -84,7 +85,7 @@ export const BEHAVIORS = {
     }
     if (vx === 0) vx = unit.state.dir * unit.def.speed * 0.4;
     unit.setVelocityX(vx);
-    if (unit.body.blocked.down && (wallAhead(unit, scene) || Math.random() < dt * 0.15)) unit.setVelocityY(-280);
+    if (unit.body.blocked.down && (wallAhead(unit, scene) || Math.random() < dt * 0.15)) unit.setVelocityY(-360);
     tryFire(unit, dt, n.d < unit.def.range && lineOfSight(scene, unit.x, unit.y, n.t.x, n.t.y));
   },
 
@@ -103,7 +104,7 @@ export const BEHAVIORS = {
       melee(scene, unit, 30, (unit.def.melee ?? 25) * unit.dmgScale);
     }
     unit.setVelocityX(unit.state.wind > 0 ? 0 : unit.facing * unit.def.speed * (n.d > 60 ? 1.2 : 0.8));
-    if (unit.body.blocked.down && wallAhead(unit, scene)) unit.setVelocityY(-320);
+    if (unit.body.blocked.down && wallAhead(unit, scene)) unit.setVelocityY(-380);
     tryFire(unit, dt, n.d > 50 && n.d < unit.def.range && lineOfSight(scene, unit.x, unit.y, n.t.x, n.t.y));
   },
 

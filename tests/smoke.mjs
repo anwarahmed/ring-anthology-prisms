@@ -81,6 +81,22 @@ await run('menus', '', async (page) => {
   if (!(await active(page, 'Level'))) throw new Error('menus did not reach the first level');
 });
 
+// Controls: open from the title menu, rebind kb1 JUMP to J, check it is saved and works.
+await run('controls', '', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
+  const tap = async (key, wait = 300) => { await page.keyboard.down(key); await page.waitForTimeout(100); await page.keyboard.up(key); await page.waitForTimeout(wait); };
+  await tap('s');
+  await tap('f');
+  await page.waitForFunction(() => window.__game.scene.isActive('Controls'), null, { timeout: 5000 });
+  for (let i = 0; i < 5; i++) await tap('ArrowDown', 150); // device row → UP, DOWN, LEFT, RIGHT, JUMP
+  await tap('Enter', 400);
+  await tap('j', 500);
+  await page.screenshot({ path: join(shots, 'controls.png') });
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.controls') ?? '{}'));
+  if (saved.kb1?.jump?.[0] !== 74) throw new Error(`jump not rebound to J: ${JSON.stringify(saved)}`);
+  await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.controls'));
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {

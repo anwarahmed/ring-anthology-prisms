@@ -1,8 +1,9 @@
-// Builds textures at runtime from code: body sprite sheets, held guns, tiles, and the
+// Builds textures at runtime from code: shaded body sheets, arm/weapon overlays, tiles, and the
 // shared white textures that projectiles and particles tint.
 
-import { BODIES, FRAMES } from '../content/bodies.js';
-import { TILE } from './config.js';
+import { BODIES } from '../content/bodies.js';
+import { bodyFrames, armFrames } from './sprites.js';
+import { tilesetPixels } from './tileset.js';
 
 function painter(ctx, ox, oy) {
   return {
@@ -24,71 +25,53 @@ export function sheet(scene, key, fw, fh, frames, draw) {
   return key;
 }
 
-// Sprite sheet + animations for a character or unit definition. Returns the texture key.
+// Frame metadata for bodies (shoulder points) and arms (muzzle offsets), by texture key.
+export const META = new Map();
+
+function rgbaSheet(scene, key, frames) {
+  const { w, h } = frames[0];
+  const tex = scene.textures.createCanvas(key, w * frames.length, h);
+  const ctx = tex.getContext();
+  frames.forEach((f, i) => {
+    ctx.putImageData(new ImageData(f.rgba, w, h), i * w, 0);
+    tex.add(i, 0, i * w, 0, w, h);
+  });
+  tex.refresh();
+}
+
+// Shaded sprite sheet + animations for a character or unit. Returns the texture key.
 export function bodyTexture(scene, id, def) {
-  const body = BODIES[def.body];
   const key = `body-${id}`;
   if (scene.textures.exists(key)) return key;
-  sheet(scene, key, body.w, body.h, body.frames, (p, f) => body.draw(p, f, def));
-  if (body.frames >= 8) {
-    for (const [name, frames] of Object.entries(FRAMES)) {
-      scene.anims.create({
-        key: `${key}-${name}`,
-        frames: frames.map((frame) => ({ key, frame })),
-        frameRate: name === 'run' ? 11 : 3,
-        repeat: -1,
-      });
-    }
-  } else {
-    scene.anims.create({ key: `${key}-idle`, frames: [{ key, frame: 0 }, { key, frame: 1 }], frameRate: 8, repeat: -1 });
+  const body = BODIES[def.body];
+  const frames = bodyFrames(def);
+  rgbaSheet(scene, key, frames);
+  META.set(key, { shoulders: frames.map((f) => f.shoulder), w: body.w, h: body.h });
+  const rates = { idle: 5, run: 14, jump: 1, fall: 1, crouch: 1 };
+  for (const [name, list] of Object.entries(body.anims)) {
+    scene.anims.create({ key: `${key}-${name}`, frames: list.map((frame) => ({ key, frame })), frameRate: body.flying ? 10 : rates[name], repeat: -1 });
   }
   return key;
 }
 
-export function gunTexture(scene, id, gun) {
-  const key = `gun-${id}`;
-  if (!gun || scene.textures.exists(key)) return key;
-  sheet(scene, key, gun.len + 2, 5, 1, (p) => {
-    p.r(0, 1, gun.len, 3, gun.body);
-    p.r(2, 0, gun.len - 5, 1, gun.body);
-    p.r(gun.len - 3, 1, 3, 1, gun.accent);
-    p.r(3, 3, 2, 2, gun.body);
-    p.r(4, 2, gun.len - 7, 1, gun.accent);
-  });
+// The arm-and-weapon overlay at every aim angle for one body + weapon pair.
+export function armTexture(scene, id, def, weaponId, weapon) {
+  const key = `arm-${id}-${weaponId}`;
+  if (scene.textures.exists(key)) return key;
+  const frames = armFrames(def, weapon);
+  rgbaSheet(scene, key, frames);
+  META.set(key, { muzzles: frames.map((f) => f.muzzle) });
   return key;
 }
 
-// One tileset per theme: 0 solid, 1 solid with exposed top, 2 platform, 3 hazard, 4 back wall.
-export function tilesTexture(scene, themeId, t) {
+// One tileset per theme (layout in src/engine/tileset.js).
+export function tilesTexture(scene, themeId, theme) {
   const key = `tiles-${themeId}`;
   if (scene.textures.exists(key)) return key;
-  const S = TILE;
-  sheet(scene, key, S, S, 5, (p, f) => {
-    if (f === 0 || f === 1) {
-      p.r(0, 0, S, S, t.solid);
-      p.r(1, 1, 6, 6, shade(t.solid, 0.08));
-      p.r(9, 8, 6, 6, shade(t.solid, -0.08));
-      p.r(0, 15, S, 1, shade(t.solid, -0.2));
-      if (f === 1) {
-        p.r(0, 0, S, 4, t.top);
-        p.r(0, 0, S, 1, t.edge);
-        p.r(0, 4, S, 1, shade(t.top, -0.3));
-      }
-    } else if (f === 2) {
-      p.r(0, 0, S, 4, t.platform);
-      p.r(0, 0, S, 1, t.edge);
-      p.r(2, 4, 2, 3, shade(t.platform, -0.2));
-      p.r(12, 4, 2, 3, shade(t.platform, -0.2));
-    } else if (f === 3) {
-      p.r(0, 6, S, 10, shade(t.hazard, -0.3));
-      for (let x = 0; x < S; x += 4) p.r(x + 1, 2 + (x % 8 ? 1 : 0), 2, 6, t.hazard);
-      p.r(0, 6, S, 1, '#ffffff');
-    } else {
-      p.r(0, 0, S, S, t.back);
-      p.r(0, 0, S, 1, shade(t.back, 0.1));
-      p.r(7, 2, 2, 12, shade(t.back, 0.06));
-    }
-  });
+  const { rgba, w, h } = tilesetPixels(theme);
+  const tex = scene.textures.createCanvas(key, w, h);
+  tex.getContext().putImageData(new ImageData(rgba, w, h), 0, 0);
+  tex.refresh();
   return key;
 }
 

@@ -116,8 +116,9 @@ Add new entries through the `new-content` skill.
 | `characters.js` | Playable characters: body, palette, shields, health, speed, jump, weapons, grenade, `kit` override, `extra` |
 | `units.js` | AI units: body, palette, health, shields, speed, `ai`, weapon, range, entrance, puff color, `boss` |
 | `weapons.js` | Weapons (tech, rate, damage, speed, spread, pellets, mag, reload, projectile, splash) and grenades |
-| `bodies.js` | Pixel-art painters: `humanoid` (16×24), `forerunner` (18×28), `sentinel` (16×12) |
-| `themes.js` | Tile colors and parallax backdrop layers for a place |
+| `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`), `forerunner` (44×62), `sentinel` (36×28, hovering); `armShapes` draws the arm and weapon |
+| `guns.js` | Held-weapon shapes by `kind`: `rifle`, `cannon`, `lance`, `scatter` |
+| `themes.js` | Tile colors (`solid`, `top`, `edge`, `platform`, `hazard`, `back`, `window`) and parallax layers (`gradient`, `stars`, `planet`, `halo`, `ships`, `spires`, `smoke`, `haze`, `embers`) |
 | `music.js` | Chiptune tracks with calm, combat and boss layers |
 
 **AI behaviors:** `shooter` (keeps distance, strafes, bursts), `charger` (rushes,
@@ -126,6 +127,29 @@ melee), `flyer` (hovers above), `walker` (patrols), `turret`, and `boss` (cycles
 
 **Tech vs shields:** plasma strips shields, ballistic hurts health, hard-light is
 balanced, explosive and melee hit both (`src/engine/rules.js`).
+
+## Art pipeline
+
+Everything is drawn in code, in a 16-bit style:
+
+- **Sprites** (`src/engine/raster.js`): bodies and weapons are capsules, ellipses and
+  polygons. Each pixel is shaded from its surface normal, with one light from the
+  upper left, into a 5-tone hue-shifted ramp per material. It adds light dithering,
+  dark outlines, separation lines where parts overlap, and specular glints.
+  Materials come from the palette (`armor`, `helmet`, `trim`, `dark`, `visor`,
+  `cape`, `glow`); `glow` is emissive.
+- **Frames:** 15 per walking body (idle ×4, run ×8, jump, fall, crouch), posed by
+  `pose()` in `bodies.js`, with feet planted on the ground. Arms and weapons are a
+  separate overlay at 9 aim angles, attached at the body's shoulder point.
+- **Tiles** (`src/engine/tileset.js`): stone courses, plus edge highlights and
+  shadows chosen by which sides are exposed. Tile indices: solid 0–31, platform 32–34,
+  hazard 35, background wall 36–38. Background walls fill in behind markers and
+  platforms set into them, and hazards emit flames.
+- **Preview:** `node scripts/preview-sprites.mjs [id ...]` renders every frame, plus
+  arms at three angles, to `test-results/sprites.png`. Check new art there first.
+
+Positions in the engine are feet points: map rows, markers and spawns place a unit's
+feet on the ground, and the sprite is centered above them.
 
 ## Era kits
 
@@ -140,6 +164,11 @@ character can override the kit when its technology differs from the era's.
 | banished | Grappleshot (walls pull you, enemies pull you into a melee) | — |
 
 ## Controls
+
+Every action can be rebound per keyboard layout or controller on the **Controls**
+screen (title menu and pause menu). Bindings are saved per controller name
+(`src/engine/input.js`). The defaults:
+
 
 | | Move/aim | Jump | Fire | Ability | Grenade | Swap | Melee | Pause |
 |---|---|---|---|---|---|---|---|---|

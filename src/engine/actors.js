@@ -5,7 +5,8 @@ import Phaser from 'phaser';
 import { BODIES } from '../content/bodies.js';
 import { WEAPONS } from '../content/weapons.js';
 import { applyDamage, aimFrom } from './rules.js';
-import { bodyTexture, gunTexture, hexNum } from './textures.js';
+import { bodyTexture, armTexture, hexNum, META } from './textures.js';
+import { aimFrame } from './sprites.js';
 import { fireWeapon, throwGrenade, melee } from './combat.js';
 import { makeKit } from './kits.js';
 import { BEHAVIORS } from './ai.js';
@@ -26,9 +27,12 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     scene.actorGroup.add(this);
+    this.id = id;
+    this.meta = META.get(key);
     if (def.scale) this.setScale(def.scale);
-    const bw = Math.round(this.bodyDef.w * 0.5), bh = this.bodyDef.h - 2;
-    this.body.setSize(bw, bh).setOffset((this.bodyDef.w - bw) / 2, 2);
+    const [hw, hh] = this.bodyDef.hit;
+    const B = this.bodyDef;
+    this.body.setSize(hw, hh).setOffset((B.w - hw) / 2, B.flying ? (B.h - hh) / 2 : B.h - hh - 1);
     if (this.bodyDef.flying) this.body.setAllowGravity(false);
     this.setDepth(team === 'players' ? 20 : 18);
     this.play(`${key}-idle`);
@@ -38,22 +42,37 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
   equip(weaponId) {
     this.weapon = WEAPONS[weaponId];
     if (this.gun) this.gun.destroy();
-    this.gun = this.weapon?.gun ? this.scene.add.image(this.x, this.y, gunTexture(this.scene, weaponId, this.weapon.gun))
-      .setOrigin(0.25, 0.5).setDepth(this.depth + 1) : null;
+    this.gun = null;
+    if (this.bodyDef.flying || !this.weapon) return;
+    const key = armTexture(this.scene, this.id, this.def, weaponId, this.weapon);
+    this.armMeta = META.get(key);
+    this.gun = this.scene.add.sprite(this.x, this.y, key, 4).setDepth(this.depth + 1).setScale(this.scaleX);
+  }
+
+  // Where the arm attaches (or the eye, for armless bodies) in world space.
+  shoulder() {
+    const sh = this.meta.shoulders[this.frame.name] ?? this.meta.shoulders[0];
+    const k = this.scaleX;
+    return { x: this.x + (sh[0] - this.meta.w / 2) * this.facing * k, y: this.y + (sh[1] - this.meta.h / 2) * k };
+  }
+
+  aimPose() {
+    return aimFrame(Math.abs(this.aim.x) < 0.01 ? this.facing * 0.02 : this.aim.x, this.aim.y);
   }
 
   muzzlePoint() {
-    const m = this.bodyDef.muzzle;
-    const len = (this.weapon?.gun?.len ?? 8) * 0.75;
-    return { x: this.x + this.aim.x * (len + m.x), y: this.y + m.y + this.aim.y * len };
+    const s = this.shoulder();
+    if (!this.gun) return s;
+    const { i, flip } = this.aimPose();
+    const [mx, my] = this.armMeta.muzzles[i];
+    return { x: s.x + mx * (flip ? -1 : 1) * this.scaleX, y: s.y + my * this.scaleX };
   }
 
   syncGun() {
     if (!this.gun) return;
-    const m = this.bodyDef.muzzle;
-    this.gun.setPosition(this.x + this.facing * 2, this.y + m.y + (this.crouching ? 3 : 0));
-    this.gun.setRotation(Math.atan2(this.aim.y, this.aim.x));
-    this.gun.setFlipY(this.aim.x < 0);
+    const s = this.shoulder();
+    const { i, flip } = this.aimPose();
+    this.gun.setPosition(s.x, s.y).setFrame(i).setFlipX(flip);
     this.gun.setVisible(this.visible).setAlpha(this.alpha);
   }
 
@@ -119,9 +138,9 @@ export class Unit extends Actor {
     if (!this.alive) return;
     this.brain(this, dt, this.scene);
     this.setFlipX(this.facing < 0);
-    if (this.bodyDef.frames >= 8) {
+    if (!this.bodyDef.flying) {
       const moving = Math.abs(this.body.velocity.x) > 10;
-      const anim = !this.body.blocked.down ? 'jump' : moving ? 'run' : 'idle';
+      const anim = !this.body.blocked.down ? (this.body.velocity.y < 0 ? 'jump' : 'fall') : moving ? 'run' : 'idle';
       this.play(`${this.key}-${anim}`, true);
     }
     // Shields recharge for AI too.
@@ -254,7 +273,7 @@ export class Player extends Actor {
 
     // Animation.
     this.setFlipX(this.facing < 0);
-    const anim = this.crouching ? 'crouch' : !onGround ? 'jump' : Math.abs(b.velocity.x) > 15 ? 'run' : 'idle';
+    const anim = this.crouching ? 'crouch' : !onGround ? (b.velocity.y < 0 ? 'jump' : 'fall') : Math.abs(b.velocity.x) > 15 ? 'run' : 'idle';
     this.play(`${this.key}-${anim}`, true);
     this.syncGun();
   }
