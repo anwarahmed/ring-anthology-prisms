@@ -9,6 +9,8 @@
 //   ruins {color, light, shadow, glow, scroll, height}   lightshafts {color, count, alpha, angle, scroll}
 //   industrial {color, rim, light, scroll, height}   temple {style: stone | forerunner, color, light, shadow, glow, sconce, scroll}
 //   fog {color, alpha, y, height, scroll, speed}   beacons {color, count, scroll}
+//   floor {color, line, light, top, bottom, rows, tile, scroll}  (perspective floor plane)
+//   temple also takes windows: true (arched lit windows) and marble: true (veined panels)
 // atmosphere {color, amount}: far layers fade toward it.  grade {saturate, contrast, brightness}.
 // props / foreground: see src/engine/scenery.js.
 //   embers {color}   haze {color, alpha}
@@ -59,7 +61,8 @@ export const THEMES = {
       { type: 'gradient', top: '#060a1e', bottom: '#1e2a52' },
       { type: 'lightshafts', color: '#45e6ff', count: 3, alpha: 0.17, scroll: 0.1 },
       { type: 'stars', count: 60 },
-      { type: 'temple', style: 'forerunner', color: '#2a3866', light: '#6a8ac8', shadow: '#080c1e', glow: '#45e6ff', scroll: 0.5 },
+      { type: 'temple', style: 'forerunner', color: '#2a3866', light: '#6a8ac8', shadow: '#080c1e', glow: '#45e6ff', scroll: 0.5, windows: true, marble: true },
+      { type: 'floor', color: '#1e2a4a', line: '#45e6ff', light: '#8ab8ff', top: 0.6, bottom: 0.78, scroll: 0.5 },
       { type: 'fog', color: '#6a9a3a', alpha: 0.35, y: 0.55, height: 0.45, scroll: 0.5 },
       { type: 'beacons', color: '#45e6ff', count: 5, scroll: 0.5 },
       { type: 'smoke', color: '#4a6a2a', alpha: 0.35, scroll: 0.3, y: 0.55, height: 0.45 },
@@ -158,6 +161,7 @@ export const THEMES = {
       { type: 'industrial', color: '#262c2e', rim: '#8a7a5a', light: '#ff3a2a', scroll: 0.2, height: 0.8 },
       { type: 'fog', color: '#6a4a2a', alpha: 0.4, y: 0.45, height: 0.5, scroll: 0.3 },
       { type: 'industrial', color: '#14181a', rim: '#c89a5a', light: '#ffb040', scroll: 0.4, height: 0.65 },
+      { type: 'floor', color: '#2a2e2c', line: '#4a5048', light: '#c89a5a', top: 0.64, bottom: 0.78, scroll: 0.45 },
       { type: 'smoke', color: '#3a3a3a', alpha: 0.4, scroll: 0.3, y: 0.55, height: 0.45 },
       { type: 'haze', color: '#ff7a2a', alpha: 0.05 },
     ],

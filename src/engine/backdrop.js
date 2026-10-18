@@ -240,6 +240,17 @@ export function buildBackdrop(scene, theme, worldW) {
               else if (by < 2 * HD) c = mix(c, lit, 0.25 * pool);
               const gx = (x - pw) % (17 * HD), gy = y % (44 * HD);
               if (px >= pw && (gx === 6 * HD || gy === 30 * HD) && noise2(Math.floor(x / (17 * HD)), Math.floor(y / (44 * HD)), 3) > 0.45) c = fore ? mix(c, glyph, 0.35 + pool * 0.4) : mix(c, dark, 0.5);
+              // Arched windows between the pilasters, glowing from outside.
+              const wx = px - pil / 2, wtop = H * 0.2, wbot = H * 0.5, wr = 10 * HD;
+              const inArch = Math.abs(wx) < wr && y < wbot && (y > wtop + wr || Math.hypot(wx, y - (wtop + wr)) < wr);
+              if (L.windows && px >= pw && inArch) {
+                const edge = Math.abs(wx) > wr - 2 * HD || (y < wtop + wr + 2 * HD && Math.hypot(wx, y - (wtop + wr)) > wr - 2 * HD);
+                c = edge ? mix(dark, lit, 0.4) : mix(glyph, [255, 255, 255], 0.15 * (1 - (y - wtop) / (wbot - wtop)));
+                if (!edge && Math.abs(wx) < HD / 2) c = mix(c, dark, 0.7);
+              } else if (L.marble && px >= pw) {
+                const vein = Math.abs(noise2(x / (30 * HD) + y / (90 * HD), y / (40 * HD), 51) - 0.5);
+                if (vein < 0.012) c = mix(c, lit, 0.18);
+              }
               const g = (hash(x, y, 2) - 0.5) * 0.08;
               d.set([...c.map((v) => Math.max(0, Math.min(255, v * (1 + g)))), 255], (y * W + x) * 4);
             }
@@ -251,6 +262,36 @@ export function buildBackdrop(scene, theme, worldW) {
           const g = scene.add.image(sx, VIEW.h * 0.42, 'glow').setTint(fore ? hexNum(L.glow ?? '#45e6ff') : hexNum(L.sconce ?? '#ffb04a'))
             .setBlendMode('ADD').setScale(2.2).setAlpha(0.5).setScrollFactor(sf2, 0).setDepth(depth + 0.5);
           scene.tweens.add({ targets: g, alpha: 0.32, duration: 600 + rnd.between(0, 600), yoyo: true, repeat: -1 });
+        }
+        break;
+      }
+      case 'floor': {
+        // A perspective floor receding from the playfield to the back wall: horizontal
+        // strips whose tiles shrink and whose scroll speed slows with distance, so it
+        // reads as a real floor plane (line scrolling, as SNES-era stages did).
+        const y0 = (L.top ?? 0.62) * VIEW.h, y1 = (L.bottom ?? 0.78) * VIEW.h, rows = L.rows ?? 10;
+        const c = hexRgb(L.color), ln = hexRgb(L.line), hi = hexRgb(L.light ?? L.line);
+        for (let r = 0; r < rows; r++) {
+          const t0 = r / rows, t1 = (r + 1) / rows;
+          const ya = y0 + (y1 - y0) * t0 * t0, yb = y0 + (y1 - y0) * t1 * t1;
+          const hh = Math.max(1, Math.round(yb - ya));
+          const scale = 0.35 + 0.65 * t1; // nearer rows: bigger tiles, faster scroll
+          const tw = Math.max(8, Math.round((L.tile ?? 40) * scale));
+          const key = canvasTex(scene, tw * HD, hh * HD, (d, w, h) => {
+            for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+              let col = mix(c, [0, 0, 0], (1 - t1) * 0.55);
+              if (x < HD) col = mix(ln, [0, 0, 0], (1 - t1) * 0.5);
+              if (y === 0 && r % 2 === 0) col = mix(hi, [0, 0, 0], (1 - t1) * 0.6);
+              const sheen = Math.max(0, 1 - Math.abs(x / w - 0.3) * 3) * 0.12 * t1;
+              col = mix(col, hi, sheen);
+              d.set([...col, 255], (y * w + x) * 4);
+            }
+          }, `floor-${L.color}-${r}`);
+          const ts = scene.add.tileSprite(0, ya, VIEW.w, hh, key).setOrigin(0).setScrollFactor(0).setDepth(depth).setTileScale(1 / HD);
+          const sf2 = (L.scroll ?? 0.5) + (1 - (L.scroll ?? 0.5)) * t1;
+          const follow = () => { ts.tilePositionX = scene.cameras.main.scrollX * sf2 * HD; };
+          scene.events.on('update', follow);
+          scene.events.once('shutdown', () => scene.events.off('update', follow));
         }
         break;
       }
