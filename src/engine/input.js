@@ -185,6 +185,28 @@ export class Controls {
     return now.some((on, i) => on && !prev[i] && !dirs.has(i));
   }
 
+  // True while any button or direction is held on any device. Menus opened by a button
+  // press wait for everything to be released, so that press doesn't carry over.
+  anyHeld() {
+    for (const d of this.devices()) {
+      const s = this.raw(d);
+      if (BUTTONS.some((a) => s[a]) || Math.abs(s.x) > 0.5 || Math.abs(s.y) > 0.5) return true;
+      const pad = d.startsWith('pad') ? this.pad(Number(d.slice(3))) : null;
+      if (pad?.buttons.some((b) => b.pressed || b.value > 0.5)) return true;
+    }
+    return false;
+  }
+
+  // Waits for a full release before letting input through (see anyHeld).
+  armed() {
+    if (!this.isArmed && !this.anyHeld()) {
+      this.isArmed = true;
+      for (const d of this.devices()) { this.read(d); this.anyButton(d); }
+      return false;
+    }
+    return !!this.isArmed;
+  }
+
   devices() {
     const pads = [0, 1, 2, 3].filter((i) => this.pad(i)).map((i) => `pad${i}`);
     return ['kb1', 'kb2', ...pads];

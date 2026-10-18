@@ -116,6 +116,7 @@ export class ControlsScene extends Phaser.Scene {
   }
 
   update() {
+    if (!this.controls.armed()) return;
     const c = this.capture;
     if (c) {
       if (this.time.now > c.until) {

@@ -133,6 +133,23 @@ await run('unknown-pad', '', async (page) => {
   await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.controls'));
 });
 
+// Pause: a long press of Start pauses and the menu stays open; Start again resumes.
+await run('pause', '?level=1a', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await page.waitForTimeout(1500);
+  await page.keyboard.down('Escape');
+  await page.waitForTimeout(500);
+  await page.keyboard.up('Escape');
+  await page.waitForTimeout(800);
+  if (!(await active(page, 'Pause'))) throw new Error('pause menu closed by the same Start press');
+  await page.keyboard.down('Escape');
+  await page.waitForTimeout(400);
+  await page.keyboard.up('Escape');
+  await page.waitForTimeout(800);
+  if (await active(page, 'Pause')) throw new Error('Start did not resume');
+  if (!(await page.evaluate(() => window.__game.scene.isActive('Level')))) throw new Error('level not running after resume');
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {

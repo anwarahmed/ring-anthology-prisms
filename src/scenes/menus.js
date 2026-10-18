@@ -368,7 +368,7 @@ export class PauseScene extends Phaser.Scene {
     this.items.forEach((t, i) => t.setColor(i === this.sel ? this.level.era.css : '#ffffff').setText((i === this.sel ? '> ' : '') + this.options[i]));
   }
   update() {
-    if (this.time.now < this.ready) return;
+    if (!this.controls.armed() || this.time.now < this.ready) return;
     const hit = anyDevice(this.controls);
     if (!hit) return;
     const s = hit.s;
