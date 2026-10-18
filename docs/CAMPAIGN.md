@@ -174,12 +174,12 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Status:** planned
 
 ### 2e · The Hunt
-- **Era:** Covenant War · **When/where:** Installation 04 · **Source:** *Halo: The Flood* (novel)
+- **Era:** Covenant War · **When/where:** September 2552, Installation 04 · **Source:** *Halo: The Flood* (novel); Halopedia: Zuka 'Zamamee
 - **Players:** P1 Zuka 'Zamamee (Sangheili) · P2 Yayap (Unggoy)
-- **Story:** The Covenant's side of Installation 04. 'Zamamee and Yayap hunt the "Demon" across the ring while the Flood overruns it.
+- **Story:** The Covenant's side of Installation 04. Special Operations Officer Zuka 'Zamamee is wounded by the "Demon" during the boarding of the *Pillar of Autumn*; Yayap's Grunts carry him to safety. After the Demon raids the *Truth and Reconciliation*, the Covenant leaders let 'Zamamee hunt him. His trap at the Silent Cartographer fails, and his attack on the humans' Alpha Base finds the Demon already gone. Yayap talks him out of it, and the two escape in a Banshee.
 - **Sacrifice:** 'Zamamee gives everything to restore his honor.
-- **Play:** Plasma weapons and Elite melee. Plays as the Covenant against both the UNSC and the Flood.
-- **Enemies:** Marines, Flood. **Vehicles:** Ghost. **Boss:** none **(verify the novel's events)**.
+- **Play:** Plasma weapons and Elite melee. The Covenant against the humans of Alpha Base; the Flood is loose on the ring. Ends escaping in a Banshee.
+- **Enemies:** UNSC Marines, Flood **(staging)**. **Vehicles:** Banshee. **Boss:** none.
 - **Status:** planned
 
 ### 2f · The Maw

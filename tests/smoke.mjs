@@ -227,6 +227,36 @@ await run('vehicle', '?level=1a&god=1', async (page) => {
   if (!out) throw new Error('SWAP did not leave the Warthog');
 });
 
+// The screen edges hold: sprinting and dashing right (into an arena lock), then back
+// left, the player's body never leaves the screen.
+await run('screen-edge', '?level=1d&god=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await page.waitForTimeout(800);
+  await page.evaluate(() => {
+    const L = window.__game.scene.getScene('Level');
+    window.__worst = 0;
+    L.events.on('postupdate', () => {
+      const cam = L.cameras.main, p = L.players[0];
+      const half = p.body.width / 2;
+      const over = Math.max(cam.scrollX - (p.x - half), (p.x + half) - (cam.scrollX + cam.width));
+      window.__worst = Math.max(window.__worst, over);
+    });
+  });
+  await page.keyboard.down('d');
+  await page.keyboard.down('h');
+  for (let i = 0; i < 24; i++) {
+    await page.keyboard.down('g'); await page.waitForTimeout(160); await page.keyboard.up('g');
+    await page.waitForTimeout(120);
+  }
+  await page.keyboard.up('h');
+  await page.keyboard.up('d');
+  await page.keyboard.down('a');
+  await page.waitForTimeout(2500);
+  await page.keyboard.up('a');
+  const worst = await page.evaluate(() => window.__worst);
+  if (worst > 1) throw new Error(`player went ${worst.toFixed(1)} px off screen`);
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {

@@ -225,20 +225,25 @@ export class LevelScene extends Phaser.Scene {
     cam.setScroll(ease(cam.scrollX, tx, this.arena ? 3.5 : 6, 420), ease(cam.scrollY, ty, 4, 260));
   }
 
-  // Co-op leash: players stay on screen (or inside a locked arena). Someone caught
-  // outside when an arena locks is walked in, not teleported.
+  // Co-op leash. The screen edges are a hard wall: every player (or their vehicle)
+  // stays fully in view, on both sides. A locked arena adds its own walls; someone
+  // caught outside it when it locks is walked in, not teleported.
   leash(alive, dt) {
     const cam = this.cameras.main;
-    const lo = (this.arena ? this.arena.x0 : cam.scrollX) + 6;
-    const hi = (this.arena ? this.arena.x1 : cam.scrollX + cam.width) - 6;
     for (const p of alive) {
-      // Riders are leashed through their vehicle.
       const o = p.vehicle ?? p;
       if (!p.vehicle && p.y > this.worldH + 40) p.hurt(9999, 'explosive');
-      const out = o.x < lo ? lo - o.x : o.x > hi ? hi - o.x : 0;
+      const half = o.body.width / 2 + 3;
+      const vLo = cam.scrollX + half, vHi = cam.scrollX + cam.width - half;
+      if (o.x < vLo || o.x > vHi) {
+        o.x = Phaser.Math.Clamp(o.x, vLo, vHi);
+        o.body.velocity.x = 0;
+      }
+      if (!this.arena) continue;
+      const aLo = this.arena.x0 + half, aHi = this.arena.x1 - half;
+      const out = o.x < aLo ? aLo - o.x : o.x > aHi ? aHi - o.x : 0;
       if (!out) continue;
-      const step = Math.abs(out) > 24 ? Math.sign(out) * Math.min(Math.abs(out), 320 * dt) : out;
-      o.x += step;
+      o.x += Math.abs(out) > 24 ? Math.sign(out) * Math.min(Math.abs(out), 320 * dt) : out;
       o.body.velocity.x = 0;
     }
   }
