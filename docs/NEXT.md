@@ -19,7 +19,7 @@ milestone lands. Everything listed as done is committed.
   industrial, temple, fog, beacons, perspective floor, ringrise for on-ring levels);
   scenery props, foreground silhouettes, light pools, vignette, ground shadows.
 - **GRAPHICS screen** (title and pause menus): art style (saved; reloads), CRT presets
-  and individual effects (`src/engine/crt.js` overlay), Show FPS. Comparison shots:
+  and individual effects (`src/engine/crt.js`), Show FPS. Comparison shots:
   `node scripts/compare-graphics.mjs`.
 
 ## In progress / next (in this order)
