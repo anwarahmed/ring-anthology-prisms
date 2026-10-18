@@ -336,7 +336,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 the Rookie · P2 an ODST
 - **Story:** The Rookie searches for his squad. The Superintendent, the city's AI, guides him.
 - **Play:** No shields, VISR night vision.
-- **Enemies:** Brutes, Grunts. **Boss:** none **(verify)**.
+- **Enemies:** Brutes, Grunts. **Boss:** none (ODST has no boss fight).
 - **Status:** planned
 
 ### 4e · Sacred Icon
