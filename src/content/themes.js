@@ -667,6 +667,50 @@ export const THEMES = {
       { type: 'hills', color: '#4a6a3a', rim: '#9ac86a', scroll: 0.28, height: 0.26 },
     ],
   },
+  // Part VII
+  'zeta-halo': {
+    tiles: { style: 'rock', solid: '#5a5a52', top: '#4a7a3a', edge: '#a8d880', platform: '#7a7a72', hazard: '#ff7a2a', back: '#3e3e38', window: '#7ad8ff', moss: '#5a8a3a' },
+    atmosphere: { color: '#b8c8d8', amount: 0.5 },
+    grade: { saturate: 0.1, contrast: 0.12 },
+    props: [{ kind: 'grass', chance: 0.22, color: '#5a8a3a' }, { kind: 'rocks', chance: 0.07, color: '#7a7a72' }, { kind: 'plant', chance: 0.05, color: '#2e5a2e' }, { kind: 'crystal', chance: 0.02, color: '#7a7a72', glow: '#7ad8ff' }],
+    foreground: { kind: 'ferns', color: '#0a120a', rim: '#3a6a3a', every: 760 },
+    backdrop: [
+      { type: 'gradient', top: '#4a6a9a', bottom: '#e0ecf4' },
+      { type: 'ringrise', x: 0.5, horizon: 0.72, haze: '#d0e0ec' },
+      { type: 'clouds', color: '#e0e8f0', light: '#ffffff', shade: '#8a9aa8', y: 0.1, height: 0.3, count: 5, scroll: 0.04 },
+      { type: 'mountains', color: '#5a6a7a', light: '#c8d4e0', shadow: '#2a3440', cap: '#ffffff', scroll: 0.07, height: 0.5 },
+      { type: 'hills', color: '#2e4a2e', rim: '#6a9a5a', scroll: 0.16, height: 0.36 },
+      { type: 'spires', color: '#2a3a2a', glow: '#7ad8ff', scroll: 0.3, height: 0.4, density: 0.25 },
+    ],
+  },
+  'warship-gbraakon': {
+    tiles: { style: 'metal', solid: '#3a2e2e', top: '#6a4a44', edge: '#ff6a3a', platform: '#523c38', hazard: '#ff5a2a', back: '#241c1c', window: '#ff8a3a', glow: '#ff6a3a' },
+    atmosphere: { color: '#3a1a14', amount: 0.55 },
+    grade: { saturate: 0.1, contrast: 0.16 },
+    props: [{ kind: 'debris', chance: 0.07, color: '#4a3a36' }, { kind: 'lamp', chance: 0.05, color: '#241c1c', glow: '#ff6a3a' }],
+    decor: [{ kind: 'pipes', chance: 0.12, color: '#5a4440', trim: '#2a1e1c', glow: '#ff5a2a' }, { kind: 'banners', chance: 0.08, color: '#6a1e1a', trim: '#e8c46a' }],
+    foreground: { kind: 'pillars', color: '#0e0808', rim: '#a8402a', every: 800 },
+    backdrop: [
+      { type: 'gradient', top: '#060406', bottom: '#2a120c' },
+      { type: 'stars', count: 80 },
+      { type: 'industrial', color: '#241a18', rim: '#a8503a', light: '#ff6a3a', scroll: 0.1, height: 0.7 },
+      { type: 'beacons', color: '#ff5a3a', count: 8, scroll: 0.15 },
+    ],
+  },
+  'silent-auditorium': {
+    tiles: { style: 'metal', solid: '#34303e', top: '#5e5872', edge: '#ff7ae0', platform: '#48425a', hazard: '#ff5ad0', back: '#221e2a', window: '#ff7ae0', glow: '#ff7ae0' },
+    atmosphere: { color: '#2a1a34', amount: 0.55 },
+    grade: { saturate: 0.12, contrast: 0.16 },
+    props: [{ kind: 'crystal', chance: 0.06, color: '#48425a', glow: '#ff7ae0' }],
+    decor: [{ kind: 'glyphs', chance: 0.14, color: '#2a2634', glow: '#ff7ae0' }],
+    foreground: { kind: 'pillars', color: '#0a080e', rim: '#8a4a8a', every: 820 },
+    backdrop: [
+      { type: 'gradient', top: '#06040a', bottom: '#2e1a3a' },
+      { type: 'temple', style: 'forerunner', color: '#24202e', light: '#a890c8', shadow: '#0a080e', glow: '#ff7ae0', scroll: 0.12 },
+      { type: 'lightshafts', color: '#ffb8f0', count: 3, alpha: 0.14, angle: -0.3, scroll: 0.05 },
+      { type: 'fog', color: '#4a2a5a', alpha: 0.35, y: 0.7, height: 0.3, scroll: 0.3, speed: 0.01 },
+    ],
+  },
 };
 
 // Janjur Qom in 2100 BCE (3a): the same city long after the Forerunners, with no ring
@@ -680,4 +724,10 @@ THEMES['janjur-qom-reformist'] = {
 THEMES['ark-ancient'] = {
   ...THEMES.ark,
   backdrop: THEMES.ark.backdrop.filter((l) => l.type !== 'halo'),
+};
+
+// Installation 07 in the Forerunner era (7a, 7b): the same ring, long before the Banished.
+THEMES['zeta-halo-ancient'] = {
+  ...THEMES['zeta-halo'],
+  props: THEMES['zeta-halo'].props.filter((p) => p.kind !== 'crystal'),
 };

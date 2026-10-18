@@ -281,4 +281,12 @@ export const CHARACTERS = {
     shields: 120, health: 100, speed: 125, jump: 400,
     weapons: ['assault-rifle', 'energy-sword'], grenade: 'frag',
   },
+  // Part VII: Zeta Halo
+  riser: {
+    name: 'Riser', title: 'Florian of Erde-Tyrene', faction: 'humans',
+    body: 'humanoid', style: 'primitive', scale: 0.7,
+    pal: { armor: '#8a6a3a', trim: '#c8a070', dark: '#3a2414', skin: '#9a7a5a' },
+    shields: 40, health: 100, speed: 132, jump: 400,
+    weapons: [], grenade: 'frag', kit: 'covenant',
+  },
 };

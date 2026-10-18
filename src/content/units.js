@@ -384,4 +384,38 @@ export const UNITS = {
     health: 120, shields: 100, speed: 80, ai: 'shooter', weapon: 'battle-rifle',
     range: 260, entrance: 'drop', puff: '#9ad8ff', score: 0,
   },
+  // Part VII
+  'banished-elite': {
+    name: 'Banished Sangheili', faction: 'banished', body: 'elite',
+    pal: { armor: '#5a2e2a', trim: '#c86a3a', dark: '#2a1e1c', skin: '#5a5048', glow: '#ff8a3a' },
+    health: 80, shields: 100, speed: 95, ai: 'shooter', weapon: 'plasma-rifle',
+    range: 250, entrance: 'drop', puff: '#ff8a3a', score: 150, burst: 4,
+  },
+  skimmer: {
+    name: 'Skimmer', faction: 'banished', body: 'sentinel',
+    pal: { armor: '#3a2e3a', trim: '#8a5a7a', dark: '#1e161e', glow: '#ff5ad0' },
+    health: 45, shields: 0, speed: 95, ai: 'flyer', weapon: 'needler',
+    range: 240, entrance: 'fly', puff: '#ff7ae0', score: 70,
+  },
+  'jega-rdomnai': {
+    name: "Jega 'Rdomnai", faction: 'banished', body: 'elite', scale: 1.1,
+    pal: { armor: '#1e1e24', trim: '#5a5a6a', dark: '#141418', skin: '#5a5048', glow: '#7ad8ff' },
+    health: 700, shields: 300, speed: 120, ai: 'boss', weapon: 'energy-sword',
+    range: 200, melee: 42, entrance: 'drop', puff: '#7ad8ff', score: 1500,
+    boss: { attacks: ['charge', 'leap', 'charge', 'barrage'] },
+  },
+  escharum: {
+    name: 'Escharum', faction: 'banished', body: 'brute', chieftain: true, scale: 1.3,
+    pal: { armor: '#3a3a42', trim: '#c83a2e', dark: '#d8d0c8', skin: '#6a5a4e', glow: '#ff5a3a' },
+    health: 1200, shields: 400, speed: 78, ai: 'boss', weapon: 'gravity-hammer',
+    range: 240, melee: 50, entrance: 'drop', puff: '#ff5a3a', score: 2000,
+    boss: { attacks: ['charge', 'leap', 'summon', 'charge'], summon: 'banished-brute' },
+  },
+  harbinger: {
+    name: 'The Harbinger', faction: 'endless', body: 'elite', scale: 1.25,
+    pal: { armor: '#d8d0e8', trim: '#ff7ae0', dark: '#2a1e3a', skin: '#c8b8e0', glow: '#ff5ad0' },
+    health: 1300, shields: 400, speed: 90, ai: 'boss', weapon: 'boltshot',
+    range: 300, melee: 45, entrance: 'teleport', puff: '#ff7ae0', score: 2000,
+    boss: { attacks: ['barrage', 'summon', 'leap', 'barrage'], summon: 'skimmer' },
+  },
 };

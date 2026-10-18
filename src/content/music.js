@@ -182,4 +182,14 @@ export const TRACKS = {
       lead: { wave: 'square', vol: 0.05, level: 2, notes: 'D4:4 F4:4 A4:8 G4:4 E4:4 C4:8 A#3:4 D4:4 F4:8 E4:4 C#4:4 A3:8' },
     },
   },
+  'zeta-halo': {
+    bpm: 88,
+    layers: {
+      pad: { wave: 'triangle', vol: 0.15, level: 0, notes: 'E3+B3+G4:16 C3+G3+E4:16 G2+D3+B3:16 D3+A3+F#4:16' },
+      choir: { wave: 'sine', vol: 0.11, level: 0, vibrato: 4, notes: 'B4:8 E5:8 G5:8 E5:8 D5:8 B4:8 A4:16' },
+      bass: { wave: 'triangle', vol: 0.16, level: 1, notes: 'E2:8 E2:8 C2:8 C2:8 G1:8 G1:8 D2:8 D2:8' },
+      drums: { wave: 'noise', vol: 0.18, level: 1, notes: 'k:4 h:2 h:2 s:4 h:2 h:2 k:4 h:2 h:2 s:4 h:2 h:2 k:4 h:2 h:2 s:4 h:2 h:2 k:4 h:2 h:2 s:4 h:2 h:2' },
+      lead: { wave: 'square', vol: 0.05, level: 2, notes: 'E4:4 G4:4 B4:8 C5:4 B4:4 G4:8 D4:4 G4:4 B4:8 A4:4 F#4:4 D4:8' },
+    },
+  },
 };
