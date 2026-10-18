@@ -27,6 +27,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] `--level <id>` runs skip the general checks; `--checks` runs only them
 4. **Part II:** bot-finish 2a, 2b, 2c, 2e, 2f (2d done); set `done` in CAMPAIGN.md.
    - [ ] 2a  - [ ] 2b  - [ ] 2c  - [x] 2e  - [ ] 2f  - [ ] statuses + commit
+   (Write batches of standard levels with `scripts/levelgen.py` + `scripts/genmap.py`.)
    (Bot runs: `test-results/verify.sh <ids>` runs three at a time; logs in
    test-results/finish/. If lost: a loop over `node tests/smoke.mjs --level <id> --finish`.)
 5. **Part III (3a–3m)** with the `new-level` skill. New content: a Jiralhanae (Brute)
@@ -42,7 +43,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    levels: `python3 scripts/genmap.py SEED [--hazard] [--indoor] [--ceiling]`.
 6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
-   - [ ] Part IV (4a–4f)  - [ ] Part V (5a–5h)  - [ ] Part VI (6a–6g)
+   - [ ] Part IV (4a–4f) (written + committed; bot pending)  - [ ] Part V (5a–5h)  - [ ] Part VI (6a–6g)
    - [ ] Part VII (7a–7g)  - [ ] Firefight  - [ ] publish
 7. **Halo 3 chiptune arrangements:** blocked until the user supplies MIDI files
    (docs/LEGAL.md: Halo 3 music only, into the gitignored home-soundtrack folder).
