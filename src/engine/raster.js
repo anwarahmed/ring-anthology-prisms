@@ -42,12 +42,15 @@ function hslRgb([h, s, l]) {
 export function ramp(hex, contrast = 1) {
   const [h, s, l] = rgbHsl(hexRgb(hex));
   const toward = (target, amt) => { let d = ((target - h + 540) % 360) - 180; return h + d * amt; };
+  // Vivid SNES-style ramp: saturated mid-tones, shadows that shift strongly toward
+  // purple, highlights that warm toward yellow.
+  const sat = Math.min(1, s * 1.18 + 0.04);
   return [
-    hslRgb([toward(250, 0.25), Math.min(1, s * 0.9 + 0.1), l * 0.22]),
-    hslRgb([toward(240, 0.12 * contrast), Math.min(1, s * 1.05), l * (1 - 0.32 * contrast)]),
-    hslRgb([h, s, l]),
-    hslRgb([toward(55, 0.08 * contrast), s * 0.95, l + (1 - l) * 0.22 * contrast]),
-    hslRgb([toward(55, 0.14 * contrast), s * 0.8, l + (1 - l) * 0.5 * contrast]),
+    hslRgb([toward(265, 0.35), Math.min(1, sat * 0.9 + 0.15), l * 0.2]),
+    hslRgb([toward(255, 0.2 * contrast), Math.min(1, sat * 1.1), l * (1 - 0.38 * contrast)]),
+    hslRgb([h, sat, l]),
+    hslRgb([toward(50, 0.1 * contrast), Math.min(1, sat * 1.05), l + (1 - l) * 0.3 * contrast]),
+    hslRgb([toward(50, 0.18 * contrast), sat * 0.75, l + (1 - l) * 0.62 * contrast]),
   ];
 }
 

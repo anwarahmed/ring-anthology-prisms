@@ -1,6 +1,7 @@
 // The EPIC layer: puffs, sparks, explosions, shake, hit-stop, slow motion, teleports.
 // Every effect goes through here so levels feel consistent.
 
+import Phaser from 'phaser';
 import { audio } from './audio.js';
 import { hexNum } from './textures.js';
 
@@ -104,4 +105,12 @@ export class Fx {
   muzzle(x, y, color) {
     this.glow(x, y, color, 0.35, 90);
   }
+}
+
+// The final color grade: a saturation and contrast lift so everything pops (WebGL only).
+export function gradeCamera(cam, scene) {
+  if (scene.renderer.type !== Phaser.WEBGL) return;
+  const cm = cam.postFX.addColorMatrix();
+  cm.saturate(0.28);
+  cm.contrast(0.12, true);
 }

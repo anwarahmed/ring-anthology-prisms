@@ -8,7 +8,9 @@ import { Controls, bindingStore } from '../engine/input.js';
 import { audio } from '../engine/audio.js';
 import { session } from '../engine/session.js';
 import { baseTextures, hexNum } from '../engine/textures.js';
+import { spaceSky, ringHalves, planetHorizon, prismTexture, logoText, ERA_COLORS } from '../engine/titleart.js';
 import { buildBackdrop } from '../engine/backdrop.js';
+import { gradeCamera } from '../engine/fx.js';
 import { LEVELS, CAMPAIGN, ORDER } from '../../levels/index.js';
 import { THEMES } from '../content/themes.js';
 
@@ -24,11 +26,23 @@ function anyDevice(controls) {
   return null;
 }
 
+// Menu background: the painted nebula sky with a few twinkling stars.
 function starfield(scene) {
-  const g = scene.add.graphics();
-  for (let i = 0; i < 120; i++) {
-    g.fillStyle(0xffffff, Math.random() * 0.8 + 0.2).fillRect(Math.random() * VIEW.w, Math.random() * VIEW.h, 1, 1);
+  scene.add.image(0, 0, spaceSky(scene)).setOrigin(0);
+  for (let i = 0; i < 14; i++) {
+    const st = scene.add.image(Math.random() * VIEW.w, Math.random() * VIEW.h * 0.8, 'px')
+      .setTint([0xffffff, 0xbfe6ff, 0xffd8f0][i % 3]).setBlendMode('ADD').setAlpha(0);
+    scene.tweens.add({ targets: st, alpha: 1, duration: 600 + Math.random() * 900, yoyo: true, repeat: -1, delay: Math.random() * 2000 });
   }
+}
+
+// A dark beveled panel with an era-colored border.
+function panel(scene, x, y, w, h, color = 0x45e6ff) {
+  const g = scene.add.graphics();
+  g.fillStyle(0x070520, 0.78).fillRoundedRect(x, y, w, h, 4);
+  g.lineStyle(1, color, 0.9).strokeRoundedRect(x + 0.5, y + 0.5, w - 1, h - 1, 4);
+  g.lineStyle(1, 0xffffff, 0.12).lineBetween(x + 4, y + 2, x + w - 4, y + 2);
+  return g;
 }
 
 export class BootScene extends Phaser.Scene {
@@ -46,56 +60,74 @@ export class BootScene extends Phaser.Scene {
   }
 }
 
-// The logo: one white beam enters a prism and splits into the four era colors.
-function prismLogo(scene, cx, cy) {
-  const g = scene.add.graphics();
-  const draw = (t) => {
-    g.clear();
-    g.lineStyle(3, 0xffffff, 0.9).lineBetween(cx - 140, cy + 18, cx - 14, cy);
-    ERA_LIST.forEach((e, i) => {
-      const spread = (i - 1.5) * 9 + Math.sin(t / 600 + i) * 1.5;
-      g.lineStyle(3, ERAS[e].color, 0.95).lineBetween(cx + 12, cy - 2 + i * 2, cx + 150, cy - 18 + spread * 2.2);
-      g.lineStyle(7, ERAS[e].color, 0.15).lineBetween(cx + 12, cy - 2 + i * 2, cx + 150, cy - 18 + spread * 2.2);
-    });
-    g.fillStyle(0x0b0f1e, 1).fillTriangle(cx - 22, cy + 18, cx + 22, cy + 18, cx, cy - 22);
-    g.lineStyle(2, 0xdff4ff, 1).strokeTriangle(cx - 22, cy + 18, cx + 22, cy + 18, cx, cy - 22);
-  };
-  const tick = (t) => draw(t);
-  scene.events.on('update', tick);
-  scene.events.once('shutdown', () => scene.events.off('update', tick));
-  draw(0);
-}
-
+// The title screen: a ring megastructure over a planet, and the prism logo splitting
+// one white beam into the four era colors.
 export class TitleScene extends Phaser.Scene {
   constructor() { super('Title'); }
   create() {
     this.controls = new Controls(this);
     starfield(this);
-    // A great ring turning slowly in the dark (no logo, no canon artwork).
-    const ring = this.add.graphics().setPosition(VIEW.w / 2, VIEW.h * 0.48);
-    ring.lineStyle(10, 0x7fb7ff, 0.12).strokeEllipse(0, 0, 420, 90);
-    ring.lineStyle(4, 0xa8c8ff, 0.7).strokeEllipse(0, 0, 400, 84);
-    this.tweens.add({ targets: ring, rotation: 0.06, duration: 6000, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
-    prismLogo(this, VIEW.w / 2, 78);
-    txt(this, VIEW.w / 2, 120, 'RING ANTHOLOGY', { size: 8, color: '#bfd8ff' }).setOrigin(0.5);
-    const title = txt(this, VIEW.w / 2, 144, 'PRISMS', { size: 24 }).setOrigin(0.5);
-    this.tweens.add({ targets: title, alpha: 0.8, duration: 1200, yoyo: true, repeat: -1 });
-    // PLAY / CONTROLS. Up/down to choose; any jump/fire/start to confirm.
-    this.items = ['PLAY', 'CONTROLS'].map((label, i) => txt(this, VIEW.w / 2, 182 + i * 13, label, { size: 8 }).setOrigin(0.5));
+    gradeCamera(this.cameras.main, this);
+    const ring = ringHalves(this);
+    const rc = { x: VIEW.w / 2, y: 132 };
+    const back = this.add.image(rc.x, rc.y, ring.back);
+    this.add.image(0, VIEW.h - 90, planetHorizon(this)).setOrigin(0);
+    this.add.image(VIEW.w / 2, VIEW.h - 74, 'glow').setTint(0x45e6ff).setBlendMode('ADD').setScale(18, 1.2).setAlpha(0.35);
+    const front = this.add.image(rc.x, rc.y, ring.front);
+    this.tweens.add({ targets: [back, front], rotation: 0.035, duration: 7000, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+
+    // Prism and beams.
+    const px = VIEW.w / 2, py = 52;
+    this.beams = this.add.graphics().setBlendMode('ADD');
+    this.add.image(px, py, 'glow').setTint(0x9fd8ff).setBlendMode('ADD').setScale(3.2).setAlpha(0.5);
+    this.add.image(px, py, prismTexture(this));
+    this.prism = { x: px, y: py };
+
+    // Logo.
+    const sub = this.add.image(VIEW.w / 2, 96, logoText(this, 'logo-sub', 'RING ANTHOLOGY', 8, ['#ffffff', '#b8d8ff', '#7aa0e0']));
+    const title = this.add.image(VIEW.w / 2, 124, logoText(this, 'logo-main', 'PRISMS', 32, ['#ffffff', '#9ff4ff', '#3fa9f5', '#9b59d0', '#e0453a']));
+    title.setScale(1.6).setAlpha(0);
+    this.tweens.add({ targets: title, scale: 1, alpha: 1, duration: 700, ease: 'Back.Out', delay: 200 });
+    sub.setAlpha(0);
+    this.tweens.add({ targets: sub, alpha: 1, duration: 600, delay: 700 });
+    this.time.delayedCall(850, () => this.cameras.main.flash(250, 255, 255, 255));
+    this.add.particles(0, 0, 'px', {
+      x: { min: VIEW.w / 2 - 90, max: VIEW.w / 2 + 90 }, y: { min: 108, max: 140 },
+      lifespan: 700, frequency: 140, scale: { start: 1, end: 0 }, tint: [0xffffff, 0x9ff4ff, 0xffd27a], blendMode: 'ADD',
+    });
+
+    // Menu.
+    panel(this, VIEW.w / 2 - 62, 168, 124, 34);
+    this.labels = ['PLAY', 'CONTROLS'];
+    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 178 + i * 14, label, { size: 8 }).setOrigin(0.5));
     this.sel = 0;
-    this.blink = this.tweens.add({ targets: this.items[0], alpha: 0.35, duration: 500, yoyo: true, repeat: -1 });
+    this.blink = null;
     this.refreshMenu();
-    txt(this, VIEW.w / 2, 206, 'An unofficial Halo fan game', { font: 'read', size: 16, color: '#9aa' }).setOrigin(0.5);
-    txt(this, VIEW.w / 2, VIEW.h - 6, LEGAL_NOTICE, { font: 'read', size: 12, color: '#778', align: 'center', wrap: VIEW.w - 30, stroke: false }).setOrigin(0.5, 1);
+    txt(this, VIEW.w / 2, 210, 'An unofficial Halo fan game', { font: 'read', size: 14, color: '#c8d8ff' }).setOrigin(0.5);
+    this.add.rectangle(0, VIEW.h - 22, VIEW.w, 22, 0x05031a, 0.75).setOrigin(0);
+    txt(this, VIEW.w / 2, VIEW.h - 2, LEGAL_NOTICE, { font: 'read', size: 11, color: '#8890b8', align: 'center', wrap: VIEW.w - 20, stroke: false }).setOrigin(0.5, 1);
     this.input.once('pointerdown', () => audio.unlock());
     audio.playMusic('title', 0).catch(() => {});
   }
   refreshMenu() {
-    this.items.forEach((t, i) => t.setText(i === this.sel ? `> ${['PLAY', 'CONTROLS'][i]} <` : ['PLAY', 'CONTROLS'][i]).setAlpha(1));
-    this.blink.remove();
-    this.blink = this.tweens.add({ targets: this.items[this.sel], alpha: 0.35, duration: 500, yoyo: true, repeat: -1 });
+    this.items.forEach((t, i) => t.setText(i === this.sel ? `> ${this.labels[i]} <` : this.labels[i]).setColor(i === this.sel ? '#9ff4ff' : '#ffffff').setAlpha(1));
+    this.blink?.remove();
+    this.blink = this.tweens.add({ targets: this.items[this.sel], alpha: 0.45, duration: 500, yoyo: true, repeat: -1 });
   }
-  update() {
+  drawBeams(t) {
+    const g = this.beams;
+    const { x, y } = this.prism;
+    g.clear();
+    g.lineStyle(6, 0xffffff, 0.18).lineBetween(x - 200, y + 26, x - 12, y + 4);
+    g.lineStyle(2, 0xffffff, 0.95).lineBetween(x - 200, y + 26, x - 12, y + 4);
+    ERA_COLORS.forEach((c, i) => {
+      const ey = y - 30 + i * 14 + Math.sin(t / 700 + i) * 2;
+      g.lineStyle(7, c, 0.22).lineBetween(x + 12, y + 2 + i, x + 210, ey);
+      g.lineStyle(2, c, 1).lineBetween(x + 12, y + 2 + i, x + 210, ey);
+    });
+  }
+  update(t) {
+    this.drawBeams(t);
     const hit = anyDevice(this.controls);
     if (!hit) return;
     audio.unlock();
@@ -125,7 +157,9 @@ export class PlayersScene extends Phaser.Scene {
     this.events.on('wake', () => { this.ready = this.time.now + 400; this.controls.prev = {}; this.controls.prevButtons = {}; });
     this.diffs = Object.keys(DIFFICULTY);
     this.diffIndex = Math.max(0, this.diffs.indexOf(session.difficulty));
-    txt(this, VIEW.w / 2, 24, 'WHO IS PLAYING?', { size: 16 }).setOrigin(0.5);
+    panel(this, 96, 54, 288, 56);
+    panel(this, 140, 128, 200, 46, 0xffc23a);
+    this.add.image(VIEW.w / 2, 26, logoText(this, 'logo-who', 'WHO IS PLAYING?', 16, ['#ffffff', '#9ff4ff', '#3fa9f5'])).setOrigin(0.5);
     this.slots = [0, 1].map((i) => txt(this, VIEW.w / 2, 70 + i * 26, '', { size: 8 }).setOrigin(0.5));
     txt(this, VIEW.w / 2, 140, 'DIFFICULTY', { size: 8, color: '#aaa' }).setOrigin(0.5);
     this.diffText = txt(this, VIEW.w / 2, 158, '', { size: 16 }).setOrigin(0.5);
@@ -182,7 +216,8 @@ export class TimelineScene extends Phaser.Scene {
     starfield(this);
     this.partIndex = this.registry.get('partIndex') ?? 0;
     this.levelIndex = this.registry.get('levelIndex') ?? 0;
-    this.header = txt(this, VIEW.w / 2, 12, '', { size: 8 }).setOrigin(0.5, 0);
+    panel(this, 24, 38, VIEW.w - 48, 200);
+    this.header = txt(this, VIEW.w / 2, 12, '', { size: 8, color: '#ffe38a' }).setOrigin(0.5, 0);
     this.rows = [];
     this.hint = txt(this, VIEW.w / 2, VIEW.h - 10, 'UP/DOWN: LEVEL  LEFT/RIGHT: PART  START: PLAY  ABILITY: BACK', { size: 8, color: '#888' }).setOrigin(0.5, 1);
     this.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER, false);
@@ -269,8 +304,9 @@ export class ArchiveScene extends Phaser.Scene {
     this.controls = new Controls(this);
     baseTextures(this);
     buildBackdrop(this, THEMES[this.level.theme], VIEW.w);
-    this.add.rectangle(0, 0, VIEW.w, VIEW.h, 0x000000, 0.55).setOrigin(0);
+    gradeCamera(this.cameras.main, this);
     const era = ERAS[this.level.era];
+    panel(this, 10, 6, VIEW.w - 20, VIEW.h - 12, era.color).setAlpha(0.95);
     this.add.rectangle(VIEW.w / 2, 48, VIEW.w - 40, 1, era.color);
     this.add.rectangle(VIEW.w / 2, VIEW.h - 34, VIEW.w - 40, 1, era.color);
     txt(this, 20, 12, 'ARCHIVE', { size: 8, color: era.css });
@@ -323,6 +359,7 @@ export class ResultsScene extends Phaser.Scene {
     const era = ERAS[level.era];
     this.controls = new Controls(this);
     starfield(this);
+    panel(this, 40, 18, VIEW.w - 80, 210);
     txt(this, VIEW.w / 2, 30, result === 'history' ? 'AS HISTORY RECORDS' : 'MISSION COMPLETE', { size: 16, color: era.css }).setOrigin(0.5);
     txt(this, VIEW.w / 2, 54, level.title.toUpperCase(), { size: 8 }).setOrigin(0.5);
     const secs = Math.round((Date.now() - stats.start) / 1000);

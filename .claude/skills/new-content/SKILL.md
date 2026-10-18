@@ -29,7 +29,7 @@ The catalogs are plain data in `src/content/`. Their field lists are in
 
 ## By type
 
-- **Character** (`characters.js`): canon name, `title`, `faction`, `body`, `pal`,
+- **Character** (`characters.js`): canon name (plus `short` if it's longer than about 12 letters, for the HUD), `title`, `faction`, `body`, `pal`,
   `shields`, `health` (100 standard), `speed` (~110–125), `jump` (~330–345), 1–2
   `weapons`, `grenade`. Add `kit` only when the character's technology differs from
   the era's (e.g. ancient humans use `covenant`). Use `extra: 'camo'` for active

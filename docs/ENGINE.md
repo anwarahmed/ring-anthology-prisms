@@ -113,7 +113,7 @@ Add new entries through the `new-content` skill.
 
 | File | Holds |
 |---|---|
-| `characters.js` | Playable characters: body, palette, shields, health, speed, jump, weapons, grenade, `kit` override, `extra` |
+| `characters.js` | Playable characters: name (and `short` for the HUD), body, palette, shields, health, speed, jump, weapons, grenade, `kit` override, `extra` |
 | `units.js` | AI units: body, palette, health, shields, speed, `ai`, weapon, range, entrance, puff color, `boss` |
 | `weapons.js` | Weapons (tech, rate, damage, speed, spread, pellets, projectile, splash, gun) and grenades. Ammo and grenades are unlimited: no magazines or reloading, with a 0.8 s grenade cooldown |
 | `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`), `forerunner` (44×62), `sentinel` (36×28, hovering); `armShapes` draws the arm and weapon |

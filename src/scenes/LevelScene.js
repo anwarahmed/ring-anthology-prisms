@@ -12,7 +12,7 @@ import { parseMap, groundBelow, TILES } from '../engine/mapparse.js';
 import { TILESET, COLLIDES, isPlatform, isHazard } from '../engine/tileset.js';
 import { tilesTexture, baseTextures, hexNum } from '../engine/textures.js';
 import { buildBackdrop } from '../engine/backdrop.js';
-import { Fx } from '../engine/fx.js';
+import { Fx, gradeCamera } from '../engine/fx.js';
 import { Controls } from '../engine/input.js';
 import { Player, Unit } from '../engine/actors.js';
 import { setupCombat, updateProjectiles } from '../engine/combat.js';
@@ -86,6 +86,7 @@ export class LevelScene extends Phaser.Scene {
     cam.startFollow(this.focus, true, 0.09, 0.09, 0, 20);
     cam.setDeadzone(40, 50);
     cam.fadeIn(600);
+    gradeCamera(cam, this);
     this.arena = null;
     this.arenaWalls = [];
 

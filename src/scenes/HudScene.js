@@ -18,6 +18,7 @@ export class HudScene extends Phaser.Scene {
   create() {
     const era = this.level.era;
     this.color = era.color;
+    const frame = this.add.graphics();
     this.g = this.add.graphics();
     this.panels = this.level.players.map((p, i) => {
       const right = i === 1;
@@ -25,11 +26,18 @@ export class HudScene extends Phaser.Scene {
       return {
         p,
         right,
-        name: txt(this, x, 6, `P${i + 1} ${p.def.name.toUpperCase()}`, { size: 8, color: era.css }).setOrigin(right ? 1 : 0, 0),
-        weapon: txt(this, x, 30, '', { size: 8 }).setOrigin(right ? 1 : 0, 0),
+        name: txt(this, x, 6, `P${i + 1} ${(p.def.short ?? p.def.name).toUpperCase()}`, { size: 8, color: era.css }).setOrigin(right ? 1 : 0, 0),
+        weapon: txt(this, x, 30, p.current.def.name.toUpperCase(), { size: 8 }).setOrigin(right ? 1 : 0, 0),
         kit: txt(this, x, 41, '', { size: 8, color: '#bbbbbb' }).setOrigin(right ? 1 : 0, 0),
       };
     });
+    // Framed panels behind each player's readout, sized to fit its text.
+    for (const pn of this.panels) {
+      const w = Math.max(100, pn.name.width + 8, pn.weapon.width + 8);
+      const x = pn.right ? VIEW.w - 4 - w : 4;
+      frame.fillStyle(0x070520, 0.62).fillRoundedRect(x, 3, w, 56, 3);
+      frame.lineStyle(1, era.color, 0.8).strokeRoundedRect(x + 0.5, 3.5, w - 1, 55, 3);
+    }
     this.objectiveText = txt(this, VIEW.w / 2, 62, '', { size: 8, align: 'center' }).setOrigin(0.5, 0).setAlpha(0);
     this.subtitle = txt(this, VIEW.w / 2, VIEW.h - 14, '', { font: 'read', size: 16, align: 'center', wrap: VIEW.w - 60 }).setOrigin(0.5, 1).setAlpha(0);
     this.timerText = txt(this, VIEW.w / 2, 74, '', { size: 8, color: '#ffd27a' }).setOrigin(0.5, 0);

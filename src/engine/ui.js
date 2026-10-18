@@ -21,5 +21,7 @@ export function txt(scene, x, y, str, { size = 8, color = '#ffffff', font = 'pix
 export function bar(g, x, y, w, h, frac, color, back = 0x000000) {
   g.fillStyle(back, 0.6).fillRect(x - 1, y - 1, w + 2, h + 2);
   g.fillStyle(color, 1).fillRect(x, y, Math.max(0, Math.round(w * Math.min(1, frac))), h);
-  g.fillStyle(0xffffff, 0.35).fillRect(x, y, Math.max(0, Math.round(w * Math.min(1, frac))), 1);
+  const fw = Math.max(0, Math.round(w * Math.min(1, frac)));
+  g.fillStyle(0xffffff, 0.45).fillRect(x, y, fw, 1);
+  if (h > 2) g.fillStyle(0x000000, 0.3).fillRect(x, y + h - 1, fw, 1);
 }

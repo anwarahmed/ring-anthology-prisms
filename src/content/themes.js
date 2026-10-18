@@ -8,18 +8,18 @@
 
 export const THEMES = {
   'charum-hakkor': {
-    tiles: { solid: '#4a3a2e', top: '#9a7a44', edge: '#f0cf78', platform: '#6a5236', hazard: '#ff6a3d', back: '#2c231e', window: '#ffb04a' },
+    tiles: { solid: '#5c3f2c', top: '#d29a38', edge: '#ffe38a', platform: '#9a6230', hazard: '#ff5a1f', back: '#3c2a2c', window: '#ffc23a' },
     backdrop: [
-      { type: 'gradient', top: '#0c0820', bottom: '#7a3340' },
-      { type: 'stars', count: 110 },
-      { type: 'planet', x: 0.78, y: 0.24, r: 40, color: '#d39a72', shade: '#b67a5e' },
-      { type: 'ships', count: 5, color: '#59647a', scroll: 0.05, beams: '#7fd8ff' },
-      { type: 'spires', color: '#3a2630', glow: '#ff9a3d', scroll: 0.15, height: 0.62, density: 0.6 },
-      { type: 'smoke', color: '#5a3040', alpha: 0.55, scroll: 0.2, y: 0.42, height: 0.4 },
-      { type: 'haze', color: '#ff7a3d', alpha: 0.1 },
-      { type: 'spires', color: '#24171c', glow: '#ffb04a', scroll: 0.4, height: 0.45, density: 0.4 },
-      { type: 'smoke', color: '#2e1a20', alpha: 0.7, scroll: 0.55, y: 0.66, height: 0.35 },
-      { type: 'embers', color: '#ffb04a' },
+      { type: 'gradient', top: '#120838', bottom: '#f0584e' },
+      { type: 'stars', count: 120 },
+      { type: 'planet', x: 0.78, y: 0.24, r: 40, color: '#e8885c', shade: '#b8584a' },
+      { type: 'ships', count: 5, color: '#7a88a8', scroll: 0.05, beams: '#45e6ff' },
+      { type: 'spires', color: '#5a2458', glow: '#ffb347', scroll: 0.15, height: 0.62, density: 0.6 },
+      { type: 'smoke', color: '#8a3a5a', alpha: 0.5, scroll: 0.2, y: 0.42, height: 0.4 },
+      { type: 'haze', color: '#ff6a3d', alpha: 0.12 },
+      { type: 'spires', color: '#341238', glow: '#ffc23a', scroll: 0.4, height: 0.45, density: 0.4 },
+      { type: 'smoke', color: '#4a1c3a', alpha: 0.65, scroll: 0.55, y: 0.66, height: 0.35 },
+      { type: 'embers', color: '#ffc23a' },
     ],
   },
 };
