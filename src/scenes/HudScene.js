@@ -53,8 +53,7 @@ export class HudScene extends Phaser.Scene {
       bar(g, x, 17, w, 5, sf, flash ? 0xff3030 : this.color);
       bar(g, x, 24, w, 3, p.health / p.stats.health, p.health / p.stats.health < 0.35 ? 0xff5050 : 0x7fe07f);
       const wpn = p.current;
-      const ammo = Number.isFinite(wpn.mag) ? (p.reloading > 0 ? 'RELOAD' : `${wpn.mag}`) : '--';
-      pn.weapon.setText(`${wpn.def.name.toUpperCase()} ${ammo}  G${p.grenadeCount}`);
+      pn.weapon.setText(wpn.def.name.toUpperCase());
       const k = p.kit.hud();
       pn.kit.setText(k.label.toUpperCase());
       pn.kit.setColor(k.ready >= 1 || k.active ? '#ffffff' : '#777777');

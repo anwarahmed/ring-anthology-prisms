@@ -60,6 +60,9 @@ export const bindingStore = {
     saved = { ...saved, [key]: { ...(saved[key] ?? {}), [action]: [binding] } };
     persist();
   },
+  has(key) {
+    return !!saved[key];
+  },
   reset(key) {
     const { [key]: _, ...rest } = saved;
     saved = rest;
@@ -162,6 +165,26 @@ export class Controls {
     return s;
   }
 
+  // Whether a gamepad reports the standard layout (then the defaults fit it).
+  isStandard(device) {
+    if (!device.startsWith('pad')) return true;
+    return this.pad(Number(device.slice(3)))?.pad?.mapping === 'standard';
+  }
+
+  // Any gamepad button that went down this frame, other than the ones bound to
+  // directions. Menus use it so any button confirms, whatever the controller's layout.
+  anyButton(device) {
+    if (!device.startsWith('pad')) return false;
+    const pad = this.pad(Number(device.slice(3)));
+    if (!pad) return false;
+    const binds = bindingStore.get(padKey(pad));
+    const dirs = new Set(['up', 'down', 'left', 'right'].flatMap((a) => binds[a]).filter((b) => b.b !== undefined).map((b) => b.b));
+    const now = pad.buttons.map((b) => b.pressed || b.value > 0.5);
+    const prev = this.prevButtons?.[device] ?? [];
+    (this.prevButtons ??= {})[device] = now;
+    return now.some((on, i) => on && !prev[i] && !dirs.has(i));
+  }
+
   devices() {
     const pads = [0, 1, 2, 3].filter((i) => this.pad(i)).map((i) => `pad${i}`);
     return ['kb1', 'kb2', ...pads];
@@ -172,7 +195,7 @@ export class Controls {
     for (const d of ['kb1', 'kb2', 'pad0', 'pad1', 'pad2', 'pad3']) {
       if (taken.includes(d)) continue;
       const s = this.read(d);
-      if (s.pressed.jump || s.pressed.fire) return d;
+      if (s.pressed.jump || s.pressed.fire || this.anyButton(d)) return d;
     }
     return null;
   }

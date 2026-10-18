@@ -4,7 +4,7 @@
 import Phaser from 'phaser';
 import { VIEW, ERAS, DIFFICULTY, LEGAL_NOTICE } from '../engine/config.js';
 import { txt } from '../engine/ui.js';
-import { Controls } from '../engine/input.js';
+import { Controls, bindingStore } from '../engine/input.js';
 import { audio } from '../engine/audio.js';
 import { session } from '../engine/session.js';
 import { baseTextures, hexNum } from '../engine/textures.js';
@@ -18,7 +18,7 @@ const ERA_LIST = ['forerunner', 'covenant', 'created', 'banished'];
 function anyDevice(controls) {
   for (const d of ['kb1', 'kb2', 'pad0', 'pad1', 'pad2', 'pad3']) {
     const s = controls.read(d);
-    if (s.pressed.jump || s.pressed.fire || s.pressed.pause) return { device: d, s };
+    if (s.pressed.jump || s.pressed.fire || s.pressed.pause || controls.anyButton(d)) return { device: d, s };
     if (s.pressed.up || s.pressed.down || s.pressed.left || s.pressed.right) return { device: d, s, nav: true };
   }
   return null;
@@ -121,6 +121,8 @@ export class PlayersScene extends Phaser.Scene {
     this.controls = new Controls(this);
     starfield(this);
     this.devices = [this.first];
+    this.setupDone = new Set();
+    this.events.on('wake', () => { this.ready = this.time.now + 400; this.controls.prev = {}; this.controls.prevButtons = {}; });
     this.diffs = Object.keys(DIFFICULTY);
     this.diffIndex = Math.max(0, this.diffs.indexOf(session.difficulty));
     txt(this, VIEW.w / 2, 24, 'WHO IS PLAYING?', { size: 16 }).setOrigin(0.5);
@@ -149,13 +151,21 @@ export class PlayersScene extends Phaser.Scene {
         this.refresh();
       }
     }
+    // A controller the browser doesn't recognize gets a one-time guided button setup.
+    const unknown = this.devices.find((d) => !this.controls.isStandard(d) && !bindingStore.has(this.controls.storeKey(d)) && !this.setupDone.has(d));
+    if (unknown) {
+      this.setupDone.add(unknown);
+      this.scene.sleep();
+      this.scene.launch('Controls', { returnTo: 'Players', wizard: unknown });
+      return;
+    }
     const s = this.controls.read(this.devices[0]);
     if (s.pressed.left || s.pressed.right) {
       this.diffIndex = (this.diffIndex + (s.pressed.right ? 1 : this.diffs.length - 1)) % this.diffs.length;
       audio.sfx('uiMove');
       this.refresh();
     }
-    if (s.pressed.jump || s.pressed.pause) {
+    if (s.pressed.jump || s.pressed.pause || this.controls.anyButton(this.devices[0])) {
       session.players = this.devices.map((device) => ({ device }));
       session.difficulty = this.diffs[this.diffIndex];
       audio.sfx('ui');
@@ -258,7 +268,7 @@ export class ArchiveScene extends Phaser.Scene {
     this.when = txt(this, VIEW.w - 20, 12, '', { size: 8, color: '#ccc' }).setOrigin(1, 0);
     this.title = txt(this, 20, 28, '', { size: 8 });
     this.body = txt(this, 20, 58, '', { font: 'read', size: 16, wrap: VIEW.w - 40 });
-    this.source = txt(this, 20, VIEW.h - 28, '', { font: 'read', size: 16, color: '#999' });
+    this.source = txt(this, 20, VIEW.h - 30, '', { font: 'read', size: 14, color: '#999', wrap: VIEW.w - 130 });
     this.more = txt(this, VIEW.w - 20, VIEW.h - 12, '', { size: 8, color: era.css }).setOrigin(1, 1);
     this.tweens.add({ targets: this.more, alpha: 0.3, duration: 500, yoyo: true, repeat: -1 });
     audio.playMusic('archive', 0);

@@ -290,7 +290,6 @@ export class LevelScene extends Phaser.Scene {
   checkpoint(index) {
     const p = this.players.find((pl) => pl.alive) ?? this.players[0];
     this.cp = { index, x: p.x, y: p.y + p.meta.h / 2 };
-    for (const pl of this.players) pl.grenadeCount = Math.max(pl.grenadeCount, 3);
     audio.sfx('checkpoint');
     this.hud.announce('CHECKPOINT', '#ffffff', true);
   }

@@ -12,6 +12,8 @@ import { makeKit } from './kits.js';
 import { BEHAVIORS } from './ai.js';
 import { audio } from './audio.js';
 
+const GRENADE_COOLDOWN = 0.8;
+
 class Actor extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, id, def, team) {
     const key = bodyTexture(scene, id, def);
@@ -175,11 +177,10 @@ export class Player extends Actor {
     this.shields = def.shields;
     this.shieldColor = hexNum(era.css);
     this.puffColor = era.css;
-    this.weapons = def.weapons.map((id) => ({ id, def: WEAPONS[id], mag: WEAPONS[id].mag }));
+    this.weapons = def.weapons.map((id) => ({ id, def: WEAPONS[id] }));
     this.cur = 0;
-    this.grenadeCount = 3;
+    this.grenadeCooldown = 0;
     this.cooldown = 0;
-    this.reloading = 0;
     this.lastGround = -9999;
     this.jumpBuffer = -9999;
     this.kit = makeKit(def.kit ?? era.kit, this, def.extra);
@@ -228,22 +229,19 @@ export class Player extends Actor {
     if (Math.abs(s.x) > 0.3) this.facing = Math.sign(s.x);
     if (s.stick && Math.abs(s.aimX) > 0.2) this.facing = Math.sign(s.aimX);
 
-    // Weapons.
+    // Weapons: unlimited ammo, no reloading. Grenades are unlimited, with a short
+    // cooldown so they can't be spammed.
     this.cooldown -= dt;
-    if (this.reloading > 0) {
-      this.reloading -= dt;
-      if (this.reloading <= 0) this.current.mag = this.current.def.mag;
-    }
+    this.grenadeCooldown -= dt;
     if (s.pressed.swap && this.weapons.length > 1) {
       this.cur = (this.cur + 1) % this.weapons.length;
       this.equip(this.current.id);
-      this.reloading = 0;
       this.cooldown = 0.2;
       audio.sfx('reload');
     }
-    if (s.fire && this.cooldown <= 0 && this.reloading <= 0) this.shoot();
-    if (s.pressed.grenade && this.grenadeCount > 0) {
-      this.grenadeCount--;
+    if (s.fire && this.cooldown <= 0) this.shoot();
+    if (s.pressed.grenade && this.grenadeCooldown <= 0) {
+      this.grenadeCooldown = GRENADE_COOLDOWN;
       throwGrenade(this.scene, this, this.def.grenade ?? 'frag', { x: this.facing * 0.9 + this.aim.x * 0.1, y: Math.min(0, this.aim.y) });
     }
     if (s.pressed.melee) {
@@ -299,21 +297,9 @@ export class Player extends Actor {
 
   shoot() {
     const w = this.current;
-    if (w.mag <= 0) {
-      this.reloading = w.def.reload;
-      audio.sfx('reload');
-      return;
-    }
     const m = this.muzzlePoint();
     fireWeapon(this.scene, this, w.def, m.x, m.y, this.aim, 1);
     this.cooldown = w.def.rate;
-    if (Number.isFinite(w.mag)) {
-      w.mag--;
-      if (w.mag <= 0) {
-        this.reloading = w.def.reload;
-        audio.sfx('reload');
-      }
-    }
     if (w.def.splash) this.body.velocity.x -= this.aim.x * 40; // recoil
   }
 

@@ -76,7 +76,7 @@ Blocking actions finish before the next action starts.
 | `{ wait: 2 }` | yes | Seconds |
 | `{ lock: ['B', 'C'] }` | no | Locks camera and players between two marker columns (arena) |
 | `{ unlock: true }` | no | Opens the arena; shows "GO >" |
-| `{ checkpoint: true }` | no | Respawn point if everyone goes down; refills grenades |
+| `{ checkpoint: true }` | no | Respawn point if everyone goes down |
 | `{ fx: 'shake' \| 'flash' \| 'slowmo' }` | no | Screen effect |
 | `{ spawn: [group, ...] }` | no | Spawns enemies |
 | `{ allies: [group, ...] }` | no | Spawns allies |
@@ -115,7 +115,7 @@ Add new entries through the `new-content` skill.
 |---|---|
 | `characters.js` | Playable characters: body, palette, shields, health, speed, jump, weapons, grenade, `kit` override, `extra` |
 | `units.js` | AI units: body, palette, health, shields, speed, `ai`, weapon, range, entrance, puff color, `boss` |
-| `weapons.js` | Weapons (tech, rate, damage, speed, spread, pellets, mag, reload, projectile, splash) and grenades |
+| `weapons.js` | Weapons (tech, rate, damage, speed, spread, pellets, projectile, splash, gun) and grenades. Ammo and grenades are unlimited: no magazines or reloading, with a 0.8 s grenade cooldown |
 | `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`), `forerunner` (44×62), `sentinel` (36×28, hovering); `armShapes` draws the arm and weapon |
 | `guns.js` | Held-weapon shapes by `kind`: `rifle`, `cannon`, `lance`, `scatter` |
 | `themes.js` | Tile colors (`solid`, `top`, `edge`, `platform`, `hazard`, `back`, `window`) and parallax layers (`gradient`, `stars`, `planet`, `halo`, `ships`, `spires`, `smoke`, `haze`, `embers`) |

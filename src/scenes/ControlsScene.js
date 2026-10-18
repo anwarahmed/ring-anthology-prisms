@@ -1,5 +1,7 @@
 // Controls: rebind every action per keyboard layout or controller, with a live tester.
-// Opened from the title menu or the pause menu (data.returnTo).
+// Opened from the title menu or the pause menu (data.returnTo). With data.wizard set to
+// a device, it walks through every action in turn (first-time setup for a controller
+// the browser doesn't recognize).
 
 import Phaser from 'phaser';
 import { VIEW } from '../engine/config.js';
@@ -15,13 +17,14 @@ export class ControlsScene extends Phaser.Scene {
 
   init(data) {
     this.returnTo = data?.returnTo ?? 'Title';
+    this.wizard = data?.wizard ?? null;
   }
 
   create() {
     this.controls = new Controls(this);
     this.add.rectangle(0, 0, VIEW.w, VIEW.h, 0x05070d, 0.96).setOrigin(0);
-    txt(this, VIEW.w / 2, 10, 'CONTROLS', { size: 16 }).setOrigin(0.5, 0);
-    this.deviceIndex = 0;
+    txt(this, VIEW.w / 2, 10, this.wizard ? 'SET UP YOUR CONTROLLER' : 'CONTROLS', { size: this.wizard ? 8 : 16 }).setOrigin(0.5, 0);
+    this.deviceIndex = this.wizard ? Math.max(0, this.controls.devices().indexOf(this.wizard)) : 0;
     this.row = 0;
     this.capture = null;
     this.cool = 0;
@@ -37,6 +40,7 @@ export class ControlsScene extends Phaser.Scene {
     this.esc = this.input.keyboard.addKey(KC.ESC, false);
     this.input.keyboard.on('keydown', (e) => this.onKey(e));
     this.refresh();
+    if (this.wizard) this.time.delayedCall(300, () => this.startCapture(ACTIONS[0]));
   }
 
   get device() {
@@ -61,7 +65,7 @@ export class ControlsScene extends Phaser.Scene {
     this.resetText.setColor(sel(ACTIONS.length + 1));
     this.backText.setColor(sel(ACTIONS.length + 2));
     this.hint.setText(this.capture
-      ? `Press the ${dev.startsWith('kb') ? 'key' : 'button or direction'} for ${NAMES[this.capture.action]}\n(wait 8 seconds to cancel)`
+      ? `Press the ${dev.startsWith('kb') ? 'key' : 'button or direction'} for ${NAMES[this.capture.action]}\n(wait 8 seconds to ${this.wizard ? 'keep the current one' : 'cancel'})`
       : 'Up/down: choose · Left/right (top row): device · Jump/Enter: rebind · Esc: back\nButtons light up green when pressed');
   }
 
@@ -81,17 +85,31 @@ export class ControlsScene extends Phaser.Scene {
   }
 
   finishCapture() {
+    const done = this.capture?.action;
     this.capture = null;
     this.cool = this.time.now + 350;
     audio.sfx('checkpoint');
     this.refresh();
+    if (this.wizard) this.wizardNext(done);
+  }
+
+  // Wizard: move on to the next action; after the last one, return to the menu.
+  wizardNext(done) {
+    const i = ACTIONS.indexOf(done);
+    if (i < ACTIONS.length - 1) {
+      this.row = i + 2;
+      this.time.delayedCall(250, () => this.startCapture(ACTIONS[i + 1]));
+      return;
+    }
+    this.hint.setText('All set! You can change these any time under CONTROLS.');
+    this.time.delayedCall(1500, () => this.back());
   }
 
   back() {
     audio.sfx('uiMove');
-    if (this.returnTo === 'Pause') {
+    if (this.scene.isSleeping(this.returnTo)) {
       this.scene.stop();
-      this.scene.wake('Pause');
+      this.scene.wake(this.returnTo);
     } else {
       this.scene.start(this.returnTo);
     }
@@ -100,7 +118,13 @@ export class ControlsScene extends Phaser.Scene {
   update() {
     const c = this.capture;
     if (c) {
-      if (this.time.now > c.until) { this.capture = null; this.refresh(); return; }
+      if (this.time.now > c.until) {
+        // Timed out: keep the current binding (the wizard moves on).
+        this.capture = null;
+        this.refresh();
+        if (this.wizard) this.wizardNext(c.action);
+        return;
+      }
       if (c.pad !== null && this.time.now > c.from) {
         if (!c.base) {
           if (this.controls.padIdle(c.pad)) c.base = this.controls.snapshot(c.pad);
@@ -123,7 +147,7 @@ export class ControlsScene extends Phaser.Scene {
       else this.rows[i].name.setColor(this.row === i + 1 ? '#3fa9f5' : '#ffffff');
     });
 
-    if (this.time.now < this.cool) return;
+    if (this.time.now < this.cool || this.wizard) return;
     // Navigation: any device, plus Enter/Esc that always work.
     let nav = null;
     for (const d of this.controls.devices()) {

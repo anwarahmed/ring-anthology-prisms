@@ -97,6 +97,37 @@ await run('controls', '', async (page) => {
   await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.controls'));
 });
 
+// A controller the browser doesn't recognize (like the 8BitDo M30, "6B controller"):
+// any button confirms, and joining runs the one-time guided button setup.
+await run('unknown-pad', '', async (page) => {
+  await page.evaluate(() => {
+    const pad = { id: '6B controller', index: 0, mapping: '', connected: true, timestamp: 0,
+      buttons: Array.from({ length: 14 }, () => ({ pressed: false, value: 0 })), axes: [0, 0, 0, 0] };
+    window.__pad = pad;
+    navigator.getGamepads = () => [pad, null, null, null];
+    window.dispatchEvent(Object.assign(new Event('gamepadconnected'), { gamepad: pad }));
+  });
+  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
+  const press = async (i, wait = 350) => {
+    await page.evaluate((b) => { window.__pad.buttons[b] = { pressed: true, value: 1 }; window.__pad.timestamp = performance.now(); }, i);
+    await page.waitForTimeout(150);
+    await page.evaluate((b) => { window.__pad.buttons[b] = { pressed: false, value: 0 }; window.__pad.timestamp = performance.now(); }, i);
+    await page.waitForTimeout(wait);
+  };
+  await press(11); // a non-standard Start
+  await page.waitForFunction(() => window.__game.scene.isActive('Controls'), null, { timeout: 5000 });
+  await page.waitForTimeout(900);
+  for (let i = 0; i < 11; i++) await press(i, 650);
+  await page.screenshot({ path: join(shots, 'wizard.png') });
+  await page.waitForFunction(() => window.__game.scene.isActive('Players'), null, { timeout: 6000 });
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.controls') ?? '{}')['pad:6B controller']);
+  if (saved?.jump?.[0]?.b !== 4 || saved?.pause?.[0]?.b !== 10) throw new Error(`wizard bindings wrong: ${JSON.stringify(saved)}`);
+  await page.waitForTimeout(500);
+  await press(10); // the new Start
+  await page.waitForFunction(() => window.__game.scene.isActive('Timeline'), null, { timeout: 5000 });
+  await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.controls'));
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {
