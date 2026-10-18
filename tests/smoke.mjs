@@ -335,6 +335,53 @@ await run('down-arms', '?level=1a&god=1', async (page) => {
   if (gap > 2) throw new Error(`arm left ${gap} px from its body after the players went down`);
 });
 
+// Checkpoints save the feet on solid ground and restart the players standing there.
+// Restarts used to place them inside the ground (they fell through and the retry
+// looped), and a checkpoint on 1b's pit platform would drop them into the pit.
+await run('checkpoint', '?level=1b&p2=kb2', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  const setup = await page.evaluate(async () => {
+    const L = window.__game.scene.getScene('Level'), T = 16;
+    L.runner.triggers.forEach((t) => { t.fired = true; });
+    L.arena = null;
+    const floor = L.map.spawn.y + 1;
+    const stand = async (x, y) => {
+      L.focus = { x, y };
+      L.updateCamera(0, true);
+      for (const p of L.players) { p.invulnUntil = Infinity; p.body.reset(x, y - p.body.height / 2 - 1); }
+      await new Promise((r) => setTimeout(r, 700));
+      return L.players[0].body.blocked.down && Math.abs(L.players[0].x - x) < 4;
+    };
+    // 1. On the platform over the pit: the checkpoint goes to the ground beside it.
+    let pit = L.map.spawn.x;
+    while (L.layer.getTileAt(pit, floor)?.index < 32) pit++;
+    const ok1 = (await stand((pit - 2) * T, floor * T)) && (await stand((pit + 1) * T + 8, (floor - 1) * T));
+    L.checkpoint(1);
+    const pitCp = { ...L.cp, pit: pit * T, floor: floor * T };
+    // 2. On top of the raised block near the start: restart standing on it.
+    let col = L.map.spawn.x;
+    while (L.layer.getTileAt(col, floor - 1)?.index >= 32 || !L.layer.getTileAt(col, floor - 1)) col++;
+    let top = floor - 1;
+    while (L.layer.getTileAt(col + 1, top - 1)?.index < 32) top--;
+    const ok2 = await stand((col + 2) * T + 8, top * T);
+    L.checkpoint(1);
+    window.__top = top * T;
+    L.restart();
+    return { ok1, ok2, pitCp, top: top * T };
+  });
+  if (!setup.ok1 || !setup.ok2) throw new Error(`test setup failed: ${JSON.stringify(setup)}`);
+  const c = setup.pitCp;
+  if (c.y !== c.floor || c.x >= c.pit) throw new Error(`checkpoint over the pit not on solid ground: ${JSON.stringify(c)}`);
+  await page.waitForTimeout(500);
+  await page.waitForFunction(() => window.__game.scene.isActive('Level') && window.__game.scene.getScene('Level').players.length, null, { timeout: 30000 });
+  await page.waitForTimeout(2500);
+  const r = await page.evaluate(() => {
+    const L = window.__game.scene.getScene('Level');
+    return { players: L.players.map((p) => ({ alive: p.alive, x: Math.round(p.x), feet: Math.round(p.body.bottom), down: p.body.blocked.down })), ended: !!L.ended };
+  });
+  if (r.ended || r.players.some((p) => !p.alive || !p.down || Math.abs(p.feet - setup.top) > 1)) throw new Error(`restart from checkpoint failed: ${JSON.stringify({ top: setup.top, ...r })}`);
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {

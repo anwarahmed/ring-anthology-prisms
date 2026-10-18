@@ -11,6 +11,7 @@ import { fireWeapon, throwGrenade, melee } from './combat.js';
 import { makeKit } from './kits.js';
 import { BEHAVIORS, avoidHazards, keepApart } from './ai.js';
 import { audio } from './audio.js';
+import { isSolid } from './tileset.js';
 import { HD } from './config.js';
 import { dropShadow } from './fx.js';
 
@@ -212,6 +213,12 @@ export class Player extends Actor {
     const b = this.body;
     const onGround = b.blocked.down;
     if (onGround) this.lastGround = now;
+    // The last spot standing on solid ground (not a drop-through platform or a hazard):
+    // where a checkpoint puts the player back.
+    if (onGround) {
+      const under = (x) => this.scene.layer.getTileAtWorldXY(x, b.bottom + 2);
+      if (isSolid(under(b.left + 1)?.index ?? -1) && isSolid(under(b.right - 1)?.index ?? -1)) this.safeSpot = { x: this.x, y: b.bottom };
+    }
     if (s.pressed.jump) this.jumpBuffer = now;
 
     // Crouch (and drop through one-way platforms).

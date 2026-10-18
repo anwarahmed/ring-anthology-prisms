@@ -10,7 +10,7 @@ import { BODIES } from '../content/bodies.js';
 import { THEMES } from '../content/themes.js';
 import { TILE, ERAS, DIFFICULTY, VIEW } from '../engine/config.js';
 import { parseMap, groundBelow, TILES } from '../engine/mapparse.js';
-import { TILESET, COLLIDES, isPlatform, isHazard } from '../engine/tileset.js';
+import { TILESET, COLLIDES, isSolid, isPlatform, isHazard } from '../engine/tileset.js';
 import { tilesTexture, baseTextures, hexNum, TILE_PX } from '../engine/textures.js';
 import { buildBackdrop } from '../engine/backdrop.js';
 import { buildScenery } from '../engine/scenery.js';
@@ -78,7 +78,7 @@ export class LevelScene extends Phaser.Scene {
     session.players.forEach((sp, i) => {
       const charId = L.players[i] ?? L.players[0];
       const ch = CHARACTERS[charId];
-      const p = new Player(this, spawn.x - i * 20, spawn.y - BODIES[ch.body].h / 2 - 1, i, charId, ch, sp.device, this.era);
+      const p = new Player(this, this.besideSpawn(spawn, i), spawn.y - BODIES[ch.body].h / 2 - 1, i, charId, ch, sp.device, this.era);
       if (session.debug.god) p.invulnUntil = Infinity;
       this.players.push(p);
       if (session.debug.bot) this.controls.bots[sp.device] = makeBot(this, p);
@@ -383,9 +383,20 @@ export class LevelScene extends Phaser.Scene {
     this.hud.go();
   }
 
+  // Player i's start x: P1 on the spawn point, partners 20 px to a side that has solid
+  // ground at the same height (a checkpoint can sit right at a pit's edge).
+  besideSpawn(spawn, i) {
+    if (i === 0) return spawn.x;
+    const solidAt = (x) => isSolid(this.layer.getTileAtWorldXY(x, spawn.y + 2)?.index ?? -1);
+    for (const d of [-20, 20, -10, 10]) if (solidAt(spawn.x + d * i)) return spawn.x + d * i;
+    return spawn.x;
+  }
+
   checkpoint(index) {
     const p = this.players.find((pl) => pl.alive) ?? this.players[0];
-    this.cp = { index, x: p.x, y: p.y + p.meta.h / 2 };
+    // Feet on solid ground: never mid-jump over a pit or on a drop-through platform.
+    const spot = p.safeSpot ?? { x: p.x, y: p.body.bottom };
+    this.cp = { index, x: spot.x, y: spot.y };
     audio.sfx('checkpoint');
     this.hud.announce('CHECKPOINT', '#ffffff', true);
   }
