@@ -55,6 +55,12 @@ export function buildBackdrop(scene, theme, worldW) {
   const atm = theme.atmosphere;
   const air = (c, scroll) => (atm ? mix(c, hexRgb(atm.color), Math.max(0, atm.amount * (1 - Math.min(1, (scroll ?? 0) * 2)))) : c);
   let depth = -100;
+  canvasTex(scene, 16, 128, (d, w, h) => {
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const edge = 1 - Math.abs(x - w / 2) / (w / 2);
+      d.set([255, 255, 255, Math.round(255 * edge * (1 - y / h) * 0.9)], (y * w + x) * 4);
+    }
+  }, 'shaft');
   for (const L of theme.backdrop) {
     depth += 1;
     const sf = L.scroll ?? 0;
@@ -164,11 +170,113 @@ export function buildBackdrop(scene, theme, worldW) {
               }
               const h = Math.max(Math.pow(t, 5) * 0.65, (1 - t) * 0.3);
               col = mix(col, haze, h);
+              if (L.dim) col = mix(col, [8, 10, 22], L.dim); // night
               d.set([...col, 255], (y * W + x) * 4);
             }
           }
         });
         scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(L.scroll ?? 0.02, 0).setDepth(depth);
+        break;
+      }
+      case 'industrial': {
+        // Industrial depth in the style of late-90s fighting-game stages: lattice truss
+        // towers, girders, pipe runs and catwalks in silhouette, rim-lit by the haze,
+        // with beacon lights. Painted at HD resolution.
+        const sf2 = L.scroll ?? 0.3;
+        const lw = Math.min(width, Math.floor(4096 / HD));
+        const W = lw * HD, H = VIEW.h * HD;
+        const base = air(hexRgb(L.color), sf2), rim = air(hexRgb(L.rim), sf2), deep = mix(base, [0, 0, 0], 0.35);
+        const lights = [];
+        const key = canvasTex(scene, W, H, (d) => {
+          const put = (x, y, c) => { if (x >= 0 && x < W && y >= 0 && y < H) d.set([...c, 255], ((y | 0) * W + (x | 0)) * 4); };
+          const rect = (x0, y0, x1, y1, c) => { for (let y = Math.max(0, y0 | 0); y < Math.min(H, y1); y++) for (let x = Math.max(0, x0 | 0); x < Math.min(W, x1); x++) put(x, y, c); };
+          const line = (x0, y0, x1, y1, c, t = 1) => {
+            const n = Math.ceil(Math.hypot(x1 - x0, y1 - y0));
+            for (let i = 0; i <= n; i++) rect(x0 + ((x1 - x0) * i) / n, y0 + ((y1 - y0) * i) / n, x0 + ((x1 - x0) * i) / n + t, y0 + ((y1 - y0) * i) / n + t, c);
+          };
+          // Pipe runs across the whole layer.
+          for (let k = 0; k < 3; k++) {
+            const py = H * (0.35 + rnd.realInRange(0, 0.4)), r = rnd.between(3, 7) * HD / 2;
+            for (let x = 0; x < W; x++) for (let dy = -r; dy <= r; dy++) put(x, py + dy, dy < -r * 0.4 ? rim : dy > r * 0.5 ? deep : base);
+          }
+          let x = rnd.between(10, 80) * HD;
+          while (x < W) {
+            const tw = rnd.between(18, 34) * HD, top = H * (1 - L.height * rnd.realInRange(0.55, 1));
+            // Lattice tower: two legs, cross-bracing, a platform on top.
+            rect(x, top, x + 3 * HD, H, base); rect(x + tw - 3 * HD, top, x + tw, H, base);
+            rect(x, top, x + HD, H, rim);
+            for (let y = top; y < H; y += 12 * HD) { line(x, y, x + tw, y + 12 * HD, base, HD); line(x + tw, y, x, y + 12 * HD, base, HD); rect(x, y, x + tw, y + HD, rim); }
+            rect(x - 4 * HD, top - 3 * HD, x + tw + 4 * HD, top, base); rect(x - 4 * HD, top - 3 * HD, x + tw + 4 * HD, top - 2 * HD, rim);
+            if (rnd.frac() < 0.8) lights.push({ x: (x + tw / 2) / HD, y: (top - 6 * HD) / HD });
+            // A catwalk to the next tower.
+            const gap = rnd.between(20, 90) * HD;
+            if (rnd.frac() < 0.6) { const cy = top + rnd.between(10, 40) * HD; rect(x + tw, cy, x + tw + gap, cy + 2 * HD, base); rect(x + tw, cy, x + tw + gap, cy + HD / 2, rim); for (let rx = x + tw; rx < x + tw + gap; rx += 6 * HD) rect(rx, cy - 6 * HD, rx + HD / 2, cy, base); }
+            x += tw + gap;
+          }
+        });
+        scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(sf2, 0).setDepth(depth);
+        for (const l of lights) beacon(scene, l.x, l.y, hexNum(L.light ?? '#ff4a3a'), sf2, depth + 0.5, rnd);
+        break;
+      }
+      case 'temple': {
+        // An interior wall: big carved blocks between pilasters, lit in pools by sconces
+        // (stone) or glyph lights (Forerunner). Painted at HD resolution.
+        const sf2 = L.scroll ?? 0.55;
+        const lw = Math.min(width, Math.floor(4096 / HD));
+        const W = lw * HD, H = VIEW.h * HD;
+        const base = hexRgb(L.color), lit = hexRgb(L.light), dark = hexRgb(L.shadow), glyph = hexRgb(L.glow ?? '#45e6ff');
+        const fore = L.style === 'forerunner';
+        const pil = 70 * HD, pw = 12 * HD, sconces = [];
+        const key = canvasTex(scene, W, H, (d) => {
+          for (let y = 0; y < H; y++) {
+            for (let x = 0; x < W; x++) {
+              const px = x % pil, bx = (x + (Math.floor(y / (22 * HD)) % 2) * 17 * HD) % (34 * HD), by = y % (22 * HD);
+              // Lighting pools around each sconce, fading into darkness above and below.
+              const cx = Math.floor(x / pil) * pil + pil / 2, ly = H * 0.42;
+              const pool = Math.max(0, 1 - Math.hypot((x - cx) / (pil * 0.55), (y - ly) / (H * 0.45)));
+              let c = mix(dark, base, pool * 0.9 + 0.1);
+              if (px < pw) c = mix(dark, px < 3 * HD ? lit : base, 0.5 + pool * 0.5); // pilaster
+              else if (bx < HD || by < HD) c = mix(c, dark, 0.6); // block joints
+              else if (by < 2 * HD) c = mix(c, lit, 0.25 * pool);
+              const gx = (x - pw) % (17 * HD), gy = y % (44 * HD);
+              if (px >= pw && (gx === 6 * HD || gy === 30 * HD) && noise2(Math.floor(x / (17 * HD)), Math.floor(y / (44 * HD)), 3) > 0.45) c = fore ? mix(c, glyph, 0.35 + pool * 0.4) : mix(c, dark, 0.5);
+              const g = (hash(x, y, 2) - 0.5) * 0.08;
+              d.set([...c.map((v) => Math.max(0, Math.min(255, v * (1 + g)))), 255], (y * W + x) * 4);
+            }
+          }
+          for (let x = pil / 2; x < W; x += pil) sconces.push(x / HD);
+        });
+        scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(sf2, 0).setDepth(depth);
+        for (const sx of sconces) {
+          const g = scene.add.image(sx, VIEW.h * 0.42, 'glow').setTint(fore ? hexNum(L.glow ?? '#45e6ff') : hexNum(L.sconce ?? '#ffb04a'))
+            .setBlendMode('ADD').setScale(2.2).setAlpha(0.5).setScrollFactor(sf2, 0).setDepth(depth + 0.5);
+          scene.tweens.add({ targets: g, alpha: 0.32, duration: 600 + rnd.between(0, 600), yoyo: true, repeat: -1 });
+        }
+        break;
+      }
+      case 'fog': {
+        // A drifting band of volumetric haze, thick in the middle and fading at the edges.
+        const W = 512, Hh = Math.round(VIEW.h * (L.height ?? 0.4)), c = hexRgb(L.color);
+        const key = canvasTex(scene, W, Hh, (d, w, h) => {
+          for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+            const band = Math.sin((y / h) * Math.PI);
+            const n = noise2(x / 60, y / 20, 41) * 0.6 + noise2(x / 23, y / 9, 43) * 0.4;
+            const a = Math.max(0, band * (0.35 + n * 0.65)) * (L.alpha ?? 0.5);
+            d.set([...c, Math.round(255 * a)], (y * w + x) * 4);
+          }
+        });
+        const ts = scene.add.tileSprite(0, VIEW.h * (L.y ?? 0.5), VIEW.w, Hh, key).setOrigin(0).setScrollFactor(0).setDepth(depth);
+        scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
+        const sf2 = L.scroll ?? 0.4;
+        const drift = (_t, dt) => { ts.tilePositionX = scene.cameras.main.scrollX * sf2 + (ts.drift = (ts.drift ?? 0) + dt * (L.speed ?? 0.008)); };
+        scene.events.on('update', drift);
+        scene.events.once('shutdown', () => scene.events.off('update', drift));
+        break;
+      }
+      case 'beacons': {
+        for (let i = 0; i < (L.count ?? 6); i++) {
+          beacon(scene, rnd.between(0, width), rnd.realInRange(0.15, 0.55) * VIEW.h, hexNum(L.color), L.scroll ?? 0.2, depth, rnd);
+        }
         break;
       }
       case 'ships': {
@@ -422,4 +530,15 @@ export function buildBackdrop(scene, theme, worldW) {
         break;
     }
   }
+}
+
+// A point light in the distance: a glow, a star flare, a soft cone of light angled down
+// through the haze, and a slow blink.
+function beacon(scene, x, y, color, scroll, depth, rnd) {
+  const g = scene.add.image(x, y, 'glow').setTint(color).setBlendMode('ADD').setScale(0.9).setScrollFactor(scroll, 0).setDepth(depth);
+  const flare = scene.add.rectangle(x, y, 14, 1, color, 0.8).setBlendMode('ADD').setScrollFactor(scroll, 0).setDepth(depth);
+  const cone = scene.add.image(x, y, 'shaft').setOrigin(0.5, 0).setTint(color).setBlendMode('ADD').setAlpha(0.16)
+    .setScale(2.2, 0.7).setRotation(rnd.realInRange(-0.5, 0.5)).setScrollFactor(scroll, 0).setDepth(depth - 0.1);
+  scene.tweens.add({ targets: [g, flare], alpha: 0.35, duration: rnd.between(700, 1600), yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+  scene.tweens.add({ targets: cone, alpha: 0.08, duration: rnd.between(1500, 3000), yoyo: true, repeat: -1 });
 }

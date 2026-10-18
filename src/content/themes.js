@@ -2,11 +2,13 @@
 // Backdrop layer types (drawn by src/engine/backdrop.js):
 //   gradient {top, bottom}           stars {count}
 //   planet {x, y, r, color, shade}   halo {x, y, r, k, rot, scroll, glow}  (a whole ring seen from off it)
-//   ringrise {x, horizon, top, bottom, lean, haze}  (standing on a ring: its far side rising into the sky)
+//   ringrise {x, horizon, top, bottom, lean, haze, dim}  (standing on a ring: its far side rising into the sky)
 //   ships {count, color, scroll, beams}   spires {color, glow, scroll, height, density}
 //   smoke {color, alpha, scroll, y, height}   hills {color, rim, scroll, height}
 //   mountains {color, light, shadow, cap, scroll, height}   clouds {color, light, shade, y, height, count, scroll, alpha}
 //   ruins {color, light, shadow, glow, scroll, height}   lightshafts {color, count, alpha, angle, scroll}
+//   industrial {color, rim, light, scroll, height}   temple {style: stone | forerunner, color, light, shadow, glow, sconce, scroll}
+//   fog {color, alpha, y, height, scroll, speed}   beacons {color, count, scroll}
 // atmosphere {color, amount}: far layers fade toward it.  grade {saturate, contrast, brightness}.
 // props / foreground: see src/engine/scenery.js.
 //   embers {color}   haze {color, alpha}
@@ -57,7 +59,9 @@ export const THEMES = {
       { type: 'gradient', top: '#060a1e', bottom: '#1e2a52' },
       { type: 'lightshafts', color: '#45e6ff', count: 3, alpha: 0.17, scroll: 0.1 },
       { type: 'stars', count: 60 },
-      { type: 'spires', color: '#18203e', glow: '#45e6ff', scroll: 0.25, height: 0.95, density: 0.9 },
+      { type: 'temple', style: 'forerunner', color: '#2a3866', light: '#6a8ac8', shadow: '#080c1e', glow: '#45e6ff', scroll: 0.5 },
+      { type: 'fog', color: '#6a9a3a', alpha: 0.35, y: 0.55, height: 0.45, scroll: 0.5 },
+      { type: 'beacons', color: '#45e6ff', count: 5, scroll: 0.5 },
       { type: 'smoke', color: '#4a6a2a', alpha: 0.35, scroll: 0.3, y: 0.55, height: 0.45 },
       { type: 'haze', color: '#7ad84a', alpha: 0.06 },
       { type: 'embers', color: '#c8f04a' },
@@ -82,7 +86,7 @@ export const THEMES = {
       { type: 'ships', count: 4, color: '#c8d4e8', scroll: 0.06, beams: '#45e6ff' },
       { type: 'spires', color: '#2a3a6a', glow: '#9ff4ff', scroll: 0.2, height: 0.7, density: 0.5 },
       { type: 'haze', color: '#45c8ff', alpha: 0.08 },
-      { type: 'spires', color: '#1a2650', glow: '#45e6ff', scroll: 0.45, height: 0.45, density: 0.35 },
+      { type: 'industrial', color: '#3a4a7a', rim: '#bfe8ff', light: '#45e6ff', scroll: 0.42, height: 0.6 },
     ],
   },
   // 1e: Janjur Qom, the San'Shyuum homeworld, as a Halo charges in its sky.
@@ -150,7 +154,10 @@ export const THEMES = {
       { type: 'gradient', top: '#04060c', bottom: '#1a2026' },
       { type: 'lightshafts', color: '#ffb040', count: 3, alpha: 0.14, scroll: 0.1 },
       { type: 'stars', count: 70 },
-      { type: 'spires', color: '#1c2224', glow: '#ffb040', scroll: 0.25, height: 0.95, density: 0.9 },
+      { type: 'fog', color: '#a8703a', alpha: 0.45, y: 0.15, height: 0.6, scroll: 0.15 },
+      { type: 'industrial', color: '#262c2e', rim: '#8a7a5a', light: '#ff3a2a', scroll: 0.2, height: 0.8 },
+      { type: 'fog', color: '#6a4a2a', alpha: 0.4, y: 0.45, height: 0.5, scroll: 0.3 },
+      { type: 'industrial', color: '#14181a', rim: '#c89a5a', light: '#ffb040', scroll: 0.4, height: 0.65 },
       { type: 'smoke', color: '#3a3a3a', alpha: 0.4, scroll: 0.3, y: 0.55, height: 0.45 },
       { type: 'haze', color: '#ff7a2a', alpha: 0.05 },
     ],
@@ -211,8 +218,10 @@ export const THEMES = {
     backdrop: [
       { type: 'gradient', top: '#04060e', bottom: '#14262a' },
       { type: 'stars', count: 120 },
-      { type: 'ringrise', x: 0.56, horizon: 0.74, haze: '#2a3a4a' },
+      { type: 'ringrise', x: 0.56, horizon: 0.74, haze: '#2a3a4a', dim: 0.55 },
       { type: 'hills', color: '#18262a', rim: '#2e4a44', scroll: 0.15, height: 0.45 },
+      { type: 'fog', color: '#3a6a5a', alpha: 0.45, y: 0.5, height: 0.4, scroll: 0.2 },
+      { type: 'beacons', color: '#7ad8ff', count: 3, scroll: 0.2 },
       { type: 'smoke', color: '#3a5a4a', alpha: 0.5, scroll: 0.25, y: 0.5, height: 0.45 },
       { type: 'hills', color: '#0e1a18', rim: '#2a3a2a', scroll: 0.45, height: 0.3 },
       { type: 'embers', color: '#a8f04a' },
