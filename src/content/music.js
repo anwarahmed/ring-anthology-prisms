@@ -125,4 +125,33 @@ export const TRACKS = {
       arp: { wave: 'square', vol: 0.025, level: 2, notes: 'D5:1 A4:1 F4:1 A4:1 D5:1 A4:1 F4:1 A4:1 D5:1 A4:1 F4:1 A4:1 D5:1 A4:1 F4:1 A4:1 C5:1 G4:1 E4:1 G4:1 C5:1 G4:1 E4:1 G4:1 C5:1 G4:1 E4:1 G4:1 C5:1 G4:1 E4:1 G4:1' },
     },
   },
+  'covenant-war': {
+    bpm: 110,
+    layers: {
+      bass: { wave: 'triangle', vol: 0.18, level: 0, notes: 'E2:4 E2:2 E2:2 B1:4 B1:4 C2:4 C2:2 C2:2 D2:4 D2:4 E2:4 E2:2 E2:2 B1:4 B1:4 C2:4 C2:2 C2:2 D2:4 D2:4' },
+      pad: { wave: 'sawtooth', vol: 0.03, level: 0, notes: 'E3+G3+B3:16 C3+E3+G3:16 A2+C3+E3:16 B2+D#3+F#3:16' },
+      drums: { wave: 'noise', vol: 0.2, level: 1, notes: 'k:2 h:2 s:2 h:2 k:2 h:2 s:2 k:2 k:2 h:2 s:2 h:2 k:2 h:2 s:2 k:2 k:2 h:2 s:2 h:2 k:2 h:2 s:2 k:2 k:2 h:2 s:2 h:2 k:2 h:2 s:2 k:2' },
+      lead: { wave: 'square', vol: 0.055, level: 1, notes: 'E4:4 G4:4 B4:6 A4:2 G4:4 E4:4 C5:8 B4:4 A4:4 G4:4 F#4:4 E4:16' },
+      choir: { wave: 'sine', vol: 0.1, level: 2, vibrato: 5, notes: 'B4:16 C5:16 A4:16 B4:16' },
+    },
+  },
+  'reach-dawn': {
+    bpm: 100,
+    layers: {
+      pad: { wave: 'triangle', vol: 0.15, level: 0, notes: 'G2+D3+B3:16 E2+B2+G3:16 C3+G3+E4:16 D3+A3+F#4:16' },
+      bass: { wave: 'triangle', vol: 0.16, level: 0, notes: 'G2:8 D2:8 E2:8 B1:8 C2:8 G1:8 D2:8 D2:8' },
+      lead: { wave: 'triangle', vol: 0.14, level: 1, notes: 'D5:4 B4:4 G4:8 A4:4 B4:4 E5:8 C5:4 B4:4 A4:4 G4:4 F#4:8 A4:8' },
+      drums: { wave: 'noise', vol: 0.18, level: 1, notes: 'k:4 h:2 h:2 s:4 h:2 h:2 k:4 h:2 h:2 s:4 h:2 h:2 k:4 h:2 h:2 s:4 h:2 h:2 k:4 h:2 h:2 s:4 h:2 h:2' },
+      arp: { wave: 'square', vol: 0.025, level: 2, notes: 'G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 G4:1 B4:1 D5:1 B4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1' },
+    },
+  },
+  'banished-rise': {
+    bpm: 96,
+    layers: {
+      bass: { wave: 'sawtooth', vol: 0.06, level: 0, notes: 'C2:6 C2:2 G1:4 A#1:4 G#1:6 G#1:2 G1:8 C2:6 C2:2 G1:4 A#1:4 G#1:6 G#1:2 G1:8' },
+      pad: { wave: 'triangle', vol: 0.14, level: 0, notes: 'C3+D#3+G3:16 G#2+C3+D#3:16 A#2+D3+F3:16 G2+B2+D3:16' },
+      drums: { wave: 'noise', vol: 0.24, level: 1, notes: 'k:2 k:2 s:4 k:2 k:1 k:1 s:4 k:2 k:2 s:4 k:2 k:1 k:1 s:4 k:2 k:2 s:4 k:2 k:1 k:1 s:4 k:2 k:2 s:4 k:2 k:1 k:1 s:4' },
+      lead: { wave: 'square', vol: 0.06, level: 2, notes: 'C4:4 D#4:4 G4:8 G#4:4 G4:4 D#4:8 F4:4 D#4:4 D4:4 C4:4 B3:8 G3:8' },
+    },
+  },
 };

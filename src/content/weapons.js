@@ -2,7 +2,8 @@
 // rate: seconds between shots (ammo is unlimited and there is no reloading);
 // playerRate: a faster rate when a player picks it up (enemy weapons fire slowly on
 // purpose, so players can dodge them).
-// projectile: bullet | bolt | beam | orb; splash: explosion radius in px.
+// projectile: bullet | bolt | beam | orb; splash: explosion radius in px; life: how
+// long a shot lasts in ms (default 1800; short for swords and hammers).
 // gun: how the held weapon is drawn: kind (src/content/guns.js), length in px, colors.
 
 export const WEAPONS = {
@@ -87,6 +88,50 @@ export const WEAPONS = {
     name: 'Assault Cannon', tech: 'explosive', rate: 2.4, damage: 30, speed: 260, spread: 0.04,
     projectile: 'orb', splash: 36, color: '#7aff5a', sfx: 'cannon', gun: null,
   },
+  carbine: {
+    name: 'Covenant Carbine', tech: 'plasma', rate: 0.32, damage: 18, speed: 760, spread: 0.01,
+    projectile: 'beam', color: '#7aff5a', sfx: 'beam',
+    gun: { kind: 'rifle', len: 19, body: '#7a7a5a', dark: '#3a3a2a', accent: '#7aff5a' },
+  },
+  'energy-sword': {
+    name: 'Energy Sword', tech: 'melee', rate: 0.5, playerRate: 0.35, damage: 45, speed: 420, spread: 0, life: 130,
+    projectile: 'beam', color: '#7ad8ff', sfx: 'hardlight',
+    gun: { kind: 'sword', len: 15, body: '#4a4a5a', dark: '#2a2a3a', accent: '#7ad8ff' },
+  },
+  // Jiralhanae
+  spiker: {
+    name: 'Spiker', tech: 'ballistic', rate: 0.13, playerRate: 0.1, damage: 7, speed: 520, spread: 0.07,
+    projectile: 'bullet', color: '#ff9a3a', sfx: 'rifle',
+    gun: { kind: 'spiker', len: 14, body: '#5a5a62', dark: '#2a2a2e', accent: '#c8c8d0' },
+  },
+  'brute-shot': {
+    name: 'Brute Shot', tech: 'explosive', rate: 1.0, playerRate: 0.7, damage: 32, speed: 330, spread: 0.02,
+    projectile: 'orb', splash: 30, color: '#ff8a3a', sfx: 'cannon',
+    gun: { kind: 'spiker', len: 18, body: '#6a5a4a', dark: '#2e2622', accent: '#d8d0c8' },
+  },
+  'gravity-hammer': {
+    name: 'Gravity Hammer', tech: 'melee', rate: 0.9, playerRate: 0.6, damage: 70, speed: 380, spread: 0, life: 150,
+    projectile: 'orb', splash: 26, color: '#7ab8ff', sfx: 'cannon',
+    gun: { kind: 'hammer', len: 18, body: '#4a4a52', dark: '#26262c', accent: '#7ab8ff' },
+  },
+  // Jiralhanae packs before the Covenant: their own slug-throwing rifles.
+  'pack-rifle': {
+    name: 'Jiralhanae Pack Rifle', tech: 'ballistic', rate: 0.5, playerRate: 0.25, damage: 14, speed: 560, spread: 0.04,
+    projectile: 'bullet', color: '#ffd27a', sfx: 'rifle',
+    gun: { kind: 'rifle', len: 18, body: '#6a4a32', dark: '#2a1e16', accent: '#c8a070' },
+  },
+  // UNSC, 2552
+  dmr: {
+    name: 'DMR', tech: 'ballistic', rate: 0.36, damage: 24, speed: 820, spread: 0.008,
+    projectile: 'bullet', color: '#fff0b0', sfx: 'rifle',
+    gun: { kind: 'rifle', len: 19, body: '#4a4e52', dark: '#22242a', accent: '#9ad8ff' },
+  },
+  // Training rounds (Spartan training on Reach): light, harmless-looking paint bolts.
+  'training-rifle': {
+    name: 'Training Rifle', tech: 'ballistic', rate: 0.12, damage: 8, speed: 600, spread: 0.04,
+    projectile: 'bullet', color: '#7aff9a', sfx: 'rifle',
+    gun: { kind: 'rifle', len: 16, body: '#5a5e66', dark: '#2a2c32', accent: '#7aff9a' },
+  },
   // Vehicle guns
   'warthog-chaingun': {
     name: 'Chaingun', tech: 'ballistic', rate: 0.06, damage: 6, speed: 700, spread: 0.05,
@@ -99,6 +144,14 @@ export const WEAPONS = {
   'banshee-plasma': {
     name: 'Banshee Cannons', tech: 'plasma', rate: 0.12, damage: 8, speed: 540, spread: 0.04,
     projectile: 'bolt', color: '#7aff5a', sfx: 'plasma', gun: null,
+  },
+  'chopper-cannons': {
+    name: 'Chopper Cannons', tech: 'ballistic', rate: 0.11, damage: 9, speed: 600, spread: 0.05,
+    projectile: 'bullet', color: '#ffb04a', sfx: 'rifle', gun: null,
+  },
+  'scorpion-cannon': {
+    name: 'Scorpion Cannon', tech: 'explosive', rate: 1.1, damage: 60, speed: 420, spread: 0,
+    projectile: 'orb', splash: 44, color: '#ffd27a', sfx: 'cannon', gun: null,
   },
   'sentinel-beam': {
     name: 'Sentinel Beam', tech: 'hardlight', rate: 0.5, damage: 6, speed: 380, spread: 0.06,

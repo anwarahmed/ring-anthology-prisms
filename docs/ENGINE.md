@@ -126,9 +126,9 @@ Add new entries through the `new-content` skill.
 |---|---|
 | `characters.js` | Playable characters: name (and `short` for the HUD), body, palette, shields, health, speed, jump, weapons, grenade, `kit` override, `extra` |
 | `units.js` | AI units: body, palette, health, shields, speed, `ai`, weapon, range, entrance, puff color, `boss` |
-| `weapons.js` | Weapons (tech, rate, `playerRate`, damage, speed, spread, pellets, projectile, splash, gun) and grenades. Ammo and grenades are unlimited: no magazines or reloading, with a 0.8 s grenade cooldown |
-| `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`, `primitive`, `sanshyuum`), `forerunner` (44×62, style `infected`), `sentinel` (36×28, hovering), `infection` (Flood hopper); `armShapes` draws the arm and weapon. Characters with `weapons: []` are drawn unarmed |
-| `guns.js` | Held-weapon shapes by `kind`: `rifle`, `cannon`, `lance`, `scatter` |
+| `weapons.js` | Weapons (tech, rate, `playerRate`, damage, speed, spread, pellets, projectile, splash, `life` (ms a shot lasts; short for swords and hammers), gun) and grenades. Ammo and grenades are unlimited: no magazines or reloading, with a 0.8 s grenade cooldown |
+| `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`, `primitive`, `sanshyuum`), `forerunner` (44×62, style `infected`), `sentinel` (36×28, hovering), `infection` (Flood hopper); Covenant rigs in `bodies-covenant.js`: `elite`, `grunt`, `jackal` (`noShield`), `hunter`, `brute` (`chieftain` crest, `bare` head), `target` (training target); `armShapes` draws the arm and weapon. Characters with `weapons: []` are drawn unarmed |
+| `guns.js` | Held-weapon shapes by `kind`: `rifle`, `cannon`, `lance`, `scatter`, `pistol`, `plasma`, `needler`, `spiker`, `sword`, `hammer` |
 | `themes.js` | Tile colors (`solid`, `top`, `edge`, `platform`, `hazard`, `back`, `window`) parallax layers (`gradient`, `stars`, `planet`, `halo`, `ships`, `spires`, `smoke`, `haze`, `embers`, …), `props`, `foreground`, and `decor` (back-wall `pipes`, `cables`, `banners`, `glyphs` for interiors; see scenery.js) |
 | `music.js` | Chiptune tracks with calm, combat and boss layers |
 
@@ -191,7 +191,8 @@ it has one) and SWAP again to get out. The driver steers with the move controls,
 jumps with JUMP (ground vehicles), and fires forward; a gunner aims freely and does
 the firing. Empty vehicles are neutral; occupied ones take every hit for their crew,
 and wreck in an explosion that throws the crew out. Driving fast into enemies runs
-them over (`splatter`). Kinds: `ground`, `hover`, `air`. Enemy vehicles are ordinary
+them over (`splatter`). Kinds: `ground`, `hover`, `air`. Drivable: `warthog` (driver +
+gunner), `ghost`, `banshee`, `chopper`, `scorpion`. Enemy vehicles are ordinary
 units in `units.js` using a vehicle body (`ghost-enemy`, `banshee-enemy`).
 
 **Front shields:** bodies with `frontShield` (Jackals, Hunters) block shots that hit

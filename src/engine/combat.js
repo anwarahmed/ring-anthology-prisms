@@ -55,7 +55,7 @@ export function fireWeapon(scene, shooter, w, ox, oy, dir, dmgScale = 1, extraSp
     p.tech = w.tech;
     p.splash = w.splash ?? 0;
     p.color = color;
-    p.expires = scene.time.now + 1800;
+    p.expires = scene.time.now + (w.life ?? 1800);
   }
   scene.fx.muzzle(ox, oy, color);
   audio.sfx(w.sfx);

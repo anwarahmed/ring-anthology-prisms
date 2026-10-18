@@ -5,7 +5,7 @@
 //   Jackal pal: armor, trim, dark, skin, glow (energy shield)
 //   Hunter pal: armor (plates), trim, dark, skin (worm core), glow (cannon)
 
-import { pose, add, dirDown, FRAMES } from './rig.js';
+import { pose, add, dirDown, FRAMES, HOVER } from './rig.js';
 
 // Digitigrade leg (Elites, Jackals): thigh forward, shin back, then a long foot.
 function digiLeg(hip, [t, k], L, near) {
@@ -159,9 +159,66 @@ function hunter(f) {
   return { shapes, shoulder: add(back, [34, 6]), w: W, h: H };
 }
 
+// Jiralhanae: huge, hunched and shaggy, with heavy plate on the shoulders and chest.
+function brute(f, def) {
+  const L = { thigh: 10, shin: 10, thighR: 4.4, shinR: 3.8, foot: 5 };
+  const p = pose(f);
+  const W = 54, H = 66;
+  const ay = (leg) => L.thigh * Math.cos(leg[0]) + L.shin * Math.cos(leg[0] - leg[1]);
+  const hip = [24, H - 3 - Math.max(ay(p.front), ay(p.back))];
+  const leg = (h, [t, k], near) => {
+    const knee = add(h, dirDown(t, L.thigh));
+    const ankle = add(knee, dirDown(t - k, L.shin));
+    const fs = near ? '' : 'Far';
+    return [
+      { t: 'cap', a: h, b: knee, r1: L.thighR, r2: L.thighR * 0.9, m: `dark${fs}`, z: near ? 6 : 1 },
+      { t: 'cap', a: knee, b: ankle, r1: L.shinR, r2: L.shinR * 0.85, m: `armor${fs}`, z: near ? 6.1 : 1.1 },
+      { t: 'ell', c: add(ankle, [2, 1.5]), rx: L.foot, ry: 2.4, m: `dark${fs}`, z: near ? 6.2 : 1.2 },
+    ];
+  };
+  const shapes = [];
+  const lean = 0.28 + p.lean * 0.4;
+  const up = (len) => [Math.sin(lean) * len, -Math.cos(lean) * len];
+  const chestC = add(hip, up(14 - p.breathe * 0.4));
+  const neck = add(hip, up(24 - p.breathe * 0.5));
+  const headC = add(neck, [6, 0]);
+  shapes.push(...leg([hip[0] - 2, hip[1]], p.back, false));
+  shapes.push({ t: 'cap', a: hip, b: chestC, r1: 7, r2: 8, m: 'dark', z: 2 });
+  shapes.push({ t: 'ell', c: chestC, rx: 11, ry: 12, rot: lean, m: 'armor', z: 3 });
+  shapes.push({ t: 'poly', pts: [add(chestC, [-4, -9]), add(chestC, [8, -6]), add(chestC, [9, 4]), add(chestC, [-2, 6])], m: 'trim', z: 3.4, bevel: 2 });
+  shapes.push({ t: 'poly', pts: [[hip[0] - 7, hip[1] - 2], [hip[0] + 7, hip[1] - 2], [hip[0] + 6, hip[1] + 6], [hip[0] - 6, hip[1] + 6]], m: 'armor', z: 3.5, bevel: 1.5 });
+  shapes.push(...leg(hip, p.front, true));
+  // Shoulder plate on the near side and a mane of fur behind the head.
+  shapes.push({ t: 'ell', c: add(neck, [-2, 4]), rx: 7, ry: 5, rot: -0.3, m: 'armor', z: 8.5 });
+  shapes.push({ t: 'ell', c: add(neck, [-5, 1]), rx: 7, ry: 6, m: 'dark', z: 4 });
+  // Head: heavy brow, beard and small glowing eyes.
+  shapes.push({ t: 'ell', c: headC, rx: 6, ry: 5.4, m: 'skin', z: 7 });
+  shapes.push({ t: 'poly', pts: [add(headC, [-3, 2]), add(headC, [6, 2.5]), add(headC, [4, 8]), add(headC, [-2, 7])], m: 'dark', z: 7.2, bevel: 1.2 });
+  shapes.push({ t: 'cap', a: add(headC, [0, -2]), b: add(headC, [6, -1.4]), r1: 1.6, r2: 1.2, m: 'skin', z: 7.4 });
+  shapes.push({ t: 'ell', c: add(headC, [3.6, -0.4]), rx: 0.9, ry: 0.7, m: 'glow', z: 7.6, hot: true });
+  if (!def.bare) shapes.push({ t: 'poly', pts: [add(headC, [-6, -1]), add(headC, [-2, -6.5]), add(headC, [5, -6]), add(headC, [6, -2.5]), add(headC, [-1, -2])], m: 'armor', z: 7.8, bevel: 1.4 });
+  if (def.chieftain) shapes.push({ t: 'poly', pts: [add(headC, [-3, -6]), add(headC, [-1, -14]), add(headC, [3, -6])], m: 'trim', z: 7.9, bevel: 1 });
+  return { shapes, shoulder: add(neck, [3, 6]), w: W, h: H };
+}
+
+// A pop-up training target on a post (Spartan training courses).
+function target(f) {
+  const shapes = [
+    { t: 'cap', a: [14, 40], b: [14, 22], r1: 1.6, r2: 1.4, m: 'dark', z: 0 },
+    { t: 'poly', pts: [[6, 41], [22, 41], [20, 37], [8, 37]], m: 'dark', z: 0.5, bevel: 1 },
+    { t: 'ell', c: [14, 14], rx: 10, ry: 10, m: 'armor', z: 1 },
+    { t: 'ell', c: [14, 14], rx: 6.5, ry: 6.5, m: 'trim', z: 1.2 },
+    { t: 'ell', c: [14, 14], rx: 3, ry: 3, m: 'armor', z: 1.4 },
+    { t: 'ell', c: [14, 14], rx: 1.2, ry: 1.2, m: 'glow', z: 1.6, hot: f % 2 === 0 },
+  ];
+  return { shapes, shoulder: [14, 14], w: 28, h: 42 };
+}
+
 export const COVENANT_BODIES = {
   elite: { w: 46, h: 60, frames: 15, anims: FRAMES, hit: [16, 46], build: elite, reach: 10, arm: [3.2, 2.8] },
   grunt: { w: 32, h: 34, frames: 15, anims: FRAMES, hit: [14, 24], build: grunt, reach: 6, arm: [2.4, 2.2] },
   jackal: { w: 40, h: 52, frames: 15, anims: FRAMES, hit: [12, 40], build: jackal, reach: 8, arm: [2.2, 2], frontShield: true },
   hunter: { w: 66, h: 68, frames: 15, anims: FRAMES, hit: [32, 56], build: hunter, frontShield: true },
+  brute: { w: 54, h: 66, frames: 15, anims: FRAMES, hit: [20, 52], build: brute, reach: 11, arm: [4, 3.4] },
+  target: { w: 28, h: 42, frames: 4, anims: HOVER, hit: [20, 40], build: target },
 };

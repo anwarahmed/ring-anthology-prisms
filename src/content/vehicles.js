@@ -72,10 +72,48 @@ function banshee(f) {
   return { shapes, shoulder: [68, 17 + bob], w: W, h: H };
 }
 
+// Jiralhanae Chopper: one huge bladed front wheel, the rider sitting behind it.
+function chopper(f) {
+  const W = 70, H = 40;
+  const bob = f % 2 ? 0.5 : 0;
+  const shapes = [
+    ...wheel([54, 26], 12, f, 4),
+    { t: 'poly', pts: [[44, 14], [66, 14], [68, 18], [42, 18]], m: 'trim', z: 4.5, bevel: 1 },
+    ...wheel([10, 33], 5, f, 2),
+    { t: 'poly', pts: [[4, 24 + bob], [12, 17 + bob], [42, 16 + bob], [48, 22 + bob], [40, 30 + bob], [10, 30 + bob]], m: 'armor', z: 2, bevel: 2, tilt: [0, -0.15] },
+    { t: 'poly', pts: [[14, 17 + bob], [22, 11 + bob], [30, 12 + bob], [26, 17 + bob]], m: 'trim', z: 2.4, bevel: 1.2 },
+    { t: 'cap', a: [40, 20 + bob], b: [66, 20 + bob], r1: 1.4, r2: 1.2, m: 'dark', z: 5 },
+    { t: 'cap', a: [40, 24 + bob], b: [66, 24 + bob], r1: 1.4, r2: 1.2, m: 'dark', z: 5 },
+    { t: 'ell', c: [6, 24 + bob], rx: 1.6, ry: 2.4, m: 'glow', z: 3, hot: f % 2 === 0 },
+  ];
+  return { shapes, shoulder: [66, 22 + bob], w: W, h: H };
+}
+
+// UNSC Scorpion: a tank on two treads with a long main cannon.
+function scorpion(f) {
+  const W = 92, H = 46;
+  const tread = (x0, x1, y, z, m) => [
+    { t: 'cap', a: [x0, y], b: [x1, y], r1: 6.5, r2: 6.5, m, z },
+    ...[0, 1, 2, 3, 4].map((i) => ({ t: 'ell', c: [x0 + 2 + i * (x1 - x0 - 4) / 4 + (f % 2) * 1.5, y], rx: 2.6, ry: 2.6, m: 'trim', z: z + 0.1 })),
+  ];
+  const shapes = [
+    ...tread(12, 80, 37, 1, 'darkFar'),
+    { t: 'poly', pts: [[6, 30], [16, 22], [76, 22], [88, 30], [80, 34], [12, 34]], m: 'armor', z: 2, bevel: 2.4, tilt: [0, -0.2] },
+    ...tread(14, 82, 39, 3, 'dark'),
+    { t: 'poly', pts: [[28, 22], [34, 12], [58, 12], [64, 22]], m: 'armor', z: 2.6, bevel: 2, tilt: [0, -0.25] },
+    { t: 'cap', a: [58, 16], b: [90, 16], r1: 2.6, r2: 2.2, m: 'dark', z: 2.8 },
+    { t: 'cap', a: [86, 16], b: [91, 16], r1: 3, r2: 3, m: 'trim', z: 2.9 },
+    { t: 'ell', c: [40, 13], rx: 3, ry: 1.4, m: 'glow', z: 2.7, hot: true },
+  ];
+  return { shapes, shoulder: [91, 16], w: W, h: H };
+}
+
 export const VEHICLE_BODIES = {
   warthog: { w: 76, h: 40, frames: 4, anims: HOVER, hit: [60, 24], build: warthog, vehicle: true },
   ghost: { w: 58, h: 30, frames: 4, anims: HOVER, hit: [44, 18], build: ghost, vehicle: true },
   banshee: { w: 72, h: 34, frames: 4, anims: HOVER, hit: [52, 20], build: banshee, vehicle: true, flying: true },
+  chopper: { w: 70, h: 40, frames: 4, anims: HOVER, hit: [56, 26], build: chopper, vehicle: true },
+  scorpion: { w: 92, h: 46, frames: 4, anims: HOVER, hit: [80, 30], build: scorpion, vehicle: true },
 };
 
 export const VEHICLES = {
@@ -93,5 +131,15 @@ export const VEHICLES = {
     name: 'Banshee', body: 'banshee', kind: 'air', seats: ['driver'],
     pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7ad8ff' },
     speed: 220, accel: 500, jump: 0, health: 280, weapon: 'banshee-plasma', splatter: 0,
+  },
+  chopper: {
+    name: 'Chopper', body: 'chopper', kind: 'ground', seats: ['driver'],
+    pal: { armor: '#5a4a3a', trim: '#a89070', dark: '#2a221a', glow: '#ff8a3a' },
+    speed: 260, accel: 640, jump: 280, health: 420, weapon: 'chopper-cannons', splatter: 120,
+  },
+  scorpion: {
+    name: 'Scorpion', body: 'scorpion', kind: 'ground', seats: ['driver'],
+    pal: { armor: '#56663a', trim: '#8a8a70', dark: '#24241e', glow: '#fff4c0' },
+    speed: 150, accel: 300, jump: 0, health: 900, weapon: 'scorpion-cannon', splatter: 140,
   },
 };

@@ -32,7 +32,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    Noble Team, Johnson, Forge, Red Team, Atriox, Decimus, Itho 'Hesiikee, Maccabeus,
    Choppers; themes for Janjur Qom (2100 BCE), Ulgethon, Rentus, High Charity,
    Doisac, Reach, Harvest, Trove, Algolis.
-   - [ ] content  - [ ] 3a - [ ] 3b - [ ] 3c - [ ] 3d - [ ] 3e - [ ] 3f - [ ] 3g
+   - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [ ] 3a - [ ] 3b - [ ] 3c - [ ] 3d - [ ] 3e - [ ] 3f - [ ] 3g
    - [ ] 3h - [ ] 3i - [ ] 3j - [ ] 3k - [ ] 3l - [ ] 3m
 6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).

@@ -63,6 +63,38 @@ export function gunShapes(kind, len = 16) {
           { t: 'poly', pts: [[-1, 1.8], [3, 1.8], [2, 5], [-1.5, 4.5]], m: 'gunDark', z: -0.1, bevel: 0.8 },
         ],
       };
+    case 'spiker':
+      // Jiralhanae spiker: a heavy frame with a curved blade under the barrel.
+      return {
+        grip: L * 0.35, muzzle: [L + 1, -1.4],
+        shapes: [
+          { t: 'poly', pts: [[-4, -3], [L, -2.6], [L, 0], [-4, 1.4]], m: 'gunBody', bevel: 1.3 },
+          { t: 'poly', pts: [[2, 0.5], [L + 3, 1], [L - 2, 3.4], [3, 2.6]], m: 'gunGlow', z: 0.2, bevel: 0.6 },
+          { t: 'cap', a: [L * 0.5, -1.4], b: [L + 1, -1.4], r1: 0.9, r2: 0.8, m: 'gunDark', z: 0.3 },
+          { t: 'poly', pts: [[-1, 1.4], [2.5, 1.4], [2, 5.5], [-1.5, 5]], m: 'gunDark', z: -0.1, bevel: 0.8 },
+        ],
+      };
+    case 'sword':
+      // Energy sword: a hilt with two glowing curved blades.
+      return {
+        grip: 0, muzzle: [L, 0],
+        shapes: [
+          { t: 'cap', a: [-3, 0], b: [3, 0], r1: 1.6, r2: 1.6, m: 'gunBody' },
+          { t: 'poly', pts: [[2, -1.5], [L * 0.6, -3.5], [L, -1.5], [L * 0.5, -0.5]], m: 'gunGlow', z: 0.2, hot: true, bevel: 0.5 },
+          { t: 'poly', pts: [[2, 1.5], [L * 0.6, 3.5], [L, 1.5], [L * 0.5, 0.5]], m: 'gunGlow', z: 0.2, hot: true, bevel: 0.5 },
+        ],
+      };
+    case 'hammer':
+      // Gravity hammer: a long haft with a heavy head and a glowing striking face.
+      return {
+        grip: L * 0.25, muzzle: [L + 3, 0],
+        shapes: [
+          { t: 'cap', a: [-6, 0], b: [L - 2, 0], r1: 1.1, r2: 1.1, m: 'gunDark' },
+          { t: 'poly', pts: [[L - 4, -6], [L + 3, -5], [L + 3, 5], [L - 4, 6]], m: 'gunBody', z: 0.2, bevel: 1.5 },
+          { t: 'ell', c: [L + 3, 0], rx: 1.2, ry: 4, m: 'gunGlow', z: 0.4, hot: true },
+          { t: 'poly', pts: [[L - 6, -7], [L - 1, -9], [L, -5]], m: 'gunDark', z: 0.3, bevel: 0.6 },
+        ],
+      };
     case 'rifle':
     default:
       return {

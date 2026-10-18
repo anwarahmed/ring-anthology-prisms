@@ -33,6 +33,8 @@ for (const [id, u] of Object.entries(UNITS)) {
   if (u.weapon && !WEAPONS[u.weapon]) err(`unit ${id}`, `unknown weapon '${u.weapon}'`);
   if (u.ai === 'boss' && !u.boss?.attacks?.length) err(`unit ${id}`, 'boss without boss.attacks');
   if (u.boss?.summon && !UNITS[u.boss.summon]) err(`unit ${id}`, `unknown summon '${u.boss.summon}'`);
+  // Textures are keyed by id, so a unit and a character must never share one.
+  if (CHARACTERS[id]) err(`unit ${id}`, 'same id as a character (textures would clash)');
 }
 for (const [id, v] of Object.entries(VEHICLES)) {
   if (!BODIES[v.body]) err(`vehicle ${id}`, `unknown body '${v.body}'`);
