@@ -129,7 +129,7 @@ Add new entries through the `new-content` skill.
 | `weapons.js` | Weapons (tech, rate, `playerRate`, damage, speed, spread, pellets, projectile, splash, gun) and grenades. Ammo and grenades are unlimited: no magazines or reloading, with a 0.8 s grenade cooldown |
 | `bodies.js` | Body rigs built from shapes and posed per frame: `humanoid` (40×52, styles `spartan`, `soldier`, `ancient-lord`, `primitive`, `sanshyuum`), `forerunner` (44×62, style `infected`), `sentinel` (36×28, hovering), `infection` (Flood hopper); `armShapes` draws the arm and weapon. Characters with `weapons: []` are drawn unarmed |
 | `guns.js` | Held-weapon shapes by `kind`: `rifle`, `cannon`, `lance`, `scatter` |
-| `themes.js` | Tile colors (`solid`, `top`, `edge`, `platform`, `hazard`, `back`, `window`) and parallax layers (`gradient`, `stars`, `planet`, `halo`, `ships`, `spires`, `smoke`, `haze`, `embers`) |
+| `themes.js` | Tile colors (`solid`, `top`, `edge`, `platform`, `hazard`, `back`, `window`) parallax layers (`gradient`, `stars`, `planet`, `halo`, `ships`, `spires`, `smoke`, `haze`, `embers`, …), `props`, `foreground`, and `decor` (back-wall `pipes`, `cables`, `banners`, `glyphs` for interiors; see scenery.js) |
 | `music.js` | Chiptune tracks with calm, combat and boss layers |
 
 **AI behaviors:** `shooter` (keeps distance, strafes, bursts), `charger` (rushes,

@@ -43,6 +43,7 @@ export const THEMES = {
       { kind: 'lamp', chance: 0.035, color: '#4a3020', glow: '#ffb347' },
       { kind: 'rubble', chance: 0.05, front: true, color: '#5a3a2a' },
     ],
+    decor: [{ kind: 'banners', chance: 0.18, color: '#7a1e2e', trim: '#e8c46a' }, { kind: 'cables', chance: 0.08, color: '#3a3226', trim: '#8a7a5a' }],
     foreground: { kind: 'pillars', color: '#140814', rim: '#5a2a3a', every: 640 },
   },
   // 1c: a Forerunner ship overrun by the Flood.
@@ -56,6 +57,7 @@ export const THEMES = {
       { kind: 'debris', chance: 0.06, color: '#6a7a9a' },
       { kind: 'growth', chance: 0.05, front: true, color: '#b8b050' },
     ],
+    decor: [{ kind: 'glyphs', chance: 0.16, color: '#2e3e58', glow: '#7fd8ff' }, { kind: 'pipes', chance: 0.1, color: '#4a5a78', trim: '#2a3448', glow: '#7fd8ff' }],
     foreground: { kind: 'pillars', color: '#0a0e1e', rim: '#2a4a7a', every: 820 },
     backdrop: [
       { type: 'gradient', top: '#060a1e', bottom: '#1e2a52' },
@@ -103,6 +105,7 @@ export const THEMES = {
       { kind: 'rubble', chance: 0.06, color: '#7a5a8a' },
       { kind: 'plant', chance: 0.04, front: true, color: '#3a6a5a' },
     ],
+    decor: [{ kind: 'banners', chance: 0.16, color: '#4a2a6a', trim: '#d8b0ff' }, { kind: 'glyphs', chance: 0.08, color: '#3a2a4a', glow: '#c890ff' }],
     foreground: { kind: 'pillars', color: '#1a0a24', rim: '#c8a040', every: 860 },
     backdrop: [
       { type: 'gradient', top: '#081a3e', bottom: '#c05a9a' },
@@ -152,6 +155,7 @@ export const THEMES = {
       { kind: 'debris', chance: 0.08, color: '#7a8478' },
       { kind: 'debris', chance: 0.04, front: true, color: '#4a5048' },
     ],
+    decor: [{ kind: 'pipes', chance: 0.16, color: '#6a737c', trim: '#3a4048', glow: '#c8402e' }, { kind: 'cables', chance: 0.12, color: '#2a2e34', trim: '#7a828c' }, { kind: 'glyphs', chance: 0.07, color: '#3a4450', glow: '#5fe07a' }],
     foreground: { kind: 'pillars', color: '#0a0c0e', rim: '#5a6a5a', every: 820 },
     backdrop: [
       { type: 'gradient', top: '#04060c', bottom: '#1a2026' },

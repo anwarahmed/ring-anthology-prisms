@@ -20,8 +20,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
    Review all menu screens with `node scripts/screens.mjs` (test-results/screens/sheet.png).
 2. **Richer interiors:** back-wall decoration props (pipes, cables, banners, glyph
    panels) for indoor themes.
-   - [ ] Decoration kinds in scenery.js, placed on back-wall areas
-   - [ ] Added to indoor themes; screenshots reviewed
+   - [x] Decoration kinds in scenery.js, placed on back-wall areas
+   - [x] Added to indoor themes; screenshots reviewed (new themes: add a `decor` list)
 3. **Reliable tests** (keyboard/menu checks fail when the machine is loaded):
    - [ ] Replace fixed waits with waiting on outcomes; retry key presses
    - [ ] `--level <id>` runs skip the general checks
