@@ -1,8 +1,9 @@
-// CRT emulation and the FPS counter. The CRT effect is a second WebGL canvas laid over
-// the game: after Phaser draws each frame, the whole frame (every scene stacked: level,
-// HUD, pause) is copied in and drawn through a CRT shader at the screen's real pixel
-// size, so phosphor masks line up with the display's pixels. It never touches Phaser's
-// own GL state. Effects read the live settings in src/engine/graphics.js:
+// CRT emulation and the FPS counter. After Phaser draws each frame (every scene
+// stacked: level, HUD, pause), the CRT pass copies the finished frame into a texture
+// and draws it back through a CRT shader, in Phaser's own WebGL context. It brackets
+// its GL calls with pipelines.clear() / rebind(), Phaser's hook for external
+// rendering. (A separate overlay canvas was tried first; some desktop compositors drew
+// it partly black.) Effects read the live settings in src/engine/graphics.js:
 //   scanlines (one per game pixel row), phosphor mask (aperture grille, slot mask or
 //   shadow mask), bloom and halation, pixel softening, curvature, vignette, colour
 //   convergence, phosphor persistence (afterglow trails) and noise.
@@ -23,17 +24,17 @@ uniform sampler2D uSrc, uPrev;
 uniform float uPersist;
 varying vec2 vUv;
 void main() {
-  vec3 src = texture2D(uSrc, vec2(vUv.x, 1.0 - vUv.y)).rgb;
+  vec3 src = texture2D(uSrc, vUv).rgb;
   vec3 prev = texture2D(uPrev, vUv).rgb;
   gl_FragColor = vec4(max(src, prev * uPersist * 0.8), 1.0);
 }
 `;
 
-// Pass 2: the CRT itself, at screen resolution.
+// Pass 2: the CRT itself.
 const crtFrag = `
 precision mediump float;
 uniform sampler2D uSrc;
-uniform vec2 uSrcRes, uOutRes;
+uniform vec2 uSrcRes;
 uniform float uTime, uLines;
 uniform float uScan, uMask, uMaskType, uBloom, uSoften, uCurve, uVig, uConv, uNoise;
 varying vec2 vUv;
@@ -66,7 +67,7 @@ void main() {
   float y = fract(uv.y * uLines);
   float beam = exp(-pow((y - 0.5) / (0.28 + 0.2 * dot(col, vec3(0.3, 0.5, 0.2))), 2.0));
   col *= mix(1.0, beam * 1.25, uScan);
-  // Phosphor mask, in real screen pixels.
+  // Phosphor mask, one triad per three canvas pixels.
   vec2 sp = gl_FragCoord.xy;
   vec3 m;
   if (uMaskType < 0.5) {
@@ -125,71 +126,68 @@ function anyEffect(g) {
 }
 
 export function installCrt(game) {
-  const src = game.canvas;
-  const out = document.createElement('canvas');
-  out.id = 'crt';
-  Object.assign(out.style, { position: 'absolute', pointerEvents: 'none', display: 'none' });
-  src.parentNode.appendChild(out);
   const fps = document.createElement('div');
-  Object.assign(fps.style, { position: 'absolute', font: '14px monospace', color: '#9ff4ff', textShadow: '1px 1px 0 #000', pointerEvents: 'none', display: 'none', zIndex: 2 });
-  src.parentNode.appendChild(fps);
+  Object.assign(fps.style, { position: 'absolute', font: '14px monospace', color: '#9ff4ff', textShadow: '1px 1px 0 #000', pointerEvents: 'none', display: 'none' });
+  game.canvas.parentNode.appendChild(fps);
+  let fpsAt = 0;
+  game.events.on('postrender', () => {
+    if (!graphics.fps) return void (fps.style.display = 'none');
+    fps.style.display = 'block';
+    const r = game.canvas.getBoundingClientRect();
+    const host = game.canvas.parentNode.getBoundingClientRect();
+    fps.style.right = `${host.right - r.right + 8}px`;
+    fps.style.bottom = `${host.bottom - r.bottom + 6}px`;
+    if (game.loop.time - fpsAt > 500) {
+      fpsAt = game.loop.time;
+      fps.textContent = `${Math.round(game.loop.actualFps)} FPS`;
+    }
+  });
 
-  const gl = out.getContext('webgl', { alpha: false, antialias: false });
-  if (!gl) return;
+  const renderer = game.renderer;
+  if (!renderer.gl) return;
+  const gl = renderer.gl;
+  const W = renderer.width, H = renderer.height;
   const persist = program(gl, persistFrag);
   const crt = program(gl, crtFrag);
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0);
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  // RGB: the canvas has no alpha channel, and the copy must match its format.
   const frame = texture(gl, gl.NEAREST);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, W, H, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
   // Two persistence buffers, swapped every frame.
   const acc = [0, 1].map(() => {
     const t = texture(gl, gl.LINEAR);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, src.width, src.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     const fb = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
     return { t, fb };
   });
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.bindTexture(gl.TEXTURE_2D, null);
   let flip = 0;
-  let fpsAt = 0;
 
-  game.events.on('postrender', () => {
+  renderer.on('postrender', () => {
     const g = graphics;
-    if (g.fps && game.loop.time - fpsAt > 500) {
-      fpsAt = game.loop.time;
-      fps.textContent = `${Math.round(game.loop.actualFps)} FPS`;
-    }
-    fps.style.display = g.fps ? 'block' : 'none';
-    const r = src.getBoundingClientRect();
-    const host = src.parentNode.getBoundingClientRect();
-    fps.style.right = `${host.right - r.right + 8}px`;
-    fps.style.bottom = `${host.bottom - r.bottom + 6}px`;
-    const on = anyEffect(g);
-    out.style.display = on ? 'block' : 'none';
-    if (!on) return;
+    if (!anyEffect(g) || renderer.contextLost) return;
+    renderer.pipelines.clear();
+    gl.disable(gl.SCISSOR_TEST);
+    gl.disable(gl.BLEND);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
-    // Match the game canvas on screen, at the display's real pixel size.
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
-    if (out.width !== w || out.height !== h) {
-      out.width = w;
-      out.height = h;
-    }
-    Object.assign(out.style, { left: `${r.left - host.left}px`, top: `${r.top - host.top}px`, width: `${r.width}px`, height: `${r.height}px` });
-
-    // The game canvas's drawing buffer is still valid inside this event.
+    // The finished frame, from the canvas's drawing buffer.
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, frame);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+    gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, W, H);
 
     const a = acc[flip], b = acc[1 - flip];
     flip = 1 - flip;
     gl.bindFramebuffer(gl.FRAMEBUFFER, a.fb);
-    gl.viewport(0, 0, src.width, src.height);
+    gl.viewport(0, 0, W, H);
     gl.useProgram(persist.p);
     gl.uniform1i(persist.u.uSrc, 0);
     gl.activeTexture(gl.TEXTURE1);
@@ -199,14 +197,12 @@ export function installCrt(game) {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.viewport(0, 0, w, h);
     gl.useProgram(crt.p);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, a.t);
     const U = crt.u;
     gl.uniform1i(U.uSrc, 0);
-    gl.uniform2f(U.uSrcRes, src.width, src.height);
-    gl.uniform2f(U.uOutRes, w, h);
+    gl.uniform2f(U.uSrcRes, W, H);
     gl.uniform1f(U.uTime, (game.loop.time % 10000) / 1000);
     gl.uniform1f(U.uLines, VIEW.h);
     gl.uniform1f(U.uScan, g.scanlines);
@@ -219,5 +215,12 @@ export function installCrt(game) {
     gl.uniform1f(U.uConv, g.convergence);
     gl.uniform1f(U.uNoise, g.noise);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.activeTexture(gl.TEXTURE0);
+    renderer.pipelines.rebind();
+    game.crtFrames = (game.crtFrames ?? 0) + 1;
   });
 }

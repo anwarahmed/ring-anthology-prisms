@@ -167,13 +167,15 @@ menus, `src/scenes/GraphicsScene.js`), saved in localStorage:
 - **Art style** (`STYLE` in `config.js`: `prerendered`, `hybrid`, `pixel`). Read once at
   load from the saved setting, or from `?style=`, which overrides it. Changing it
   reloads the page, because art is generated at startup.
-- **CRT emulation** (`src/engine/crt.js`): a second WebGL canvas over the game. After
-  each Phaser frame, the whole frame (all stacked scenes) is copied in and drawn
-  through a CRT shader at the display's real pixel size. Effects: scanlines,
+- **CRT emulation** (`src/engine/crt.js`): after each Phaser frame, the whole frame
+  (all stacked scenes) is copied to a texture and drawn back through a CRT shader, in
+  Phaser's own WebGL context (bracketed by `pipelines.clear()` / `rebind()`). Don't
+  move it to a separate overlay canvas: some desktop compositors drew that partly
+  black. Effects: scanlines,
   phosphor mask (aperture grille, slot or shadow mask), bloom and halation,
   softening, curvature, vignette, convergence, persistence and noise. Each runs from
   0 to 1; presets are Off, Subtle, Arcade and Consumer TV. When every effect is 0,
-  the overlay is hidden and costs nothing. Scenes need no CRT code.
+  the pass is skipped and costs nothing. Scenes need no CRT code.
 - **Show FPS:** a small counter in the bottom-right corner.
 - **Compare:** `node scripts/compare-graphics.mjs [--level 2a]` writes screenshots of
   each style and preset to `test-results/compare/`.

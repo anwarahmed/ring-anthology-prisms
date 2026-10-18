@@ -113,7 +113,20 @@ await run('graphics', '', async (page) => {
   await page.screenshot({ path: join(shots, 'graphics.png') });
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.graphics') ?? '{}'));
   if (saved.preset !== 'arcade' || !(saved.scanlines > 0)) throw new Error(`preset not saved: ${JSON.stringify(saved)}`);
-  if (!(await page.evaluate(() => document.getElementById('crt')?.style.display === 'block'))) throw new Error('CRT overlay not shown');
+  // The CRT pass draws the whole frame: the top third (the GRAPHICS title) must not be blank.
+  const top = await page.evaluate(() => new Promise((done) => window.__game.renderer.snapshotArea(0, 0, 960, 180, (img) => {
+    const c = document.createElement('canvas');
+    c.width = img.width;
+    c.height = img.height;
+    const x = c.getContext('2d');
+    x.drawImage(img, 0, 0);
+    const d = x.getImageData(0, 0, c.width, c.height).data;
+    let max = 0;
+    for (let i = 0; i < d.length; i += 4) max = Math.max(max, d[i] + d[i + 1] + d[i + 2]);
+    done({ max, drawn: window.__game.crtFrames });
+  })));
+  if (!(top.drawn > 0)) throw new Error('CRT pass not drawn');
+  if (top.max < 300) throw new Error(`top of screen blank with CRT on: ${JSON.stringify(top)}`);
   await tap('Escape', 600);
   await page.waitForFunction(() => window.__game.scene.isActive('Title'), null, { timeout: 5000 });
   await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.graphics'));
