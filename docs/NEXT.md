@@ -34,6 +34,10 @@ Tick boxes and commit after each step. Everything ticked is committed.
    Doisac, Reach, Harvest, Trove, Algolis.
    - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [ ] 3a - [ ] 3b - [ ] 3c - [ ] 3d - [ ] 3e - [ ] 3f - [ ] 3g
    - [ ] 3h - [ ] 3i - [ ] 3j - [ ] 3k - [ ] 3l - [ ] 3m
+   Status: all 13 written and committed (validator passes). A box is ticked once the
+   bot finishes the level (`node tests/smoke.mjs --level <id> --finish`) and its
+   CAMPAIGN.md status is set to done. Map generator: test-results/genmap.py (gitignored;
+   recreate from the 3b–3l maps if lost).
 6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
    - [ ] Part IV (4a–4f)  - [ ] Part V (5a–5h)  - [ ] Part VI (6a–6g)
