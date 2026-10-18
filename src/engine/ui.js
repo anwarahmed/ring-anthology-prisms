@@ -4,8 +4,17 @@
 import { HD } from './config.js';
 
 // Every scene calls this first: zoom the camera so world units map to HD× pixels.
+// The origin is the top-left corner, so scrollX/scrollY are the visible area's top-left
+// in world units. Phaser computes worldView as if zooming about the centre, which
+// puts it half a screen off with this origin (tile layers culled the left half of the
+// screen). The patched preRender corrects it every frame.
 export function hdCamera(scene) {
-  scene.cameras.main.setZoom(HD).setOrigin(0, 0);
+  const cam = scene.cameras.main.setZoom(HD).setOrigin(0, 0);
+  const preRender = cam.preRender;
+  cam.preRender = function () {
+    preRender.call(this);
+    this.worldView.setTo(this.scrollX, this.scrollY, this.width / this.zoomX, this.height / this.zoomY);
+  };
 }
 
 export const FONT = { pixel: '"Press Start 2P"', read: 'VT323' };

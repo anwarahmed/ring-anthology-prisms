@@ -272,7 +272,7 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
     L.events.on('postupdate', () => {
       const cam = L.cameras.main, p = L.players[0];
       const half = p.body.width / 2;
-      const over = Math.max(cam.scrollX - (p.x - half), (p.x + half) - (cam.scrollX + cam.width));
+      const over = Math.max(cam.scrollX - (p.x - half), (p.x + half) - (cam.scrollX + cam.width / cam.zoom));
       window.__worst = Math.max(window.__worst, over);
     });
   });
@@ -284,6 +284,14 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
   }
   await page.keyboard.up('h');
   await page.keyboard.up('d');
+  // Tiles are drawn across the whole screen after scrolling (culling matches the view).
+  const cull = await page.evaluate(() => {
+    const L = window.__game.scene.getScene('Level'), cam = L.cameras.main, s = L.layer.scaleX;
+    const xs = L.layer.culledTiles.map((t) => t.pixelX * s);
+    return { scroll: cam.scrollX, min: Math.min(...xs), max: Math.max(...xs) + 16 };
+  });
+  if (cull.scroll < 32) throw new Error(`camera did not scroll: ${JSON.stringify(cull)}`);
+  if (cull.min > cull.scroll || cull.max < cull.scroll + 480) throw new Error(`tiles not drawn across the screen: ${JSON.stringify(cull)}`);
   await page.keyboard.down('a');
   await page.waitForTimeout(2500);
   await page.keyboard.up('a');
