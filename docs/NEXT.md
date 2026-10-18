@@ -23,8 +23,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Decoration kinds in scenery.js, placed on back-wall areas
    - [x] Added to indoor themes; screenshots reviewed (new themes: add a `decor` list)
 3. **Reliable tests** (keyboard/menu checks fail when the machine is loaded):
-   - [ ] Replace fixed waits with waiting on outcomes; retry key presses
-   - [ ] `--level <id>` runs skip the general checks
+   - [x] Replace fixed waits with waiting on outcomes; retry key presses (passes at load 20)
+   - [x] `--level <id>` runs skip the general checks; `--checks` runs only them
 4. **Part II:** bot-finish 2a, 2b, 2c, 2e, 2f (2d done); set `done` in CAMPAIGN.md.
    - [ ] 2a  - [ ] 2b  - [ ] 2c  - [ ] 2e  - [ ] 2f  - [ ] statuses + commit
 5. **Part III (3a–3m)** with the `new-level` skill. New content: a Jiralhanae (Brute)

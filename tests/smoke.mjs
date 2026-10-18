@@ -1,9 +1,14 @@
 // Smoke test: boots the game in headless Chromium, plays a level with the autopilot
 // bot, and fails on any page error. Screenshots go to --shots (default: test-results/).
 //
-//   node tests/smoke.mjs                       title screen + every built level, 20 s each
-//   node tests/smoke.mjs --level 1a --finish   play 1a with the bot until it ends
+//   node tests/smoke.mjs                       general checks + every built level, 20 s each
+//   node tests/smoke.mjs --checks              general checks only (menus, controls, ...)
+//   node tests/smoke.mjs --level 1a --finish   just level 1a: the bot plays it to the end
 //   options: --seconds N  --shots DIR  --difficulty easy  --solo
+//
+// The game reads input once per frame and frames can be slow when the machine is busy,
+// so checks hold each key or button until the game has seen it (tap, tapPad), retry
+// presses until the screen changes (pressUntil) and wait on outcomes, not fixed times.
 
 import { createServer } from 'vite';
 import { chromium } from 'playwright';
@@ -19,7 +24,9 @@ const shots = opt('shots', 'test-results');
 const seconds = Number(opt('seconds', 20));
 const finish = !!opt('finish', false);
 const difficulty = opt('difficulty', 'normal');
-const levels = opt('level', null) ? [opt('level')] : readdirSync('levels', { withFileTypes: true })
+const onlyLevel = opt('level', null);
+const checksOnly = !!opt('checks', false);
+const levels = checksOnly ? [] : onlyLevel ? [onlyLevel] : readdirSync('levels', { withFileTypes: true })
   .filter((d) => d.isDirectory() && !d.name.startsWith('_') && existsSync(join('levels', d.name, 'level.js'))).map((d) => d.name);
 mkdirSync(shots, { recursive: true });
 
@@ -31,9 +38,18 @@ const browser = await chromium.launch({ executablePath, args: ['--autoplay-polic
 let failed = false;
 
 async function run(name, url, check) {
+  if (onlyLevel && !name.startsWith('level-')) return;
   const page = await browser.newPage({ viewport: { width: 1440, height: 810 } });
   // Hide real controllers plugged into this machine; tests use their own fake ones.
-  await page.addInitScript(() => { navigator.getGamepads = () => []; });
+  await page.addInitScript(() => {
+    navigator.getGamepads = () => [];
+    // Waits ms of game time (in-page helper for checks).
+    window.__gameWait = (ms) => new Promise((done) => {
+      const t0 = window.__game.loop.time;
+      const tick = () => (window.__game.loop.time - t0 >= ms ? done() : requestAnimationFrame(tick));
+      tick();
+    });
+  });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error' && !m.text().startsWith('Failed to load resource')) errors.push(m.text()); });
@@ -58,46 +74,78 @@ async function run(name, url, check) {
 }
 
 const active = (page, key) => page.evaluate((k) => window.__game?.scene.isActive(k), key);
+// Waits until the game has run n more frames.
+const frames = (page, n = 2) => page.evaluate((n) => new Promise((done) => {
+  const f0 = window.__game.loop.frame;
+  const tick = () => (window.__game.loop.frame - f0 >= n ? done() : requestAnimationFrame(tick));
+  tick();
+}), n);
+// Waits until ms of game time have passed (screens ignore input briefly when they open).
+const gameWait = (page, ms) => page.evaluate((ms) => new Promise((done) => {
+  const t0 = window.__game.loop.time;
+  const tick = () => (window.__game.loop.time - t0 >= ms ? done() : requestAnimationFrame(tick));
+  tick();
+}), ms);
+// A key tap the game can't miss: held for two frames, then released for two.
+const tap = async (page, key) => {
+  await page.keyboard.down(key);
+  await frames(page, 2);
+  await page.keyboard.up(key);
+  await frames(page, 2);
+};
+// The same for a fake gamepad's button (window.__pad).
+const tapPad = async (page, b) => {
+  await page.evaluate((b) => { window.__pad.buttons[b] = { pressed: true, value: 1 }; window.__pad.timestamp = performance.now(); }, b);
+  await frames(page, 3);
+  await page.evaluate((b) => { window.__pad.buttons[b] = { pressed: false, value: 0 }; window.__pad.timestamp = performance.now(); }, b);
+  await frames(page, 3);
+};
+const waitScene = (page, key, timeout = 30000) => page.waitForFunction((k) => window.__game?.scene.isActive(k), key, { timeout });
+// Presses (tap or tapPad) until the scene is active: the first presses may land
+// while the previous screen is still opening or fading out.
+const pressUntil = async (page, press, scene, tries = 15) => {
+  for (let i = 0; i < tries; i++) {
+    if (await active(page, scene)) return;
+    await press();
+    try { await waitScene(page, scene, 2500); return; } catch { /* press again */ }
+  }
+  throw new Error(`never reached ${scene}`);
+};
 // The level is running and its fade-in is over (slow under load in headless Chromium).
 const levelReady = async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 60000 });
   await page.waitForFunction(() => !window.__game.scene.getScene('Level').cameras.main.fadeEffect.isRunning, null, { timeout: 30000 });
 };
 
 await run('title', '', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
+  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 60000 });
   await page.waitForTimeout(1500);
 });
 
 // The way the kids start: title → join → timeline → Archive cards → first level.
 await run('menus', '', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
-  const press = async (key, scene) => {
-    await page.keyboard.down(key);
-    await page.waitForTimeout(120);
-    await page.keyboard.up(key);
-    await page.waitForTimeout(500);
-    if (scene) await page.waitForFunction((k) => window.__game.scene.isActive(k), scene, { timeout: 12000 });
-  };
-  await press('f', 'Players');
-  await page.waitForTimeout(400);
-  await press('g', 'Timeline');
-  await press('Escape', 'Archive'); // Start (keys 1) plays from the level select
+  await waitScene(page, 'Title');
+  await pressUntil(page, () => tap(page, 'f'), 'Players');
+  await gameWait(page, 400);
+  await pressUntil(page, () => tap(page, 'g'), 'Timeline');
+  await gameWait(page, 300);
+  await pressUntil(page, () => tap(page, 'Escape'), 'Archive'); // Start (keys 1) plays from the level select
   await page.screenshot({ path: join(shots, 'archive.png') });
-  for (let i = 0; i < 12 && !(await active(page, 'Level')); i++) await press('g');
-  if (!(await active(page, 'Level'))) throw new Error('menus did not reach the first level');
+  await pressUntil(page, () => tap(page, 'g'), 'Level', 30);
 });
 
 // Controls: open from the title menu, rebind kb1 JUMP to J, check it is saved and works.
 await run('controls', '', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
-  const tap = async (key, wait = 300) => { await page.keyboard.down(key); await page.waitForTimeout(100); await page.keyboard.up(key); await page.waitForTimeout(wait); };
-  await tap('s');
-  await tap('f');
-  await page.waitForFunction(() => window.__game.scene.isActive('Controls'), null, { timeout: 5000 });
-  for (let i = 0; i < 5; i++) await tap('ArrowDown', 150); // device row → UP, DOWN, LEFT, RIGHT, JUMP
-  await tap('Enter', 400);
-  await tap('j', 500);
+  await waitScene(page, 'Title');
+  await gameWait(page, 300);
+  await tap(page, 's');
+  await pressUntil(page, () => tap(page, 'f'), 'Controls');
+  await gameWait(page, 400);
+  for (let i = 0; i < 5; i++) await tap(page, 'ArrowDown'); // device row → UP, DOWN, LEFT, RIGHT, JUMP
+  await tap(page, 'Enter');
+  await gameWait(page, 400);
+  await tap(page, 'j');
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.controls') ?? '{}').kb1?.jump, null, { timeout: 10000 }).catch(() => {});
   await page.screenshot({ path: join(shots, 'controls.png') });
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.controls') ?? '{}'));
   if (saved.kb1?.jump?.[0] !== 74) throw new Error(`jump not rebound to J: ${JSON.stringify(saved)}`);
@@ -106,15 +154,16 @@ await run('controls', '', async (page) => {
 
 // Graphics: open from the title menu, choose a CRT preset, check it is saved and drawn.
 await run('graphics', '', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
-  const tap = async (key, wait = 300) => { await page.keyboard.down(key); await page.waitForTimeout(100); await page.keyboard.up(key); await page.waitForTimeout(wait); };
-  await tap('s');
-  await tap('s');
-  await tap('f');
-  await page.waitForFunction(() => window.__game.scene.isActive('Graphics'), null, { timeout: 5000 });
-  await tap('ArrowDown', 150); // ART STYLE → CRT PRESET
-  await tap('ArrowRight', 150);
-  await tap('ArrowRight', 600); // Off → Subtle → Arcade
+  await waitScene(page, 'Title');
+  await gameWait(page, 300);
+  await tap(page, 's');
+  await tap(page, 's');
+  await pressUntil(page, () => tap(page, 'f'), 'Graphics');
+  await gameWait(page, 400);
+  await tap(page, 'ArrowDown'); // ART STYLE → CRT PRESET
+  await tap(page, 'ArrowRight');
+  await tap(page, 'ArrowRight'); // Off → Subtle → Arcade
+  await gameWait(page, 300);
   await page.screenshot({ path: join(shots, 'graphics.png') });
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.graphics') ?? '{}'));
   if (saved.preset !== 'arcade' || !(saved.scanlines > 0)) throw new Error(`preset not saved: ${JSON.stringify(saved)}`);
@@ -132,8 +181,7 @@ await run('graphics', '', async (page) => {
   })));
   if (!(top.drawn > 0)) throw new Error('CRT pass not drawn');
   if (top.max < 300) throw new Error(`top of screen blank with CRT on: ${JSON.stringify(top)}`);
-  await tap('Escape', 600);
-  await page.waitForFunction(() => window.__game.scene.isActive('Title'), null, { timeout: 5000 });
+  await pressUntil(page, () => tap(page, 'Escape'), 'Title');
   await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.graphics'));
 });
 
@@ -147,54 +195,49 @@ await run('unknown-pad', '', async (page) => {
     navigator.getGamepads = () => [pad, null, null, null];
     window.dispatchEvent(Object.assign(new Event('gamepadconnected'), { gamepad: pad }));
   });
-  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
-  const press = async (i, wait = 350) => {
-    await page.evaluate((b) => { window.__pad.buttons[b] = { pressed: true, value: 1 }; window.__pad.timestamp = performance.now(); }, i);
-    await page.waitForTimeout(150);
-    await page.evaluate((b) => { window.__pad.buttons[b] = { pressed: false, value: 0 }; window.__pad.timestamp = performance.now(); }, i);
-    await page.waitForTimeout(wait);
-  };
-  await press(11); // a non-standard Start
-  await page.waitForFunction(() => window.__game.scene.isActive('Controls'), null, { timeout: 5000 });
-  await page.waitForTimeout(900);
-  for (let i = 0; i < 11; i++) await press(i, 650);
+  await waitScene(page, 'Title');
+  await pressUntil(page, () => tapPad(page, 11), 'Controls'); // a non-standard Start
+  // The wizard asks for each action in turn; answer each as soon as it asks.
+  for (let i = 0; i < 11; i++) {
+    await page.waitForFunction((n) => window.__game.scene.getScene('Controls').capture?.action === n, ['up', 'down', 'left', 'right', 'jump', 'fire', 'ability', 'grenade', 'swap', 'melee', 'pause'][i], { timeout: 20000 });
+    await page.waitForFunction(() => { const c = window.__game.scene.getScene('Controls').capture; return c && c.base && window.__game.scene.getScene('Controls').time.now > c.from; }, null, { timeout: 20000 });
+    await tapPad(page, i);
+  }
   await page.screenshot({ path: join(shots, 'wizard.png') });
-  await page.waitForFunction(() => window.__game.scene.isActive('Players'), null, { timeout: 6000 });
+  await waitScene(page, 'Players');
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.controls') ?? '{}')['pad:6B controller']);
   if (saved?.jump?.[0]?.b !== 4 || saved?.pause?.[0]?.b !== 10) throw new Error(`wizard bindings wrong: ${JSON.stringify(saved)}`);
-  await page.waitForTimeout(500);
-  await press(10); // the new Start
-  await page.waitForFunction(() => window.__game.scene.isActive('Timeline'), null, { timeout: 5000 });
-  await page.waitForTimeout(400);
-  await press(4); // Jump no longer starts a level from the level select
+  await gameWait(page, 500);
+  await pressUntil(page, () => tapPad(page, 10), 'Timeline'); // the new Start
+  await gameWait(page, 400);
+  await tapPad(page, 4); // Jump no longer starts a level from the level select
+  await gameWait(page, 400);
   if (!(await active(page, 'Timeline'))) throw new Error('jump started a level from the level select');
-  await press(10); // Start does
-  await page.waitForFunction(() => window.__game.scene.isActive('Archive'), null, { timeout: 5000 });
+  await pressUntil(page, () => tapPad(page, 10), 'Archive'); // Start does
   await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.controls'));
 });
 
 // Pause: a long press of Start pauses and the menu stays open; Start again resumes.
 await run('pause', '?level=1a', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
-  await page.waitForTimeout(1500);
+  await levelReady(page);
+  await gameWait(page, 300);
   await page.keyboard.down('Escape');
-  await page.waitForFunction(() => window.__game.scene.isActive('Pause'), null, { timeout: 5000 });
-  await page.waitForTimeout(400);
+  await waitScene(page, 'Pause');
+  await gameWait(page, 400);
   await page.keyboard.up('Escape');
-  await page.waitForTimeout(800);
+  await gameWait(page, 600);
   if (!(await active(page, 'Pause'))) throw new Error('pause menu closed by the same Start press');
   await page.keyboard.down('Escape');
-  await page.waitForTimeout(400);
+  await page.waitForFunction(() => !window.__game.scene.isActive('Pause'), null, { timeout: 20000 }).catch(() => {});
   await page.keyboard.up('Escape');
-  await page.waitForTimeout(800);
   if (await active(page, 'Pause')) throw new Error('Start did not resume');
   if (!(await page.evaluate(() => window.__game.scene.isActive('Level')))) throw new Error('level not running after resume');
 });
 
 // Weapon drops: an enemy's gun drops when it dies; walking over it adds it once.
 await run('pickup', '?level=1a&god=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
-  await page.waitForTimeout(1500);
+  await levelReady(page);
+  await gameWait(page, 1500);
   const killNear = () => page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
     const p = L.players[0];
@@ -202,19 +245,19 @@ await run('pickup', '?level=1a&god=1', async (page) => {
     u.hurt(9999, 'melee', p);
   });
   await killNear();
-  await page.waitForTimeout(1500);
+  await gameWait(page, 1500);
   const one = await page.evaluate(() => { const p = window.__game.scene.getScene('Level').players[0]; return { ids: p.weapons.map((w) => w.id), cur: p.current.id }; });
   if (!one.ids.includes('hardlight-lance') || one.cur !== 'hardlight-lance') throw new Error(`gun not picked up: ${JSON.stringify(one)}`);
   await killNear();
-  await page.waitForTimeout(1500);
+  await gameWait(page, 1500);
   const two = await page.evaluate(() => window.__game.scene.getScene('Level').players[0].weapons.filter((w) => w.id === 'hardlight-lance').length);
   if (two !== 1) throw new Error(`same gun carried ${two} times`);
 });
 
 // Allies hop over fire instead of walking into it (1a has a fire at columns 89-90).
 await run('ally-fire', '?level=1a&god=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
-  await page.waitForTimeout(1000);
+  await levelReady(page);
+  await gameWait(page, 1000);
   await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
     // Quiet the level script so no waves or arenas interfere.
@@ -236,16 +279,15 @@ await run('ally-fire', '?level=1a&god=1', async (page) => {
 // Vehicles: get in with SWAP (R on keys 1), drive, run a Grunt over, get out.
 await run('vehicle', '?level=1a&god=1', async (page) => {
   await levelReady(page);
-  await page.waitForTimeout(300);
+  await gameWait(page, 300);
   await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
     L.runner.triggers.forEach((t) => { t.fired = true; });
     const p = L.players[0];
     window.__v = L.spawnVehicle('warthog', p.x + 20, 13 * 16);
   });
-  await page.waitForTimeout(600);
-  const tap = async (k) => { await page.keyboard.down(k); await page.waitForTimeout(120); await page.keyboard.up(k); await page.waitForTimeout(300); };
-  await tap('r');
+  await gameWait(page, 600);
+  await tap(page, 'r');
   const inside = await page.evaluate(() => window.__game.scene.getScene('Level').players[0].vehicle === window.__v);
   if (!inside) throw new Error('SWAP did not enter the Warthog');
   const x0 = await page.evaluate(() => window.__v.x);
@@ -261,7 +303,7 @@ await run('vehicle', '?level=1a&god=1', async (page) => {
   if (r.moved - x0 < 80) throw new Error(`Warthog did not drive: ${x0} -> ${r.moved}`);
   if (r.grunt) throw new Error('driving into the Grunt did not run it over');
   await page.screenshot({ path: join(shots, 'vehicle-driving.png') });
-  await tap('r');
+  await tap(page, 'r');
   const out = await page.evaluate(() => { const p = window.__game.scene.getScene('Level').players[0]; return !p.vehicle && p.visible && p.body.enable; });
   if (!out) throw new Error('SWAP did not leave the Warthog');
 });
@@ -270,7 +312,7 @@ await run('vehicle', '?level=1a&god=1', async (page) => {
 // left, the player's body never leaves the screen.
 await run('screen-edge', '?level=1d&god=1', async (page) => {
   await levelReady(page);
-  await page.waitForTimeout(300);
+  await gameWait(page, 300);
   await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
     window.__worst = 0;
@@ -281,12 +323,10 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
       window.__worst = Math.max(window.__worst, over);
     });
   });
+  // Sprint right, jumping and dashing, until the camera has scrolled well along.
   await page.keyboard.down('d');
   await page.keyboard.down('h');
-  for (let i = 0; i < 24; i++) {
-    await page.keyboard.down('g'); await page.waitForTimeout(160); await page.keyboard.up('g');
-    await page.waitForTimeout(120);
-  }
+  for (let i = 0; i < 40 && (await page.evaluate(() => window.__game.scene.getScene('Level').cameras.main.scrollX)) < 120; i++) await tap(page, 'g');
   await page.keyboard.up('h');
   await page.keyboard.up('d');
   // Tiles are drawn across the whole screen after scrolling (culling matches the view).
@@ -298,7 +338,7 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
   if (cull.scroll < 8) throw new Error(`camera did not scroll: ${JSON.stringify(cull)}`);
   if (cull.min > cull.scroll || cull.max < cull.scroll + 480) throw new Error(`tiles not drawn across the screen: ${JSON.stringify(cull)}`);
   await page.keyboard.down('a');
-  await page.waitForTimeout(2500);
+  await gameWait(page, 2500);
   await page.keyboard.up('a');
   const worst = await page.evaluate(() => window.__worst);
   if (worst > 1) throw new Error(`player went ${worst.toFixed(1)} px off screen`);
@@ -307,7 +347,7 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
 // Units placed inside a raised block (the 1a surrender line crosses one) stand on top
 // of it instead of being pushed out through the floor.
 await run('spawn-ground', '?level=1a&god=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await levelReady(page);
   const fell = await page.evaluate(async () => {
     const L = window.__game.scene.getScene('Level'), m = L.map.markers.L, T = 16;
     const units = [];
@@ -316,7 +356,7 @@ await run('spawn-ground', '?level=1a&god=1', async (page) => {
       u.brain = () => u.setVelocityX(0);
       units.push(u);
     }
-    await new Promise((r) => setTimeout(r, 1500));
+    await window.__gameWait(1500);
     return units.filter((u) => u.y > (m.y + 1) * T).map((u) => [Math.round(u.x), Math.round(u.y)]);
   });
   if (fell.length) throw new Error(`units fell through the floor: ${JSON.stringify(fell)}`);
@@ -325,15 +365,15 @@ await run('spawn-ground', '?level=1a&god=1', async (page) => {
 // When everyone is down, characters stop and their arms stay on their bodies until
 // the checkpoint restart (they used to be left floating while bodies kept moving).
 await run('down-arms', '?level=1a&god=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await levelReady(page);
   const gap = await page.evaluate(async () => {
     const L = window.__game.scene.getScene('Level'), p = L.players[0];
     const u = L.spawnUnit('ancient-human-defender', p.x + 40, p.y + 20, { ally: true });
-    await new Promise((r) => setTimeout(r, 400));
+    await window.__gameWait(400);
     u.setVelocityX(120);
     p.invulnUntil = 0;
     p.die();
-    await new Promise((r) => setTimeout(r, 1200));
+    await window.__gameWait(1200);
     const s = u.shoulder();
     return Math.round(Math.hypot(u.gun.x - s.x, u.gun.y - s.y));
   });
@@ -344,7 +384,7 @@ await run('down-arms', '?level=1a&god=1', async (page) => {
 // Restarts used to place them inside the ground (they fell through and the retry
 // looped), and a checkpoint on 1b's pit platform would drop them into the pit.
 await run('checkpoint', '?level=1b&p2=kb2', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await levelReady(page);
   const setup = await page.evaluate(async () => {
     const L = window.__game.scene.getScene('Level'), T = 16;
     L.runner.triggers.forEach((t) => { t.fired = true; });
@@ -354,7 +394,7 @@ await run('checkpoint', '?level=1b&p2=kb2', async (page) => {
       L.focus = { x, y };
       L.updateCamera(0, true);
       for (const p of L.players) { p.invulnUntil = Infinity; p.body.reset(x, y - p.body.height / 2 - 1); }
-      await new Promise((r) => setTimeout(r, 700));
+      await window.__gameWait(700);
       return L.players[0].body.blocked.down && Math.abs(L.players[0].x - x) < 4;
     };
     // 1. On the platform over the pit: the checkpoint goes to the ground beside it.
@@ -377,9 +417,9 @@ await run('checkpoint', '?level=1b&p2=kb2', async (page) => {
   if (!setup.ok1 || !setup.ok2) throw new Error(`test setup failed: ${JSON.stringify(setup)}`);
   const c = setup.pitCp;
   if (c.y !== c.floor || c.x >= c.pit) throw new Error(`checkpoint over the pit not on solid ground: ${JSON.stringify(c)}`);
-  await page.waitForTimeout(500);
+  await gameWait(page, 500);
   await page.waitForFunction(() => window.__game.scene.isActive('Level') && window.__game.scene.getScene('Level').players.length, null, { timeout: 30000 });
-  await page.waitForTimeout(2500);
+  await gameWait(page, 2500);
   const r = await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
     return { players: L.players.map((p) => ({ alive: p.alive, x: Math.round(p.x), feet: Math.round(p.body.bottom), down: p.body.blocked.down })), ended: !!L.ended };
@@ -390,7 +430,7 @@ await run('checkpoint', '?level=1b&p2=kb2', async (page) => {
 // Indoors (1c's cargo bay), sky and edge spawns land inside the room, never on or
 // above the ceiling where nobody can reach them (the arena could never be cleared).
 await run('spawn-indoors', '?level=1c&god=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await levelReady(page);
   const bad = await page.evaluate(async () => {
     const L = window.__game.scene.getScene('Level'), T = 16, m = L.map.markers.B;
     L.runner.triggers.forEach((t) => { t.fired = true; });
@@ -398,10 +438,10 @@ await run('spawn-indoors', '?level=1c&god=1', async (page) => {
     p.body.reset(m.x * T, (m.y + 1) * T - p.body.height / 2 - 1);
     L.focus = { x: m.x * T, y: p.y };
     L.updateCamera(0, true);
-    await new Promise((r) => setTimeout(r, 300));
+    await window.__gameWait(300);
     const units = await L.spawnGroup([{ unit: 'flood-infection', n: 6, from: 'sky', gap: 0.05 }, { unit: 'flood-warrior', n: 2, from: 'right', gap: 0.05 }]);
     for (const u of units) u.brain = () => u.setVelocityX(0);
-    await new Promise((r) => setTimeout(r, 2000));
+    await window.__gameWait(2000);
     let ceiling = m.y;
     const solid = (row) => { const i = L.layer.getTileAt(m.x, row)?.index ?? -1; return i >= 0 && i < 32; };
     while (ceiling > 0 && !solid(ceiling - 1)) ceiling--;
@@ -412,7 +452,7 @@ await run('spawn-indoors', '?level=1c&god=1', async (page) => {
 
 // Back on the timeline after finishing a level, the next level is selected.
 await run('timeline-next', '?all=1', async (page) => {
-  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 15000 });
+  await page.waitForFunction(() => window.__game?.scene.isActive('Title'), null, { timeout: 60000 });
   await page.evaluate(() => window.__game.scene.getScene('Title').scene.start('Timeline', { after: '1f' }));
   await page.waitForFunction(() => window.__game.scene.isActive('Timeline'), null, { timeout: 5000 });
   const sel = await page.evaluate(() => window.__game.scene.getScene('Timeline').selectedId);
@@ -422,7 +462,7 @@ await run('timeline-next', '?all=1', async (page) => {
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {
-    await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+    await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 60000 });
     if (finish) {
       const deadline = Date.now() + 15 * 60 * 1000;
       let n = 0;

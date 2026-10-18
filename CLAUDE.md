@@ -46,6 +46,7 @@ must change. When the engine changes, update docs/ENGINE.md in the same change.
 - `npm start`: play
 - `npm test`: unit tests and validator
 - `npm run smoke`: headless run of the title screen and every level (Chromium; set `CHROMIUM_PATH` if it's not `/usr/bin/chromium`)
-- `node tests/smoke.mjs --level <id> --finish`: the bot plays the level to the end
+- `node tests/smoke.mjs --level <id> --finish`: the bot plays the level to the end (no general checks)
+- `node tests/smoke.mjs --checks`: only the general checks (menus, controls, pause, spawns, ...)
 - `node tests/probe.mjs --level <id>`: state dump every 5 s
 - Screenshots and test output go to `test-results/` (gitignored)
