@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Controller Test</title>
+    <style>
+      :root { --bg: #0b0e17; --fg: #dfe8f5; --dim: #6b7a90; --on: #7fe07f; --line: #2a3346; }
+      body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg); font: 15px/1.5 ui-monospace, monospace; }
+      h1 { font-size: 18px; margin: 0 0 8px; }
+      .pad { border: 1px solid var(--line); border-radius: 6px; padding: 12px; margin: 12px 0; }
+      .grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+      .b { min-width: 46px; text-align: center; padding: 4px 6px; border: 1px solid var(--line); border-radius: 4px; color: var(--dim); }
+      .b.on { background: var(--on); color: #000; border-color: var(--on); }
+      #log { white-space: pre-wrap; color: var(--dim); max-height: 40vh; overflow: auto; border-top: 1px solid var(--line); padding-top: 8px; }
+      button { font: inherit; padding: 6px 10px; }
+    </style>
+  </head>
+  <body>
+    <h1>Controller test</h1>
+    <p>Press buttons on the controller (press one first so the browser notices it). Press START a few times, then click <b>Copy report</b> and paste it to Claude.</p>
+    <button id="copy">Copy report</button>
+    <div id="pads">No controller seen yet. Press any button on it.</div>
+    <div id="log"></div>
+    <script>
+      const log = [];
+      const prev = {};
+      const note = (s) => { log.push(`${(performance.now() / 1000).toFixed(2)}s ${s}`); document.getElementById('log').textContent = log.slice(-60).join('\n'); };
+      window.addEventListener('gamepadconnected', (e) => note(`connected #${e.gamepad.index} "${e.gamepad.id}" mapping="${e.gamepad.mapping}" buttons=${e.gamepad.buttons.length} axes=${e.gamepad.axes.length}`));
+      window.addEventListener('gamepaddisconnected', (e) => note(`disconnected #${e.gamepad.index}`));
+      window.addEventListener('keydown', (e) => note(`KEY ${e.key} (code ${e.code}, keyCode ${e.keyCode})`));
+      function frame() {
+        const pads = [...navigator.getGamepads()].filter(Boolean);
+        const out = [];
+        for (const p of pads) {
+          const was = prev[p.index] ?? { b: [], a: [] };
+          p.buttons.forEach((b, i) => { const on = b.pressed || b.value > 0.5; if (on !== !!was.b[i]) note(`#${p.index} button ${i} ${on ? 'DOWN' : 'up'} (value ${b.value.toFixed(2)})`); });
+          p.axes.forEach((v, i) => { const q = Math.round(v * 4) / 4; if (q !== (was.a[i] ?? 0)) note(`#${p.index} axis ${i} = ${v.toFixed(2)}`); });
+          prev[p.index] = { b: p.buttons.map((b) => b.pressed || b.value > 0.5), a: p.axes.map((v) => Math.round(v * 4) / 4) };
+          out.push(`<div class="pad"><b>#${p.index}</b> ${p.id}<br>mapping: "${p.mapping}" · timestamp: ${p.timestamp.toFixed(0)}
+            <div class="grid">${p.buttons.map((b, i) => `<span class="b ${b.pressed || b.value > 0.5 ? 'on' : ''}">B${i}</span>`).join('')}</div>
+            <div class="grid">${p.axes.map((v, i) => `<span class="b ${Math.abs(v) > 0.5 ? 'on' : ''}">A${i} ${v.toFixed(2)}</span>`).join('')}</div></div>`);
+        }
+        if (out.length) document.getElementById('pads').innerHTML = out.join('');
+        requestAnimationFrame(frame);
+      }
+      frame();
+      document.getElementById('copy').onclick = () => {
+        const pads = [...navigator.getGamepads()].filter(Boolean).map((p) => `#${p.index} "${p.id}" mapping="${p.mapping}" buttons=${p.buttons.length} axes=${p.axes.length}`);
+        navigator.clipboard.writeText([...pads, '', ...log].join('\n')).then(() => note('report copied'));
+      };
+    </script>
+  </body>
+</html>

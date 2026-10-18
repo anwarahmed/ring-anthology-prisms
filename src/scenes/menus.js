@@ -184,7 +184,8 @@ export class TimelineScene extends Phaser.Scene {
     this.levelIndex = this.registry.get('levelIndex') ?? 0;
     this.header = txt(this, VIEW.w / 2, 12, '', { size: 8 }).setOrigin(0.5, 0);
     this.rows = [];
-    this.hint = txt(this, VIEW.w / 2, VIEW.h - 10, 'UP/DOWN: LEVEL   LEFT/RIGHT: PART   JUMP: PLAY', { size: 8, color: '#888' }).setOrigin(0.5, 1);
+    this.hint = txt(this, VIEW.w / 2, VIEW.h - 10, 'UP/DOWN: LEVEL  LEFT/RIGHT: PART  START: PLAY  ABILITY: BACK', { size: 8, color: '#888' }).setOrigin(0.5, 1);
+    this.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER, false);
     this.g = this.add.graphics();
     audio.playMusic('archive', 0);
     this.draw();
@@ -218,10 +219,16 @@ export class TimelineScene extends Phaser.Scene {
       this.rows.push(txt(this, VIEW.w - 36, y, status, { size: 8, color: status === 'PLAY' ? ERAS[l.era]?.css : color }).setOrigin(1, 0));
     });
   }
+  // Start (each device's pause binding, or Enter) plays; ability goes back.
   update() {
-    const hit = anyDevice(this.controls);
-    if (!hit) return;
-    const s = hit.s;
+    let s = null;
+    for (const d of this.controls.devices()) {
+      const r = this.controls.read(d);
+      if (Object.values(r.pressed).some(Boolean)) s = r;
+    }
+    const enter = Phaser.Input.Keyboard.JustDown(this.enter);
+    if (!s && !enter) return;
+    s = s ?? { pressed: {} };
     const parts = CAMPAIGN.parts;
     if (s.pressed.left || s.pressed.right) {
       this.partIndex = (this.partIndex + (s.pressed.right ? 1 : parts.length - 1)) % parts.length;
@@ -229,7 +236,7 @@ export class TimelineScene extends Phaser.Scene {
     } else if (s.pressed.up || s.pressed.down) {
       const n = parts[this.partIndex].levels.length;
       this.levelIndex = (this.levelIndex + (s.pressed.down ? 1 : n - 1)) % n;
-    } else if (s.pressed.jump || s.pressed.fire) {
+    } else if (s.pressed.pause || enter) {
       const l = parts[this.partIndex].levels[this.levelIndex];
       if (LEVELS[l.id] && this.unlocked(l.id)) {
         audio.sfx('ui');
@@ -237,8 +244,10 @@ export class TimelineScene extends Phaser.Scene {
         this.registry.set('levelIndex', this.levelIndex);
         return this.scene.start('Archive', { levelId: l.id, which: 'before' });
       }
-    } else if (s.pressed.pause) {
+    } else if (s.pressed.ability) {
       return this.scene.start('Title');
+    } else {
+      return;
     }
     audio.sfx('uiMove');
     this.draw();

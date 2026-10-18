@@ -75,7 +75,7 @@ await run('menus', '', async (page) => {
   await press('f', 'Players');
   await page.waitForTimeout(400);
   await press('g', 'Timeline');
-  await press('g', 'Archive');
+  await press('Escape', 'Archive'); // Start (keys 1) plays from the level select
   await page.screenshot({ path: join(shots, 'archive.png') });
   for (let i = 0; i < 12 && !(await active(page, 'Level')); i++) await press('g');
   if (!(await active(page, 'Level'))) throw new Error('menus did not reach the first level');
@@ -125,6 +125,11 @@ await run('unknown-pad', '', async (page) => {
   await page.waitForTimeout(500);
   await press(10); // the new Start
   await page.waitForFunction(() => window.__game.scene.isActive('Timeline'), null, { timeout: 5000 });
+  await page.waitForTimeout(400);
+  await press(4); // Jump no longer starts a level from the level select
+  if (!(await active(page, 'Timeline'))) throw new Error('jump started a level from the level select');
+  await press(10); // Start does
+  await page.waitForFunction(() => window.__game.scene.isActive('Archive'), null, { timeout: 5000 });
   await page.evaluate(() => localStorage.removeItem('ring-anthology-prisms.controls'));
 });
 
