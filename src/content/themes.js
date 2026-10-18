@@ -427,3 +427,10 @@ export const THEMES = {
     ],
   },
 };
+
+// Janjur Qom in 2100 BCE (3a): the same city long after the Forerunners, with no ring
+// and no warships in the sky.
+THEMES['janjur-qom-reformist'] = {
+  ...THEMES['janjur-qom'],
+  backdrop: THEMES['janjur-qom'].backdrop.filter((l) => l.type !== 'halo' && l.type !== 'ships'),
+};

@@ -163,7 +163,7 @@ export const UNITS = {
     range: 240, entrance: 'drop', puff: '#d08aff', score: 60,
   },
   lekgolo: {
-    name: 'Lekgolo', faction: 'lekgolo', body: 'hunter', scale: 0.55,
+    name: 'Lekgolo', faction: 'lekgolo', body: 'hunter', scale: 0.55, noShield: true,
     pal: { armor: '#c86a2a', trim: '#ff9a4a', dark: '#5a2a14', skin: '#ffb84a', glow: '#ffd27a' },
     health: 80, shields: 0, speed: 70, ai: 'charger', melee: 22,
     entrance: 'walk', puff: '#ffb84a', score: 60,

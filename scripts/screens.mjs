@@ -13,7 +13,7 @@ const i = args.indexOf('--out');
 const out = i < 0 ? 'test-results/screens' : args[i + 1];
 mkdirSync(out, { recursive: true });
 
-const server = await createServer({ server: { port: 0 }, logLevel: 'error' });
+const server = await createServer({ server: { port: 0, hmr: false, watch: null }, logLevel: 'error' });
 await server.listen();
 const base = server.resolvedUrls.local[0];
 const executablePath = process.env.CHROMIUM_PATH ?? (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);

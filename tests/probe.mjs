@@ -14,7 +14,7 @@ const seconds = Number(opt('seconds', 120));
 const every = Number(opt('every', 5));
 const p2 = opt('solo', false) ? '' : '&p2=kb2';
 
-const server = await createServer({ server: { port: 0 }, logLevel: 'error' });
+const server = await createServer({ server: { port: 0, hmr: false, watch: null }, logLevel: 'error' });
 await server.listen();
 const executablePath = process.env.CHROMIUM_PATH ?? (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);
 const browser = await chromium.launch({ executablePath, args: ['--use-gl=angle', '--use-angle=swiftshader'] });

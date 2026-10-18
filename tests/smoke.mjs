@@ -30,7 +30,7 @@ const levels = checksOnly ? [] : onlyLevel ? [onlyLevel] : readdirSync('levels',
   .filter((d) => d.isDirectory() && !d.name.startsWith('_') && existsSync(join('levels', d.name, 'level.js'))).map((d) => d.name);
 mkdirSync(shots, { recursive: true });
 
-const server = await createServer({ server: { port: 0 }, logLevel: 'error' });
+const server = await createServer({ server: { port: 0, hmr: false, watch: null }, logLevel: 'error' });
 await server.listen();
 const base = server.resolvedUrls.local[0];
 const executablePath = process.env.CHROMIUM_PATH ?? (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);

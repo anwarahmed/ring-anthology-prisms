@@ -17,7 +17,7 @@ const styles = opt('styles', 'prerendered,hybrid,pixel').split(',');
 const presets = opt('presets', 'off,subtle,arcade,tv').split(',');
 mkdirSync(out, { recursive: true });
 
-const server = await createServer({ server: { port: 0 }, logLevel: 'error' });
+const server = await createServer({ server: { port: 0, hmr: false, watch: null }, logLevel: 'error' });
 await server.listen();
 const base = server.resolvedUrls.local[0];
 const executablePath = process.env.CHROMIUM_PATH ?? (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);

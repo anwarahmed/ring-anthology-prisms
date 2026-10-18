@@ -14,13 +14,13 @@ export function setupCombat(scene) {
   scene.physics.add.overlap(scene.projectiles, scene.actorGroup, (p, a) => {
     if (!p.active || !a.alive || p.team === a.team || a.team === 'neutral') return;
     // Jackal and Hunter shields block shots from the front: flank them or use grenades.
-    if (a.bodyDef?.frontShield && p.body.velocity.x * a.facing < 0) {
+    if ((a.bodyDef?.frontShield && !a.def?.noShield) && p.body.velocity.x * a.facing < 0) {
       scene.fx.sparks(p.x, p.y, 0x9fd8ff, 6);
       audio.sfx('shieldHit');
       p.disableBody(true, true);
       return;
     }
-    a.hurt(p.damage * (a.bodyDef?.frontShield ? 1.5 : 1), p.tech, p.owner);
+    a.hurt(p.damage * ((a.bodyDef?.frontShield && !a.def?.noShield) ? 1.5 : 1), p.tech, p.owner);
     impact(scene, p, a);
   });
   scene.physics.add.collider(scene.grenades, scene.layer, null, notPlatform);
