@@ -194,7 +194,7 @@ function pillarGround(at, map, cx) {
   return null;
 }
 
-function vignette(scene) {
+export function vignette(scene) {
   if (!scene.textures.exists('vignette')) {
     const w = VIEW.w, h = VIEW.h;
     const tex = scene.textures.createCanvas('vignette', w, h);
@@ -207,5 +207,5 @@ function vignette(scene) {
     ctx.fillRect(0, 0, w, h);
     tex.refresh();
   }
-  scene.add.image(0, 0, 'vignette').setOrigin(0).setScrollFactor(0).setDepth(58);
+  return scene.add.image(0, 0, 'vignette').setOrigin(0).setScrollFactor(0).setDepth(58);
 }

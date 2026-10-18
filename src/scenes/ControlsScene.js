@@ -6,6 +6,7 @@
 import Phaser from 'phaser';
 import { VIEW } from '../engine/config.js';
 import { txt, go, hdCamera } from '../engine/ui.js';
+import { menuBackdrop, ornatePanel, header, selectBar } from '../engine/menuart.js';
 import { audio } from '../engine/audio.js';
 import { Controls, ACTIONS, bindingStore, bindingLabel } from '../engine/input.js';
 
@@ -25,8 +26,10 @@ export class ControlsScene extends Phaser.Scene {
     this.leaving = false;
     this.cameras.main.fadeIn(220);
     this.controls = new Controls(this);
-    this.add.rectangle(0, 0, VIEW.w, VIEW.h, 0x05070d, 0.96).setOrigin(0);
-    txt(this, VIEW.w / 2, 10, this.wizard ? 'SET UP YOUR CONTROLLER' : 'CONTROLS', { size: this.wizard ? 8 : 16 }).setOrigin(0.5, 0);
+    menuBackdrop(this);
+    ornatePanel(this, 40, 31, VIEW.w - 80, 200);
+    header(this, this.wizard ? 'SET UP YOUR CONTROLLER' : 'CONTROLS', 16, 0x45e6ff, this.wizard ? 8 : 16);
+    this.bar = selectBar(this, 0x45e6ff);
     this.deviceIndex = this.wizard ? Math.max(0, this.controls.devices().indexOf(this.wizard)) : 0;
     this.row = 0;
     this.capture = null;
@@ -38,7 +41,7 @@ export class ControlsScene extends Phaser.Scene {
     }));
     this.resetText = txt(this, VIEW.w / 2, 202, 'RESET TO DEFAULTS', { size: 8 }).setOrigin(0.5, 0);
     this.backText = txt(this, VIEW.w / 2, 216, 'BACK', { size: 8 }).setOrigin(0.5, 0);
-    this.hint = txt(this, VIEW.w / 2, 234, '', { font: 'read', size: 16, color: '#8899aa', align: 'center', wrap: VIEW.w - 30 }).setOrigin(0.5, 0);
+    this.hint = txt(this, VIEW.w / 2, 236, '', { font: 'read', size: 14, color: '#9aa4c8', align: 'center', wrap: VIEW.w - 30 }).setOrigin(0.5, 0);
     this.enter = this.input.keyboard.addKey(KC.ENTER, false);
     this.esc = this.input.keyboard.addKey(KC.ESC, false);
     this.input.keyboard.on('keydown', (e) => this.onKey(e));
@@ -56,7 +59,9 @@ export class ControlsScene extends Phaser.Scene {
     const dev = this.device;
     const key = this.controls.storeKey(dev);
     const binds = key ? bindingStore.get(key) : null;
-    const sel = (r) => (this.row === r ? '#3fa9f5' : '#ffffff');
+    const sel = (r) => (this.row === r ? '#ffffff' : '#9fb0d8');
+    const rowY = this.row === 0 ? 36 : this.row <= ACTIONS.length ? 54 + (this.row - 1) * 13 : this.row === ACTIONS.length + 1 ? 202 : 216;
+    this.bar.place(52, rowY - 2, VIEW.w - 104, 12);
     this.deviceText.setText(`< ${this.controls.label(dev).toUpperCase()} >`).setColor(sel(0));
     ACTIONS.forEach((a, i) => {
       const r = this.rows[i];
@@ -69,7 +74,7 @@ export class ControlsScene extends Phaser.Scene {
     this.backText.setColor(sel(ACTIONS.length + 2));
     this.hint.setText(this.capture
       ? `Press the ${dev.startsWith('kb') ? 'key' : 'button or direction'} for ${NAMES[this.capture.action]}\n(wait 8 seconds to ${this.wizard ? 'keep the current one' : 'cancel'})`
-      : 'Up/down: choose · Left/right (top row): device · Jump/Enter: rebind · Esc: back\nButtons light up green when pressed');
+      : 'Up/down: choose · Left/right: device · Jump/Enter: rebind · Esc: back\nButtons light up green when pressed');
   }
 
   onKey(e) {
@@ -148,7 +153,7 @@ export class ControlsScene extends Phaser.Scene {
     ACTIONS.forEach((a, i) => {
       const held = a === 'up' ? live.y < -0.5 : a === 'down' ? live.y > 0.5 : a === 'left' ? live.x < -0.5 : a === 'right' ? live.x > 0.5 : live[a];
       if (held) this.rows[i].name.setColor('#7fe07f');
-      else this.rows[i].name.setColor(this.row === i + 1 ? '#3fa9f5' : '#ffffff');
+      else this.rows[i].name.setColor(this.row === i + 1 ? '#ffffff' : '#9fb0d8');
     });
 
     if (this.time.now < this.cool || this.wizard) return;

@@ -8,15 +8,16 @@ Tick boxes and commit after each step. Everything ticked is committed.
 
 1. **Restyle every screen** to match the in-game art: painted backdrops, ornate
    panels, gradient headers, era emblems, glowing selection bars.
-   - [ ] Shared menu art helpers (`src/engine/menuart.js`)
-   - [ ] Title
-   - [ ] Player join (Players)
-   - [ ] Level select (Timeline)
-   - [ ] Archive cards
-   - [ ] Results
-   - [ ] Pause
-   - [ ] Controls
-   - [ ] Graphics
+   - [x] Shared menu art helpers (`src/engine/menuart.js`)
+   - [x] Title
+   - [x] Player join (Players)
+   - [x] Level select (Timeline)
+   - [x] Archive cards
+   - [x] Results
+   - [x] Pause
+   - [x] Controls
+   - [x] Graphics
+   Review all menu screens with `node scripts/screens.mjs` (test-results/screens/sheet.png).
 2. **Richer interiors:** back-wall decoration props (pipes, cables, banners, glyph
    panels) for indoor themes.
    - [ ] Decoration kinds in scenery.js, placed on back-wall areas

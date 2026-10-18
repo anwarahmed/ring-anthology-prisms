@@ -9,6 +9,7 @@ import { txt, go, hdCamera, bar } from '../engine/ui.js';
 import { audio } from '../engine/audio.js';
 import { Controls } from '../engine/input.js';
 import { graphics, CRT_PRESETS, PRESET_NAMES } from '../engine/graphics.js';
+import { menuBackdrop, ornatePanel, header, selectBar } from '../engine/menuart.js';
 
 const STYLE_NAMES = { prerendered: 'PRE-RENDERED', hybrid: 'HYBRID', pixel: 'PIXEL ART' };
 const PRESETS = ['off', 'subtle', 'arcade', 'tv'];
@@ -50,11 +51,13 @@ export class GraphicsScene extends Phaser.Scene {
     this.controls = new Controls(this);
     this.style = STYLE;
     // A test pattern behind the menu, so CRT changes are easy to judge.
+    menuBackdrop(this);
+    ornatePanel(this, 40, 27, VIEW.w - 80, 190);
+    this.bar = selectBar(this, 0x45e6ff);
     const g = this.add.graphics();
-    g.fillStyle(0x05070d, 1).fillRect(0, 0, VIEW.w, VIEW.h);
     [0xffffff, 0xffd23a, 0x45e6ff, 0x5fd35f, 0xd04fd0, 0xe0453a, 0x3f6cf5].forEach((c, i) => g.fillStyle(c, 0.9).fillRect(16 + i * 18, VIEW.h - 30, 16, 20));
     for (let i = 0; i < 8; i++) g.fillStyle(0x111111 * (i * 2 + 1), 1).fillRect(VIEW.w - 160 + i * 18, VIEW.h - 30, 16, 20);
-    txt(this, VIEW.w / 2, 8, 'GRAPHICS', { size: 16 }).setOrigin(0.5, 0);
+    header(this, 'GRAPHICS', 14, 0x45e6ff);
     this.rows = ROWS.map((r, i) => ({
       ...r,
       name: txt(this, 60, 34 + i * 13, r.label, { size: 8 }),
@@ -72,7 +75,8 @@ export class GraphicsScene extends Phaser.Scene {
     this.bars.clear();
     this.rows.forEach((r, i) => {
       const on = i === this.row;
-      r.name.setColor(on ? '#3fa9f5' : '#ffffff').setText((on ? '> ' : '') + r.label);
+      r.name.setColor(on ? '#ffffff' : '#9fb0d8');
+      if (on) this.bar.place(52, 34 + i * 13 - 2, VIEW.w - 104, 12);
       let v = '';
       if (r.kind === 'style') v = `< ${STYLE_NAMES[this.style]} >`;
       else if (r.kind === 'preset') v = `< ${PRESET_NAMES[graphics.preset].toUpperCase()} >`;
@@ -80,9 +84,9 @@ export class GraphicsScene extends Phaser.Scene {
       else if (r.kind === 'fps') v = graphics.fps ? '< ON >' : '< OFF >';
       else if (r.key) {
         v = `${Math.round(graphics[r.key] * 10)}`;
-        bar(this.bars, VIEW.w - 150, 36 + i * 13, 70, 4, graphics[r.key], on ? 0x3fa9f5 : 0x8899aa);
+        bar(this.bars, VIEW.w - 150, 36 + i * 13, 70, 4, graphics[r.key], on ? 0x45e6ff : 0x8899aa);
       }
-      r.value.setText(v).setColor(on ? '#3fa9f5' : '#ffffff');
+      r.value.setText(v).setColor(on ? '#ffffff' : '#9fb0d8');
     });
     const r = this.rows[this.row];
     this.hint.setText(
