@@ -339,4 +339,49 @@ export const UNITS = {
     health: 70, shields: 20, speed: 70, ai: 'shooter', weapon: 'assault-rifle',
     range: 240, entrance: 'drop', puff: '#c8d870', score: 60,
   },
+  // Part VI
+  'knight-enemy': {
+    name: 'Promethean Knight', faction: 'forerunners', body: 'forerunner', style: 'knight',
+    pal: { armor: '#3a3a40', trim: '#5a5a62', dark: '#1a1a1e', glow: '#ff8a2a' },
+    health: 120, shields: 120, speed: 80, ai: 'shooter', weapon: 'light-rifle',
+    range: 260, melee: 35, entrance: 'teleport', puff: '#ff8a2a', score: 250, burst: 3,
+  },
+  crawler: {
+    name: 'Promethean Crawler', faction: 'forerunners', body: 'infection', scale: 1.4,
+    pal: { armor: '#3a3a40', trim: '#ff8a2a', dark: '#1a1a1e', glow: '#ff8a2a', skin: '#3a3a40' },
+    health: 30, shields: 0, speed: 110, ai: 'swarm', melee: 12,
+    entrance: 'teleport', puff: '#ff8a2a', score: 30,
+  },
+  watcher: {
+    name: 'Promethean Watcher', faction: 'forerunners', body: 'sentinel',
+    pal: { armor: '#3a3a40', trim: '#5a5a62', dark: '#1a1a1e', glow: '#ff8a2a' },
+    health: 50, shields: 30, speed: 70, ai: 'flyer', weapon: 'boltshot',
+    range: 260, entrance: 'teleport', puff: '#ff8a2a', score: 80,
+  },
+  'didact-boss': {
+    name: 'The Didact', faction: 'forerunners', body: 'forerunner', scale: 1.4,
+    pal: { armor: '#4a5060', trim: '#ff8a2a', dark: '#1c1e26', glow: '#ffa03a' },
+    health: 1200, shields: 400, speed: 70, ai: 'boss', weapon: 'light-rifle',
+    range: 300, melee: 45, entrance: 'teleport', puff: '#ffa03a', score: 2000,
+    boss: { attacks: ['barrage', 'summon', 'charge', 'barrage'], summon: 'knight-enemy' },
+  },
+  'warden-eternal': {
+    name: 'Warden Eternal', faction: 'forerunners', body: 'forerunner', style: 'knight', scale: 1.5,
+    pal: { armor: '#8a7a4a', trim: '#c8b070', dark: '#2a261a', glow: '#ffd27a' },
+    health: 1300, shields: 400, speed: 75, ai: 'boss', weapon: 'light-rifle',
+    range: 300, melee: 50, entrance: 'teleport', puff: '#ffd27a', score: 2000,
+    boss: { attacks: ['charge', 'barrage', 'summon', 'leap'], summon: 'knight-enemy' },
+  },
+  'remnant-elite': {
+    name: 'Covenant Remnant Elite', faction: 'covenant', body: 'elite',
+    pal: { armor: '#6a3a8a', trim: '#c890ff', dark: '#2a2a3a', skin: '#5a5048', glow: '#ff8a3a' },
+    health: 80, shields: 100, speed: 92, ai: 'shooter', weapon: 'carbine',
+    range: 260, entrance: 'drop', puff: '#c890ff', score: 140, burst: 3,
+  },
+  'spartan-ally': {
+    name: 'Spartan-IV', faction: 'unsc', body: 'humanoid', style: 'spartan',
+    pal: { armor: '#6a6a72', helmet: '#72727a', trim: '#3a7fd0', visor: '#ffb83a', dark: '#24242a' },
+    health: 120, shields: 100, speed: 80, ai: 'shooter', weapon: 'battle-rifle',
+    range: 260, entrance: 'drop', puff: '#9ad8ff', score: 0,
+  },
 };

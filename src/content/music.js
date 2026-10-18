@@ -172,4 +172,14 @@ export const TRACKS = {
       arp: { wave: 'square', vol: 0.025, level: 2, notes: 'E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1' },
     },
   },
+  requiem: {
+    bpm: 76,
+    layers: {
+      pad: { wave: 'triangle', vol: 0.15, level: 0, notes: 'D3+F3+A3:16 C3+E3+G3:16 A#2+D3+F3:16 A2+C#3+E3:16' },
+      bell: { wave: 'sine', vol: 0.1, level: 0, vibrato: 2, notes: 'A5:8 F5:8 G5:8 E5:8 F5:8 D5:8 E5:8 C#5:8' },
+      bass: { wave: 'triangle', vol: 0.16, level: 1, notes: 'D2:16 C2:16 A#1:16 A1:16' },
+      drums: { wave: 'noise', vol: 0.16, level: 1, notes: 'k:4 h:2 h:2 s:4 h:2 k:2 k:4 h:2 h:2 s:4 h:2 k:2 k:4 h:2 h:2 s:4 h:2 k:2 k:4 h:2 h:2 s:4 h:2 k:2' },
+      lead: { wave: 'square', vol: 0.05, level: 2, notes: 'D4:4 F4:4 A4:8 G4:4 E4:4 C4:8 A#3:4 D4:4 F4:8 E4:4 C#4:4 A3:8' },
+    },
+  },
 };

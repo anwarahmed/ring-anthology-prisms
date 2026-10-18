@@ -465,9 +465,9 @@ High Charity is built (851–791 BCE).
 - **Status:** planned
 
 ### 6f · Blue Team
-- **Era:** Created · **When/where:** 2558 **(verify location)** · **Source:** *Halo 5: Guardians*
+- **Era:** Created · **When/where:** October 2558, Meridian · **Source:** *Halo 5: Guardians*; Halopedia: Blue Team, Meridian
 - **Players:** P1 Master Chief · P2 Fred-104
-- **Story:** Blue Team goes AWOL to follow Cortana's signal.
+- **Story:** After the Argent Moon mission, Cortana's message points the Chief to the colony Meridian. Blue Team goes AWOL to follow it, fights through the Prometheans on Meridian and boards a Guardian, which carries them to Genesis.
 - **Enemies:** Prometheans. **Boss:** none.
 - **Status:** planned
 

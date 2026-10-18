@@ -139,6 +139,11 @@ function forerunner(f, def) {
   shapes.push({ t: 'poly', pts: [add(headC, [4.5, -1]), add(headC, [3.5, -4]), add(headC, [-3, -5]), add(headC, [-11, -7.5]), add(headC, [-5, -1.5]), add(headC, [-3, 3.5]), add(headC, [3.5, 3.2])], m: 'armor', z: 7, bevel: 1.8, tilt: [0.1, -0.2] });
   shapes.push({ t: 'cap', a: add(headC, [-1, -4.6]), b: add(headC, [-10, -7]), r1: 0.7, r2: 0.4, m: 'glow', z: 7.5, noSep: true });
   shapes.push({ t: 'cap', a: add(headC, [0.5, 0]), b: add(headC, [4.3, 0.2]), r1: 0.8, r2: 0.7, m: 'glow', z: 8, hot: true, noSep: true });
+  if (def.style === 'knight') {
+    // Promethean Knight: heavy shoulder plates and glowing spines on the back.
+    shapes.push({ t: 'ell', c: add(chestC, [-1, -6]), rx: 7, ry: 4.4, rot: -0.2, m: 'trim', z: 8.2 });
+    for (let k = 0; k < 3; k++) shapes.push({ t: 'cap', a: add(chestC, [-5 + k, -6 - k]), b: add(chestC, [-12 + k * 2, -15 - k * 2]), r1: 1.2, r2: 0.4, m: 'glow', z: 2.5, hot: k === 1 });
+  }
   if (def.style === 'infected') {
     // A Flood-taken warrior-servant: lumpy growths and a drooping tendril.
     shapes.push({ t: 'ell', c: add(chestC, [-4, -5]), rx: 5, ry: 4.2, m: 'cape', z: 8 });

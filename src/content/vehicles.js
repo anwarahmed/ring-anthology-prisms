@@ -139,6 +139,20 @@ function hornet(f) {
   return { shapes, shoulder: [68, 27 + bob], w: W, h: H };
 }
 
+// UNSC Broadsword: a single-seat space fighter.
+function broadsword(f) {
+  const W = 80, H = 34;
+  const bob = [0, -0.6, -1, -0.6][f];
+  const shapes = [
+    { t: 'poly', pts: [[4, 18 + bob], [20, 12 + bob], [60, 13 + bob], [78, 18 + bob], [60, 23 + bob], [18, 24 + bob]], m: 'armor', z: 2, bevel: 2.2, tilt: [0, -0.2] },
+    { t: 'poly', pts: [[26, 13 + bob], [40, 4 + bob], [50, 4 + bob], [44, 13 + bob]], m: 'armorFar', z: 1, bevel: 1.6 },
+    { t: 'poly', pts: [[26, 23 + bob], [40, 32 + bob], [50, 32 + bob], [44, 23 + bob]], m: 'armor', z: 3, bevel: 1.6 },
+    { t: 'poly', pts: [[52, 14 + bob], [64, 15 + bob], [60, 18 + bob], [50, 17 + bob]], m: 'trim', z: 2.5, bevel: 1 },
+    { t: 'ell', c: [5, 18 + bob], rx: 2.4, ry: 3, m: 'glow', z: 3, hot: f % 2 === 0 },
+  ];
+  return { shapes, shoulder: [78, 19 + bob], w: W, h: H };
+}
+
 export const VEHICLE_BODIES = {
   warthog: { w: 76, h: 40, frames: 4, anims: HOVER, hit: [60, 24], build: warthog, vehicle: true },
   ghost: { w: 58, h: 30, frames: 4, anims: HOVER, hit: [44, 18], build: ghost, vehicle: true },
@@ -147,6 +161,7 @@ export const VEHICLE_BODIES = {
   scorpion: { w: 92, h: 46, frames: 4, anims: HOVER, hit: [80, 30], build: scorpion, vehicle: true },
   mongoose: { w: 50, h: 32, frames: 4, anims: HOVER, hit: [40, 20], build: mongoose, vehicle: true },
   hornet: { w: 70, h: 40, frames: 4, anims: HOVER, hit: [56, 24], build: hornet, vehicle: true, flying: true },
+  broadsword: { w: 80, h: 34, frames: 4, anims: HOVER, hit: [64, 20], build: broadsword, vehicle: true, flying: true },
 };
 
 export const VEHICLES = {
@@ -184,5 +199,10 @@ export const VEHICLES = {
     name: 'Hornet', body: 'hornet', kind: 'air', seats: ['driver'],
     pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
     speed: 220, accel: 520, jump: 0, health: 320, weapon: 'warthog-chaingun', splatter: 0,
+  },
+  broadsword: {
+    name: 'Broadsword', body: 'broadsword', kind: 'air', seats: ['driver'],
+    pal: { armor: '#7a828a', trim: '#c8d0d8', dark: '#2a2e34', glow: '#9ad8ff' },
+    speed: 280, accel: 640, jump: 0, health: 360, weapon: 'warthog-chaingun', splatter: 0,
   },
 };

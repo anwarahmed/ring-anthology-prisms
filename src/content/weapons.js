@@ -144,6 +144,16 @@ export const WEAPONS = {
     name: 'Flood Spores', tech: 'plasma', rate: 0.9, damage: 14, speed: 260, spread: 0.2,
     pellets: 3, projectile: 'orb', splash: 18, color: '#b8e04a', sfx: 'cannon', gun: null,
   },
+  'binary-rifle': {
+    name: 'Binary Rifle', tech: 'hardlight', rate: 1.3, playerRate: 0.9, damage: 55, speed: 900, spread: 0,
+    projectile: 'beam', color: '#ff8a2a', sfx: 'hardlight',
+    gun: { kind: 'lance', len: 20, body: '#2a2a2e', dark: '#1a1a1e', accent: '#ff8a2a' },
+  },
+  'boltshot': {
+    name: 'Boltshot', tech: 'hardlight', rate: 0.35, playerRate: 0.25, damage: 14, speed: 600, spread: 0.03,
+    projectile: 'bolt', color: '#ff8a2a', sfx: 'hardlight',
+    gun: { kind: 'pistol', len: 10, body: '#2a2a2e', dark: '#1a1a1e', accent: '#ff8a2a' },
+  },
   // Training rounds (Spartan training on Reach): light, harmless-looking paint bolts.
   'training-rifle': {
     name: 'Training Rifle', tech: 'ballistic', rate: 0.12, damage: 8, speed: 600, spread: 0.04,

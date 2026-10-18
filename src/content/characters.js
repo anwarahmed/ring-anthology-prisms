@@ -238,4 +238,47 @@ export const CHARACTERS = {
     shields: 80, health: 150, speed: 118, jump: 390,
     weapons: ['spiker', 'gravity-hammer'], grenade: 'frag',
   },
+  // Part VI: Requiem and the Created
+  'promethean-knight': {
+    name: 'Promethean Knight', short: 'Knight', title: 'Composed warrior', faction: 'forerunners',
+    body: 'forerunner', style: 'knight',
+    pal: { armor: '#3a3a40', trim: '#5a5a62', dark: '#1a1a1e', glow: '#ff8a2a' },
+    shields: 130, health: 100, speed: 118, jump: 395,
+    weapons: ['suppressor', 'light-rifle'], grenade: 'pulse',
+  },
+  'spartan-iv': {
+    name: 'Spartan-IV', title: 'UNSC Infinity', faction: 'unsc',
+    body: 'humanoid', style: 'spartan',
+    pal: { armor: '#6a6a72', helmet: '#72727a', trim: '#3a7fd0', visor: '#ffb83a', dark: '#24242a' },
+    shields: 120, health: 100, speed: 125, jump: 400,
+    weapons: ['battle-rifle', 'assault-rifle'], grenade: 'frag',
+  },
+  locke: {
+    name: 'Jameson Locke', short: 'Locke', title: 'Fireteam Osiris', faction: 'unsc',
+    body: 'humanoid', style: 'spartan',
+    pal: { armor: '#7a7a6a', helmet: '#828272', trim: '#c8a040', visor: '#9ad8ff', dark: '#2a2a24' },
+    shields: 120, health: 100, speed: 125, jump: 400,
+    weapons: ['battle-rifle', 'magnum'], grenade: 'frag',
+  },
+  buck: {
+    name: 'Edward Buck', short: 'Buck', title: 'Fireteam Osiris', faction: 'unsc',
+    body: 'humanoid', style: 'spartan',
+    pal: { armor: '#4a4e56', helmet: '#52565e', trim: '#3a7fd0', visor: '#ff8a3a', dark: '#22242a' },
+    shields: 120, health: 100, speed: 123, jump: 400,
+    weapons: ['assault-rifle', 'battle-rifle'], grenade: 'frag',
+  },
+  vale: {
+    name: 'Olympia Vale', short: 'Vale', title: 'Fireteam Osiris', faction: 'unsc',
+    body: 'humanoid', style: 'spartan',
+    pal: { armor: '#c8c0b0', helmet: '#d0c8b8', trim: '#a83a3a', visor: '#ffb83a', dark: '#2e2a26' },
+    shields: 120, health: 100, speed: 125, jump: 400,
+    weapons: ['dmr', 'assault-rifle'], grenade: 'frag',
+  },
+  'fred-104': {
+    name: 'Fred-104', title: 'Blue Team', faction: 'unsc',
+    body: 'humanoid', style: 'spartan',
+    pal: { armor: '#5a6a5a', helmet: '#627262', trim: '#3a4a3a', visor: '#ffb83a', dark: '#22261e' },
+    shields: 120, health: 100, speed: 125, jump: 400,
+    weapons: ['assault-rifle', 'energy-sword'], grenade: 'frag',
+  },
 };
