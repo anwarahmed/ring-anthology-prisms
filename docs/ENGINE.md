@@ -49,7 +49,7 @@ Keep the ground at row 13 (rows 13–16 solid) unless the level needs height.
 | `P` | player spawn (exactly one) |
 | `X` | exit: reaching it ends the level (when no arena is locked) |
 | `A`–`Z` except `P`, `X` | markers for the script (each used once) |
-| `a`–`z` | entities from the level's `legend` |
+| `a`–`z` | entities from the level's `legend` (`{ unit }`, `{ unit, ally: true }`, `{ unit, neutral: true }`, or `{ vehicle: 'warthog' }`) |
 
 **Legend entries:** `{ unit: '<unit id>' }` places an enemy, and
 `{ unit: '<unit id>', ally: true }` places an ally. Placed units appear without an
@@ -83,6 +83,7 @@ Blocking actions finish before the next action starts.
 | `{ wave: [group, ...] }` | yes | Spawns, then waits until all are defeated |
 | `{ hold: { seconds, every, label, groups: [[group...], ...] } }` | yes | Defense: spawns the groups in turn every `every` seconds until time runs out, then waits for the rest to be defeated |
 | `{ boss: { unit, from, title, subtitle } }` | yes | Letterboxed title card, boss bar; waits until the boss is defeated |
+| `{ vehicle: { id: 'warthog', at: 'B' } }` | no | A drivable vehicle appears at a marker |
 | `{ call: 'hookName' }` | if async | Runs `hooks.hookName(api)` |
 | `{ end: { result: 'win' \| 'history' } }` | yes | Ends the level. `'history'` is for canon defeats ("AS HISTORY RECORDS") |
 
@@ -160,6 +161,20 @@ Everything is drawn in code, in a 16-bit style:
 
 Positions in the engine are feet points: map rows, markers and spawns place a unit's
 feet on the ground, and the sprite is centered above them.
+
+## Vehicles
+
+`src/content/vehicles.js` (rigs and stats) and `src/engine/vehicles.js`. Press SWAP
+next to a vehicle to get in (as driver, or as gunner if the driver's seat is taken and
+it has one) and SWAP again to get out. The driver steers with the move controls,
+jumps with JUMP (ground vehicles), and fires forward; a gunner aims freely and does
+the firing. Empty vehicles are neutral; occupied ones take every hit for their crew,
+and wreck in an explosion that throws the crew out. Driving fast into enemies runs
+them over (`splatter`). Kinds: `ground`, `hover`, `air`. Enemy vehicles are ordinary
+units in `units.js` using a vehicle body (`ghost-enemy`, `banshee-enemy`).
+
+**Front shields:** bodies with `frontShield` (Jackals, Hunters) block shots that hit
+them from the front and take 1.5× damage from behind. Grenades and melee get through.
 
 ## Weapon drops
 

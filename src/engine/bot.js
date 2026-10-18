@@ -12,6 +12,12 @@ export function makeBot(scene, player) {
   return () => {
     const s = { x: 1, y: 0, aimX: 0, aimY: 0, stick: false, jump: false, fire: false, ability: false, grenade: false, swap: false, melee: false, pause: false };
     if (!player.alive) return s;
+    // Vehicles: climb into a nearby empty seat; once inside, drive right and shoot.
+    const v = scene.vehicles?.find((vh) => vh.alive && vh.seatFor() && Math.abs(vh.x - player.x) < 160);
+    if (!player.vehicle && v) {
+      s.x = Math.sign(v.x - player.x);
+      s.swap = Math.abs(v.x - player.x) < 30 && Math.random() < 0.5;
+    }
     const n = nearest(player, scene, 320);
     if (n) {
       s.stick = true;

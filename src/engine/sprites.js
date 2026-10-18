@@ -25,6 +25,7 @@ export function materialsFor(def, gun) {
     cape: material(p.cape ?? p.dark, { contrast: 0.9 }),
     glow: material(p.glow ?? p.visor ?? '#7fd8ff', { emissive: true }),
     skin: material(p.skin ?? '#b07a50', { contrast: 0.9 }),
+    skinFar: material(darker(p.skin ?? '#b07a50'), { contrast: 0.85 }),
   };
   m.armorFar = material(darker(p.armor), { contrast: 1 });
   m.darkFar = material(darker(p.dark), { contrast: 0.8 });

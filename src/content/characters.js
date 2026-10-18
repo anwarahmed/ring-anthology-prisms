@@ -53,4 +53,32 @@ export const CHARACTERS = {
     shields: 70, health: 100, speed: 116, jump: 385,
     weapons: ['sanshyuum-rifle'], grenade: 'plasma', kit: 'covenant',
   },
+  'master-chief': {
+    name: 'Master Chief', title: 'John-117', faction: 'unsc',
+    body: 'humanoid', style: 'spartan',
+    pal: { armor: '#5c7038', helmet: '#62763c', trim: '#3c4a28', visor: '#ffb83a', dark: '#22261c' },
+    shields: 120, health: 100, speed: 125, jump: 400,
+    weapons: ['assault-rifle', 'magnum'], grenade: 'frag',
+  },
+  marine: {
+    name: 'UNSC Marine', short: 'Marine', title: 'UNSC Marine Corps', faction: 'unsc',
+    body: 'humanoid', style: 'soldier',
+    pal: { armor: '#5a6838', helmet: '#62703c', trim: '#8a8a6a', visor: '#3a3a3a', dark: '#2a2a20' },
+    shields: 60, health: 100, speed: 120, jump: 390,
+    weapons: ['assault-rifle', 'shotgun'], grenade: 'frag',
+  },
+  zamamee: {
+    name: "Zuka 'Zamamee", short: "'Zamamee", title: 'Special Operations Officer', faction: 'covenant',
+    body: 'elite',
+    pal: { armor: '#2e2e3a', trim: '#6a6a8a', dark: '#1a1a24', skin: '#5a5048', glow: '#ff8a3a' },
+    shields: 120, health: 100, speed: 128, jump: 410,
+    weapons: ['plasma-rifle', 'needler'], grenade: 'plasma', extra: 'camo',
+  },
+  yayap: {
+    name: 'Yayap', title: 'Unggoy', faction: 'covenant',
+    body: 'grunt',
+    pal: { armor: '#e08a2a', trim: '#c8b080', dark: '#3a3028', skin: '#7a8a8a', glow: '#5ad8ff' },
+    shields: 40, health: 100, speed: 118, jump: 380,
+    weapons: ['plasma-pistol', 'needler'], grenade: 'plasma',
+  },
 };

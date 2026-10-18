@@ -12,6 +12,7 @@ import { WEAPONS, GRENADES } from '../src/content/weapons.js';
 import { THEMES } from '../src/content/themes.js';
 import { TRACKS } from '../src/content/music.js';
 import { BODIES } from '../src/content/bodies.js';
+import { VEHICLES } from '../src/content/vehicles.js';
 import { parseNotes, noteFreq } from '../src/engine/audio.js';
 import { parseCampaign } from '../levels/campaign.js';
 
@@ -33,6 +34,10 @@ for (const [id, u] of Object.entries(UNITS)) {
   if (u.ai === 'boss' && !u.boss?.attacks?.length) err(`unit ${id}`, 'boss without boss.attacks');
   if (u.boss?.summon && !UNITS[u.boss.summon]) err(`unit ${id}`, `unknown summon '${u.boss.summon}'`);
 }
+for (const [id, v] of Object.entries(VEHICLES)) {
+  if (!BODIES[v.body]) err(`vehicle ${id}`, `unknown body '${v.body}'`);
+  if (v.weapon && !WEAPONS[v.weapon]) err(`vehicle ${id}`, `unknown weapon '${v.weapon}'`);
+}
 for (const [id, t] of Object.entries(TRACKS)) {
   for (const [name, l] of Object.entries(t.layers)) {
     for (const ev of parseNotes(l.notes)) {
@@ -45,7 +50,7 @@ for (const [id, t] of Object.entries(TRACKS)) {
 }
 
 // --- Levels --------------------------------------------------------------------------
-const ACTIONS = ['say', 'objective', 'music', 'intensity', 'wait', 'lock', 'unlock', 'checkpoint', 'fx', 'spawn', 'allies', 'wave', 'hold', 'boss', 'call', 'end'];
+const ACTIONS = ['say', 'objective', 'music', 'intensity', 'wait', 'lock', 'unlock', 'checkpoint', 'fx', 'spawn', 'allies', 'wave', 'hold', 'boss', 'vehicle', 'call', 'end'];
 const dirs = readdirSync('levels', { withFileTypes: true }).filter((d) => d.isDirectory() && !d.name.startsWith('_')).map((d) => d.name);
 
 for (const dir of dirs) {
@@ -74,6 +79,7 @@ for (const dir of dirs) {
   }
   for (const [ch, e] of Object.entries(L.legend ?? {})) {
     if (e.unit && !UNITS[e.unit]) err(at, `legend '${ch}': unknown unit '${e.unit}'`);
+    if (e.vehicle && !VEHICLES[e.vehicle]) err(at, `legend '${ch}': unknown vehicle '${e.vehicle}'`);
   }
   const map = parseMap(L.map ?? [], L.legend);
   for (const e of map.errors) err(at, `map: ${e}`);
@@ -87,6 +93,7 @@ for (const dir of dirs) {
       if (!keys.length) err(at, `unknown action ${JSON.stringify(a)}`);
       if (a.end) hasEnd = true;
       if (a.lock) for (const m of a.lock) if (!markers.has(m)) err(at, `lock marker '${m}' missing`);
+      if (a.vehicle && (!VEHICLES[a.vehicle.id] || !markers.has(a.vehicle.at))) err(at, `vehicle action needs a known id and marker: ${JSON.stringify(a.vehicle)}`);
       if (a.call && typeof L.hooks?.[a.call] !== 'function') err(at, `call '${a.call}' has no hook`);
       if (a.music && !TRACKS[a.music]) err(at, `unknown music '${a.music}'`);
       if (a.fx && !['shake', 'flash', 'slowmo'].includes(a.fx)) err(at, `unknown fx '${a.fx}'`);

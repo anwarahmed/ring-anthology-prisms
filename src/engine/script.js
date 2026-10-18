@@ -86,6 +86,12 @@ export class ScriptRunner {
       const boss = await s.spawnBoss(a.boss);
       return this.until(() => !boss.alive);
     }
+    if (a.vehicle) {
+      const m = this.map.markers[a.vehicle.at];
+      const v = s.spawnVehicle(a.vehicle.id, m.x * TILE + 8, (m.y + 1) * TILE);
+      s.fx.ring(v.x, v.y, 0xffffff, 1.2);
+      return;
+    }
     if (a.call) return this.level.hooks?.[a.call]?.(s.api());
     if (a.end) return s.endLevel(a.end);
     console.warn('Unknown script action', a);

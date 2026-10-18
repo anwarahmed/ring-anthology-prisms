@@ -6,7 +6,7 @@ import { isSolid, isHazard } from './tileset.js';
 import { TILE } from './config.js';
 
 export function targetsFor(unit, scene) {
-  return scene.actorList().filter((a) => a.alive && a.team !== unit.team && a.team !== 'neutral' && !a.camo);
+  return scene.actorList().filter((a) => a.alive && a.team !== unit.team && a.team !== 'neutral' && !a.camo && !a.vehicle);
 }
 
 export function nearest(unit, scene, maxD = 9999) {

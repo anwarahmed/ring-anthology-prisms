@@ -17,6 +17,8 @@ import { Controls } from '../engine/input.js';
 import { Player, Unit } from '../engine/actors.js';
 import { setupCombat, updateProjectiles, explode } from '../engine/combat.js';
 import { ScriptRunner } from '../engine/script.js';
+import { Vehicle } from '../engine/vehicles.js';
+import { VEHICLES } from '../content/vehicles.js';
 import { dropWeapon, updatePickups } from '../engine/pickups.js';
 import { audio } from '../engine/audio.js';
 import { makeBot } from '../engine/bot.js';
@@ -58,6 +60,7 @@ export class LevelScene extends Phaser.Scene {
     this.units = [];
     this.players = [];
     this.pickups = [];
+    this.vehicles = [];
     setupCombat(this);
     this.physics.world.setBounds(0, -200, W, H + 400);
     this.physics.add.collider(this.actorGroup, this.layer, null, (a, tile) => {
@@ -78,6 +81,7 @@ export class LevelScene extends Phaser.Scene {
     });
 
     for (const e of this.map.entities) {
+      if (e.vehicle) this.spawnVehicle(e.vehicle, e.x * TILE + 8, (e.y + 1) * TILE);
       if (e.unit) this.spawnUnit(e.unit, e.x * TILE + 8, (e.y + 1) * TILE, { ally: !!e.ally, team: e.neutral ? 'neutral' : null, entrance: 'none' });
     }
 
@@ -159,7 +163,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   actorList() {
-    return [...this.players, ...this.units];
+    return [...this.players, ...this.units, ...this.vehicles];
   }
 
   update(time, deltaMs) {
@@ -168,8 +172,18 @@ export class LevelScene extends Phaser.Scene {
     for (const p of this.players) {
       const s = this.controls.read(p.device);
       if (s.pressed.pause) return this.pause();
-      p.tick(dt, s);
+      // SWAP next to a vehicle gets in; SWAP inside gets out.
+      if (s.pressed.swap && p.alive) {
+        if (p.vehicle) { p.vehicle.leave(p); s.pressed.swap = false; }
+        else {
+          const v = this.vehicles.find((vh) => vh.alive && vh.seatFor() && Math.abs(vh.x - p.x) < 40 && Math.abs(vh.y - p.y) < 40);
+          if (v && v.enter(p)) s.pressed.swap = false;
+        }
+      }
+      if (p.vehicle) p.vehicle.drive(dt, s, p);
+      else p.tick(dt, s);
     }
+    for (const v of this.vehicles) v.tick(dt);
     for (const u of this.units) u.tick(dt);
     this.units = this.units.filter((u) => u.alive || u.active);
     updateProjectiles(this);
@@ -218,12 +232,14 @@ export class LevelScene extends Phaser.Scene {
     const lo = (this.arena ? this.arena.x0 : cam.scrollX) + 6;
     const hi = (this.arena ? this.arena.x1 : cam.scrollX + cam.width) - 6;
     for (const p of alive) {
-      if (p.y > this.worldH + 40) p.hurt(9999, 'explosive');
-      const out = p.x < lo ? lo - p.x : p.x > hi ? hi - p.x : 0;
+      // Riders are leashed through their vehicle.
+      const o = p.vehicle ?? p;
+      if (!p.vehicle && p.y > this.worldH + 40) p.hurt(9999, 'explosive');
+      const out = o.x < lo ? lo - o.x : o.x > hi ? hi - o.x : 0;
       if (!out) continue;
       const step = Math.abs(out) > 24 ? Math.sign(out) * Math.min(Math.abs(out), 320 * dt) : out;
-      p.x += step;
-      p.body.velocity.x = 0;
+      o.x += step;
+      o.body.velocity.x = 0;
     }
   }
 
@@ -236,6 +252,14 @@ export class LevelScene extends Phaser.Scene {
   }
 
   // --- Spawning -------------------------------------------------------------------
+
+  // A drivable vehicle, standing (or hovering) on the ground at feetY.
+  spawnVehicle(id, x, feetY) {
+    const B = BODIES[VEHICLES[id].body];
+    const v = new Vehicle(this, x, feetY - B.h / 2 - 1, id);
+    this.vehicles.push(v);
+    return v;
+  }
 
   // y is the feet point for walkers and the center for flyers.
   spawnUnit(id, x, y, { ally = false, team = null, entrance } = {}) {

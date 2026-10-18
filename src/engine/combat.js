@@ -13,7 +13,14 @@ export function setupCombat(scene) {
   scene.physics.add.collider(scene.projectiles, scene.layer, (p) => impact(scene, p), notPlatform);
   scene.physics.add.overlap(scene.projectiles, scene.actorGroup, (p, a) => {
     if (!p.active || !a.alive || p.team === a.team || a.team === 'neutral') return;
-    a.hurt(p.damage, p.tech, p.owner);
+    // Jackal and Hunter shields block shots from the front: flank them or use grenades.
+    if (a.bodyDef?.frontShield && p.body.velocity.x * a.facing < 0) {
+      scene.fx.sparks(p.x, p.y, 0x9fd8ff, 6);
+      audio.sfx('shieldHit');
+      p.disableBody(true, true);
+      return;
+    }
+    a.hurt(p.damage * (a.bodyDef?.frontShield ? 1.5 : 1), p.tech, p.owner);
     impact(scene, p, a);
   });
   scene.physics.add.collider(scene.grenades, scene.layer, null, notPlatform);
@@ -107,7 +114,7 @@ export function throwGrenade(scene, thrower, type, dir) {
 export function explode(scene, x, y, radius, damage, team, owner, direct = null) {
   scene.fx.explosion(x, y, radius);
   for (const a of scene.actorList()) {
-    if (!a.alive || a.team === team || a.team === 'neutral') continue;
+    if (!a.alive || a.team === team || a.team === 'neutral' || a.vehicle) continue;
     const d = Phaser.Math.Distance.Between(x, y, a.x, a.y);
     if (d > radius && a !== direct) continue;
     const fall = a === direct ? 1 : 1 - (d / radius) * 0.6;
@@ -122,7 +129,7 @@ export function melee(scene, attacker, reach = 24, damage = 50) {
   let best = null;
   let bestD = reach;
   for (const a of scene.actorList()) {
-    if (!a.alive || a.team === attacker.team || a.team === 'neutral') continue;
+    if (!a.alive || a.team === attacker.team || a.team === 'neutral' || a.vehicle) continue;
     const dx = (a.x - attacker.x) * attacker.facing;
     const d = Math.hypot(a.x - attacker.x, a.y - attacker.y);
     if (dx > -4 && d < bestD + (a.width ?? 0) / 2) {

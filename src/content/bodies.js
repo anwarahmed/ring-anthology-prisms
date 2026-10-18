@@ -9,27 +9,11 @@
 // Humanoid styles: spartan, soldier, ancient-lord, primitive, sanshyuum. Forerunner: infected.
 // Sprites face right; the engine mirrors them.
 
-export const FRAMES = { idle: [0, 1, 2, 3], run: [4, 5, 6, 7, 8, 9, 10, 11], jump: [12], fall: [13], crouch: [14] };
-export const HOVER = { idle: [0, 1, 2, 3] };
+import { FRAMES, HOVER, pose, add, dirDown } from './rig.js';
+import { COVENANT_BODIES } from './bodies-covenant.js';
+import { VEHICLE_BODIES } from './vehicles.js';
 
-// Leg angles (radians from straight down; + is forward) and knee bend per frame.
-function pose(f) {
-  if (f < 4) {
-    const b = [0, 0.35, 0.7, 0.35][f];
-    return { lean: 0.04, breathe: b, front: [0.14, 0.12], back: [-0.12, 0.16] };
-  }
-  if (f < 12) {
-    const ph = ((f - 4) / 8) * Math.PI * 2;
-    const leg = (p) => [0.78 * Math.sin(p), 0.22 + 1.05 * Math.max(0, Math.cos(p))];
-    return { lean: 0.16, breathe: 0, front: leg(ph), back: leg(ph + Math.PI) };
-  }
-  if (f === 12) return { lean: 0.1, breathe: 0, front: [0.75, 1.3], back: [-0.25, 0.95], air: true };
-  if (f === 13) return { lean: 0.02, breathe: 0, front: [0.3, 0.45], back: [-0.3, 0.7], air: true };
-  return { lean: 0.22, breathe: 0, front: [1.35, 2.25], back: [0.45, 2.4], crouch: true };
-}
-
-const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
-const dirDown = (ang, len) => [Math.sin(ang) * len, Math.cos(ang) * len];
+export { FRAMES, HOVER };
 
 function legShapes(hip, [t, k], L, near, m) {
   const knee = add(hip, dirDown(t, L.thigh));
@@ -119,6 +103,12 @@ function humanoid(f, def) {
     shapes.push({ t: 'poly', pts: [add(headC, [-5, -2]), add(headC, [-2, -7.5]), add(headC, [3, -7]), add(headC, [-1, -4.5])], m: 'trim', z: 7.8, bevel: 1.3 });
     shapes.push({ t: 'cap', a: add(headC, [-2, -7]), b: add(headC, [-8, -3]), r1: 1.6, r2: 0.8, m: 'cape', z: 6.5 });
   }
+  if (def.infected) {
+    // A Flood combat form: lumpy growths and a drooping tendril (goofy, not scary).
+    shapes.push({ t: 'ell', c: add(chestC, [-3, -4]), rx: 4.4, ry: 3.6, m: 'cape', z: 8 });
+    shapes.push({ t: 'ell', c: add(headC, [-3, -1]), rx: 3.2, ry: 2.6, m: 'cape', z: 8 });
+    shapes.push({ t: 'cap', a: add(chestC, [3, 4]), b: add(chestC, [6, 12 + (f % 4)]), r1: 1.4, r2: 0.5, m: 'cape', z: 8 });
+  }
   const shoulder = add(neck, [1.5, 3.2]);
   return { shapes, shoulder, w: W, h: H };
 }
@@ -202,6 +192,8 @@ export const BODIES = {
   forerunner: { w: 44, h: 62, frames: 15, anims: FRAMES, hit: [14, 48], build: forerunner, reach: 10.5, arm: [3, 2.7] },
   sentinel: { w: 36, h: 28, frames: 4, anims: HOVER, hit: [22, 14], build: sentinel, flying: true },
   infection: { w: 22, h: 18, frames: 4, anims: HOVER, hit: [12, 12], build: infection },
+  ...COVENANT_BODIES,
+  ...VEHICLE_BODIES,
 };
 
 // The front arm, support hand and weapon at aim angle `a` (radians, -π/2 up … π/2 down),

@@ -194,6 +194,39 @@ await run('ally-fire', '?level=1a&god=1', async (page) => {
   if (r.hp < 80) throw new Error(`ally was burned: ${JSON.stringify(r)}`);
 });
 
+// Vehicles: get in with SWAP (R on keys 1), drive, run a Grunt over, get out.
+await run('vehicle', '?level=1a&god=1', async (page) => {
+  await page.waitForFunction(() => window.__game?.scene.isActive('Level'), null, { timeout: 15000 });
+  await page.waitForTimeout(1000);
+  await page.evaluate(() => {
+    const L = window.__game.scene.getScene('Level');
+    L.runner.triggers.forEach((t) => { t.fired = true; });
+    const p = L.players[0];
+    window.__v = L.spawnVehicle('warthog', p.x + 20, 13 * 16);
+  });
+  await page.waitForTimeout(600);
+  const tap = async (k) => { await page.keyboard.down(k); await page.waitForTimeout(120); await page.keyboard.up(k); await page.waitForTimeout(300); };
+  await tap('r');
+  const inside = await page.evaluate(() => window.__game.scene.getScene('Level').players[0].vehicle === window.__v);
+  if (!inside) throw new Error('SWAP did not enter the Warthog');
+  const x0 = await page.evaluate(() => window.__v.x);
+  await page.evaluate(() => {
+    const L = window.__game.scene.getScene('Level');
+    window.__g = L.spawnUnit('grunt', window.__v.x + 120, 13 * 16, { entrance: 'none' });
+  });
+  await page.keyboard.down('d');
+  await page.waitForTimeout(1500);
+  await page.keyboard.up('d');
+  const r = await page.evaluate(() => ({ moved: window.__v.x, grunt: window.__g.alive, inside: !!window.__game.scene.getScene('Level').players[0].vehicle }));
+  if (!r.inside) throw new Error('thrown out of the Warthog while driving');
+  if (r.moved - x0 < 80) throw new Error(`Warthog did not drive: ${x0} -> ${r.moved}`);
+  if (r.grunt) throw new Error('driving into the Grunt did not run it over');
+  await page.screenshot({ path: join(shots, 'vehicle-driving.png') });
+  await tap('r');
+  const out = await page.evaluate(() => { const p = window.__game.scene.getScene('Level').players[0]; return !p.vehicle && p.visible && p.body.enable; });
+  if (!out) throw new Error('SWAP did not leave the Warthog');
+});
+
 for (const id of levels) {
   const p2 = opt('solo', false) ? '' : '&p2=kb2';
   await run(`level-${id}`, `?level=${id}&bot=1&god=1${p2}&difficulty=${difficulty}`, async (page) => {

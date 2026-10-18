@@ -52,12 +52,14 @@ export class HudScene extends Phaser.Scene {
       const p = pn.p;
       const w = 90;
       const x = pn.right ? VIEW.w - 8 - w : 8;
-      const sf = p.shields / p.stats.shields;
+      const v = p.vehicle;
+      const sf = v ? v.health / v.def.health : p.shields / p.stats.shields;
       const flash = sf <= 0 && Math.floor(this.time.now / 200) % 2 === 0;
-      bar(g, x, 17, w, 5, sf, flash ? 0xff3030 : this.color);
+      bar(g, x, 17, w, 5, sf, flash ? 0xff3030 : v ? 0xffa03a : this.color);
       bar(g, x, 24, w, 3, p.health / p.stats.health, p.health / p.stats.health < 0.35 ? 0xff5050 : 0x7fe07f);
       const wpn = p.current;
-      pn.weapon.setText(wpn ? `${wpn.def.name.toUpperCase()}${p.weapons.length > 1 ? ` ${p.cur + 1}/${p.weapons.length}` : ''}` : '');
+      if (v) pn.weapon.setText(`${v.def.name.toUpperCase()}${p.seat === 'gunner' ? ' GUNNER' : ''}`);
+      else pn.weapon.setText(wpn ? `${wpn.def.name.toUpperCase()}${p.weapons.length > 1 ? ` ${p.cur + 1}/${p.weapons.length}` : ''}` : '');
       const k = p.kit.hud();
       pn.kit.setText(k.label.toUpperCase());
       pn.kit.setColor(k.ready >= 1 || k.active ? '#ffffff' : '#777777');

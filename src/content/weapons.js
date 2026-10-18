@@ -46,6 +46,60 @@ export const WEAPONS = {
     name: 'Enforcer Mortar', tech: 'hardlight', rate: 2.2, damage: 22, speed: 240, spread: 0.08,
     projectile: 'orb', splash: 30, color: '#ff9a2a', sfx: 'cannon', gun: null,
   },
+  // UNSC
+  'assault-rifle': {
+    name: 'Assault Rifle', tech: 'ballistic', rate: 0.09, damage: 6, speed: 640, spread: 0.06,
+    projectile: 'bullet', color: '#ffe08a', sfx: 'rifle',
+    gun: { kind: 'rifle', len: 17, body: '#4e5c3c', dark: '#22281c', accent: '#9aff6a' },
+  },
+  magnum: {
+    name: 'Magnum', tech: 'ballistic', rate: 0.32, damage: 22, speed: 720, spread: 0.01,
+    projectile: 'bullet', color: '#fff0b0', sfx: 'rifle',
+    gun: { kind: 'pistol', len: 9, body: '#8a8e96', dark: '#3a3c42', accent: '#c8d0dc' },
+  },
+  shotgun: {
+    name: 'Shotgun', tech: 'ballistic', rate: 0.8, damage: 10, speed: 560, spread: 0.22,
+    pellets: 6, projectile: 'bullet', color: '#ffd27a', sfx: 'cannon',
+    gun: { kind: 'rifle', len: 15, body: '#3e3e42', dark: '#1e1e22', accent: '#ff8a3a' },
+  },
+  'rocket-launcher': {
+    name: 'Rocket Launcher', tech: 'explosive', rate: 1.2, damage: 60, speed: 340, spread: 0,
+    projectile: 'orb', splash: 42, color: '#ffb04a', sfx: 'cannon',
+    gun: { kind: 'cannon', len: 20, body: '#5a6a44', dark: '#2a3020', accent: '#ffb04a' },
+  },
+  // Covenant
+  'plasma-pistol': {
+    name: 'Plasma Pistol', tech: 'plasma', rate: 0.45, playerRate: 0.2, damage: 9, speed: 420, spread: 0.06,
+    projectile: 'bolt', color: '#7aff5a', sfx: 'plasma',
+    gun: { kind: 'pistol', len: 9, body: '#a8b8d0', dark: '#4a5a78', accent: '#7aff5a' },
+  },
+  'plasma-rifle': {
+    name: 'Plasma Rifle', tech: 'plasma', rate: 0.14, playerRate: 0.1, damage: 7, speed: 470, spread: 0.07,
+    projectile: 'bolt', color: '#5ab8ff', sfx: 'plasma',
+    gun: { kind: 'plasma', len: 15, body: '#b8a8e0', dark: '#4a3a78', accent: '#5ab8ff' },
+  },
+  needler: {
+    name: 'Needler', tech: 'plasma', rate: 0.12, playerRate: 0.09, damage: 5, speed: 420, spread: 0.1,
+    projectile: 'bolt', color: '#ff5ad0', sfx: 'beam',
+    gun: { kind: 'needler', len: 14, body: '#8a5ab0', dark: '#3a2a50', accent: '#ff7ae0' },
+  },
+  'fuel-rod': {
+    name: 'Assault Cannon', tech: 'explosive', rate: 2.4, damage: 30, speed: 260, spread: 0.04,
+    projectile: 'orb', splash: 36, color: '#7aff5a', sfx: 'cannon', gun: null,
+  },
+  // Vehicle guns
+  'warthog-chaingun': {
+    name: 'Chaingun', tech: 'ballistic', rate: 0.06, damage: 6, speed: 700, spread: 0.05,
+    projectile: 'bullet', color: '#ffe08a', sfx: 'rifle', gun: null,
+  },
+  'ghost-plasma': {
+    name: 'Ghost Cannons', tech: 'plasma', rate: 0.13, damage: 8, speed: 520, spread: 0.04,
+    projectile: 'bolt', color: '#5ab8ff', sfx: 'plasma', gun: null,
+  },
+  'banshee-plasma': {
+    name: 'Banshee Cannons', tech: 'plasma', rate: 0.12, damage: 8, speed: 540, spread: 0.04,
+    projectile: 'bolt', color: '#7aff5a', sfx: 'plasma', gun: null,
+  },
   'sentinel-beam': {
     name: 'Sentinel Beam', tech: 'hardlight', rate: 0.5, damage: 6, speed: 380, spread: 0.06,
     projectile: 'beam', color: '#ffc861', sfx: 'beam',

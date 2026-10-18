@@ -35,6 +35,34 @@ export function gunShapes(kind, len = 16) {
           { t: 'cap', a: [-1, 0], b: [L - 1, 0], r1: 0.6, r2: 0.6, m: 'gunGlow', z: 0.3, hot: true, noSep: true },
         ],
       };
+    case 'pistol':
+      return {
+        grip: 2, muzzle: [L + 1, -1],
+        shapes: [
+          { t: 'poly', pts: [[-2, -2.2], [L, -2.2], [L, 0.4], [-2, 0.8]], m: 'gunBody', bevel: 1 },
+          { t: 'poly', pts: [[-1, 0.5], [2.5, 0.5], [1.5, 5], [-2, 4.5]], m: 'gunDark', z: -0.1, bevel: 0.8 },
+          { t: 'cap', a: [1, -1.3], b: [L * 0.7, -1.3], r1: 0.45, r2: 0.45, m: 'gunGlow', z: 0.3, noSep: true },
+        ],
+      };
+    case 'plasma':
+      // Covenant plasma weapons: a curved two-pronged claw around a glowing coil.
+      return {
+        grip: L * 0.3, muzzle: [L + 1, 0],
+        shapes: [
+          { t: 'poly', pts: [[-4, -1.8], [4, -3], [L, -3.6], [L - 3, -0.6], [L - 3, 0.6], [L, 3.6], [4, 3], [-4, 1.8]], m: 'gunBody', bevel: 1.6, tilt: [0, -0.15] },
+          { t: 'ell', c: [L - 4, 0], rx: 2.4, ry: 1.6, m: 'gunGlow', z: 0.3, hot: true },
+          { t: 'poly', pts: [[-1, 1.8], [3, 1.8], [2, 5], [-1.5, 4.5]], m: 'gunDark', z: -0.1, bevel: 0.8 },
+        ],
+      };
+    case 'needler':
+      return {
+        grip: L * 0.35, muzzle: [L + 1, -1],
+        shapes: [
+          { t: 'poly', pts: [[-4, -2], [L, -2.4], [L + 1, 0.5], [-4, 2]], m: 'gunBody', bevel: 1.4 },
+          ...[0, 1, 2, 3, 4].map((i) => ({ t: 'cap', a: [1 + i * 2.6, -2], b: [0 + i * 2.6, -5.5 - (i % 2)], r1: 0.9, r2: 0.4, m: 'gunGlow', z: 0.2, noSep: true })),
+          { t: 'poly', pts: [[-1, 1.8], [3, 1.8], [2, 5], [-1.5, 4.5]], m: 'gunDark', z: -0.1, bevel: 0.8 },
+        ],
+      };
     case 'rifle':
     default:
       return {

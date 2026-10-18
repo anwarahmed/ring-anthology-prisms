@@ -63,4 +63,85 @@ export const UNITS = {
     pal: { armor: '#a8742c', helmet: '#c88e34', trim: '#ffcc33', visor: '#35f0ff', dark: '#3a2214', cape: '#d4263c' },
     health: 999, shields: 0, speed: 0, ai: 'idle', entrance: 'walk', puff: '#ffcc33', score: 0,
   },
+  // Covenant
+  grunt: {
+    name: 'Grunt', faction: 'covenant', body: 'grunt',
+    pal: { armor: '#e08a2a', trim: '#c8b080', dark: '#3a3028', skin: '#7a8a8a', glow: '#5ad8ff' },
+    health: 30, shields: 0, speed: 72, ai: 'shooter', weapon: 'plasma-pistol',
+    range: 200, entrance: 'drop', puff: '#5ad8ff', score: 30,
+  },
+  'grunt-major': {
+    name: 'Grunt Major', faction: 'covenant', body: 'grunt',
+    pal: { armor: '#d03a3a', trim: '#c8b080', dark: '#3a3028', skin: '#7a8a8a', glow: '#5ad8ff' },
+    health: 45, shields: 0, speed: 72, ai: 'shooter', weapon: 'needler',
+    range: 210, entrance: 'drop', puff: '#5ad8ff', score: 45,
+  },
+  jackal: {
+    name: 'Jackal', faction: 'covenant', body: 'jackal',
+    pal: { armor: '#6a5a8a', trim: '#c8a070', dark: '#3a2a3a', skin: '#c8a878', glow: '#5ab8ff' },
+    health: 40, shields: 0, speed: 65, ai: 'shooter', weapon: 'plasma-pistol',
+    range: 230, entrance: 'drop', puff: '#5ab8ff', score: 50,
+  },
+  elite: {
+    name: 'Elite Minor', faction: 'covenant', body: 'elite',
+    pal: { armor: '#3a6ad8', trim: '#8ab0f0', dark: '#2a2a3a', skin: '#5a5048', glow: '#ff8a3a' },
+    health: 70, shields: 80, speed: 90, ai: 'shooter', weapon: 'plasma-rifle',
+    range: 240, entrance: 'drop', puff: '#5ab8ff', score: 120, burst: 4,
+  },
+  'elite-major': {
+    name: 'Elite Major', faction: 'covenant', body: 'elite',
+    pal: { armor: '#c83a3a', trim: '#f0a0a0', dark: '#2a2a3a', skin: '#5a5048', glow: '#ff8a3a' },
+    health: 85, shields: 110, speed: 95, ai: 'shooter', weapon: 'plasma-rifle',
+    range: 250, entrance: 'drop', puff: '#ff6a5a', score: 180, burst: 5,
+  },
+  'elite-specops': {
+    name: 'Spec Ops Elite', faction: 'covenant', body: 'elite',
+    pal: { armor: '#2e2e3a', trim: '#6a6a8a', dark: '#2a2a3a', skin: '#5a5048', glow: '#ff8a3a' },
+    health: 85, shields: 120, speed: 100, ai: 'shooter', weapon: 'needler',
+    range: 240, entrance: 'drop', puff: '#9a9ab8', score: 200, burst: 6,
+  },
+  'elite-zealot': {
+    name: 'Elite Zealot', faction: 'covenant', body: 'elite',
+    pal: { armor: '#e8b83a', trim: '#fff0a0', dark: '#2a2a3a', skin: '#5a5048', glow: '#ff8a3a' },
+    health: 120, shields: 160, speed: 105, ai: 'charger', weapon: 'plasma-rifle',
+    range: 220, melee: 40, entrance: 'drop', puff: '#ffd27a', score: 300,
+  },
+  hunter: {
+    name: 'Hunter', faction: 'covenant', body: 'hunter',
+    pal: { armor: '#34548a', trim: '#9ab0c8', dark: '#262c3a', skin: '#ff8a2a', glow: '#7aff5a' },
+    health: 420, shields: 0, speed: 38, ai: 'charger', weapon: 'fuel-rod',
+    range: 300, melee: 45, entrance: 'walk', puff: '#ff8a2a', score: 400,
+  },
+  'ghost-enemy': {
+    name: 'Ghost', faction: 'covenant', body: 'ghost',
+    pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7ad8ff' },
+    health: 160, shields: 0, speed: 150, ai: 'charger', weapon: 'ghost-plasma',
+    range: 260, melee: 30, entrance: 'drop', puff: '#c8a8f0', score: 200,
+  },
+  'banshee-enemy': {
+    name: 'Banshee', faction: 'covenant', body: 'banshee',
+    pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7aff5a' },
+    health: 140, shields: 0, speed: 120, ai: 'flyer', weapon: 'banshee-plasma',
+    range: 260, entrance: 'fly', puff: '#c8a8f0', score: 220,
+  },
+  // UNSC allies
+  'marine-ally': {
+    name: 'Marine', faction: 'unsc', body: 'humanoid', style: 'soldier',
+    pal: { armor: '#5a6838', helmet: '#62703c', trim: '#8a8a6a', visor: '#3a3a3a', dark: '#2a2a20' },
+    health: 90, shields: 30, speed: 70, ai: 'shooter', weapon: 'assault-rifle',
+    range: 240, entrance: 'drop', puff: '#c8d870', score: 0,
+  },
+  // Flood combat forms (goofy-gross, never scary)
+  'flood-marine': {
+    name: 'Flood Combat Form', faction: 'flood', body: 'humanoid', style: 'soldier', infected: true,
+    pal: { armor: '#6a7a4a', helmet: '#7a8a52', trim: '#5a6a3a', visor: '#c8f04a', dark: '#3a4a2a', cape: '#c8c060' },
+    health: 60, shields: 0, speed: 80, ai: 'charger', melee: 18,
+    entrance: 'walk', puff: '#b8e04a', score: 60,
+  },
+  'flood-elite': {
+    name: 'Flood Combat Form', faction: 'flood', body: 'elite', infected: true,
+    pal: { armor: '#6a7a9a', trim: '#5a6a7a', dark: '#3a4a3a', skin: '#8a8a5a', glow: '#c8f04a', cape: '#c8c060' },
+    health: 90, shields: 0, speed: 90, ai: 'charger', melee: 24,
+    entrance: 'walk', puff: '#b8e04a', score: 90,
+  },
 };
