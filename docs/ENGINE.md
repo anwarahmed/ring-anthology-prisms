@@ -203,7 +203,10 @@ jumps with JUMP (ground vehicles), and fires forward; a gunner aims freely and d
 the firing. Empty vehicles are neutral; occupied ones take every hit for their crew,
 and wreck in an explosion that throws the crew out. Driving fast into enemies runs
 them over (`splatter`). Kinds: `ground`, `hover`, `air`. Drivable: `warthog` (driver +
-gunner), `ghost`, `banshee`, `chopper`, `scorpion`. Enemy vehicles are ordinary
+gunner), `ghost`, `banshee`, `chopper`, `scorpion`, `mongoose`, `hornet`, `broadsword`.
+Open vehicles (`seatAt` in vehicles.js) show their riders in their seats, drawn just
+behind the vehicle so only the head and shoulders show; the Warthog's gunner stands
+at the turret (`gunnerStands`). Closed vehicles hide their crew. Enemy vehicles are ordinary
 units in `units.js` using a vehicle body (`ghost-enemy`, `banshee-enemy`).
 
 **Front shields:** bodies with `frontShield` (Jackals, Hunters) block shots that hit

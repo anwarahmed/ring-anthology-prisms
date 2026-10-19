@@ -9,6 +9,9 @@
 //   kind: ground | hover | air
 //   seats: ['driver'] or ['driver', 'gunner'] (the gunner aims freely)
 //   speed, accel, jump (ground hop), health, weapon, splatter (run-over damage)
+//   seatAt: { driver: [x, y], gunner: [x, y] } where each rider shows (the rider's
+//   center in rig pixels); riders of vehicles without it are hidden inside. Riders
+//   sit, except a gunner on a vehicle with gunnerStands (the Warthog's turret)
 
 import { add, HOVER } from './rig.js';
 
@@ -21,24 +24,48 @@ function wheel(c, r, f, z) {
   ];
 }
 
-// UNSC Warthog: a four-wheeled light vehicle with a rear chaingun.
+// UNSC Warthog (our own drawing of the classic shape): big off-road tires under
+// angular wheel arches, a long low hood with a push-bar snout, an open cab with a roll
+// bar, and a raised three-barrel chaingun turret at the back firing over the cab.
 function warthog(f) {
-  const W = 76, H = 40;
+  const W = 88, H = 46;
   const bob = f % 2 ? 0.5 : 0;
-  const shapes = [
-    ...wheel([16, 31], 7, f, 4),
-    ...wheel([58, 31], 7, f, 4),
-    { t: 'poly', pts: [[4, 24 + bob], [12, 15 + bob], [44, 14 + bob], [56, 17 + bob], [72, 20 + bob], [72, 27 + bob], [60, 29 + bob], [8, 29 + bob]], m: 'armor', z: 2, bevel: 2.2, tilt: [0, -0.15] },
-    { t: 'poly', pts: [[52, 17 + bob], [72, 20 + bob], [72, 23 + bob], [54, 21 + bob]], m: 'trim', z: 2.5, bevel: 1 },
-    { t: 'cap', a: [38, 15 + bob], b: [46, 5 + bob], r1: 1, r2: 1, m: 'dark', z: 1.5 },
-    { t: 'cap', a: [24, 15 + bob], b: [30, 6 + bob], r1: 1, r2: 1, m: 'dark', z: 1.5 },
-    { t: 'cap', a: [30, 6 + bob], b: [46, 5 + bob], r1: 1, r2: 1, m: 'dark', z: 1.5 },
-    // Rear chaingun turret.
-    { t: 'poly', pts: [[6, 15 + bob], [14, 13 + bob], [16, 6 + bob], [8, 6 + bob]], m: 'trim', z: 3, bevel: 1.2 },
-    { t: 'cap', a: [14, 8 + bob], b: [30, 8 + bob], r1: 1.6, r2: 1.4, m: 'dark', z: 3.2 },
-    { t: 'ell', c: [71, 22 + bob], rx: 1.2, ry: 1.4, m: 'glow', z: 3, hot: true },
+  const tire = (c) => [
+    { t: 'ell', c, rx: 9.5, ry: 9.5, m: 'dark', z: 4 },
+    ...[0, 1, 2, 3, 4, 5, 6, 7].map((k) => {
+      const a = (k / 8) * Math.PI * 2 + (f / 4) * Math.PI;
+      return { t: 'ell', c: add(c, [Math.cos(a) * 8.6, Math.sin(a) * 8.6]), rx: 1.6, ry: 1.6, m: 'darkFar', z: 4.05 };
+    }),
+    ...wheel(c, 5.2, f, 4.1),
   ];
-  return { shapes, shoulder: [31, 8 + bob], w: W, h: H };
+  const y = (v) => v + bob;
+  const shapes = [
+    ...tire([20, 36]),
+    ...tire([70, 36]),
+    // Chassis and side panels.
+    { t: 'poly', pts: [[6, y(31)], [9, y(23)], [80, y(23)], [86, y(28)], [84, y(33)], [8, y(33)]], m: 'armor', z: 2, bevel: 2, tilt: [0, -0.15] },
+    { t: 'poly', pts: [[30, y(24)], [32, y(18)], [50, y(18)], [52, y(24)]], m: 'armor', z: 5, bevel: 1.6, tilt: [0, -0.2] },
+    // Wheel arches.
+    { t: 'poly', pts: [[7, y(27)], [11, y(18)], [29, y(18)], [33, y(27)]], m: 'armor', z: 5.2, bevel: 2, tilt: [0, -0.3] },
+    { t: 'poly', pts: [[57, y(27)], [61, y(17)], [80, y(18)], [84, y(27)]], m: 'armor', z: 5.2, bevel: 2, tilt: [0, -0.3] },
+    // The long hood, sloping down to the snout.
+    { t: 'poly', pts: [[50, y(18)], [62, y(15)], [80, y(17)], [86, y(22)], [84, y(24)], [52, y(22)]], m: 'armor', z: 5.4, bevel: 2, tilt: [0, -0.35] },
+    { t: 'poly', pts: [[64, y(16)], [78, y(17.5)], [77, y(19)], [64, y(18)]], m: 'trim', z: 5.6, bevel: 0.8 },
+    // Push-bar snout and grill.
+    { t: 'poly', pts: [[84, y(19)], [90, y(21)], [90, y(30)], [84, y(31)]], m: 'dark', z: 5.5, bevel: 1.2 },
+    ...[22.5, 25.5, 28.5].map((gy) => ({ t: 'cap', a: [85, y(gy)], b: [89, y(gy)], r1: 0.6, r2: 0.6, m: 'trim', z: 5.7 })),
+    { t: 'ell', c: [85, y(21)], rx: 1.4, ry: 1.2, m: 'glow', z: 5.8, hot: true },
+    // Windshield frame and roll bar.
+    { t: 'cap', a: [50, y(18)], b: [47, y(10)], r1: 0.9, r2: 0.8, m: 'dark', z: 5.3 },
+    { t: 'cap', a: [31, y(18)], b: [33, y(7)], r1: 1.1, r2: 1, m: 'dark', z: 5.3 },
+    { t: 'cap', a: [33, y(7)], b: [40, y(7)], r1: 1.1, r2: 1, m: 'dark', z: 5.3 },
+    // Turret: pedestal, gun body and three barrels.
+    { t: 'cap', a: [16, y(22)], b: [16, y(12)], r1: 1.6, r2: 1.4, m: 'dark', z: 1.5 },
+    { t: 'poly', pts: [[11, y(13)], [22, y(10)], [24, y(15)], [12, y(16)]], m: 'trim', z: 1.6, bevel: 1.2 },
+    ...[11, 12.6, 14.2].map((by) => ({ t: 'cap', a: [22, y(by)], b: [36, y(by - 1)], r1: 0.7, r2: 0.6, m: 'dark', z: 1.7 })),
+    { t: 'ell', c: [7, y(26)], rx: 1, ry: 1.3, m: 'glow', z: 3, hot: true },
+  ];
+  return { shapes, shoulder: [37, y(11.5)], w: W, h: H };
 }
 
 // Covenant Ghost: a single-seat hover bike with twin plasma cannons.
@@ -154,7 +181,7 @@ function broadsword(f) {
 }
 
 export const VEHICLE_BODIES = {
-  warthog: { w: 76, h: 40, frames: 4, anims: HOVER, hit: [60, 24], build: warthog, vehicle: true },
+  warthog: { w: 88, h: 46, frames: 4, anims: HOVER, hit: [66, 26], build: warthog, vehicle: true },
   ghost: { w: 58, h: 30, frames: 4, anims: HOVER, hit: [44, 18], build: ghost, vehicle: true },
   banshee: { w: 72, h: 34, frames: 4, anims: HOVER, hit: [52, 20], build: banshee, vehicle: true, flying: true },
   chopper: { w: 70, h: 40, frames: 4, anims: HOVER, hit: [56, 26], build: chopper, vehicle: true },
@@ -169,11 +196,13 @@ export const VEHICLES = {
     name: 'Warthog', body: 'warthog', kind: 'ground', seats: ['driver', 'gunner'],
     pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
     speed: 250, accel: 520, jump: 300, health: 450, weapon: 'warthog-chaingun', splatter: 90,
+    seatAt: { driver: [41, 6], gunner: [15, 12] }, gunnerStands: true,
   },
   ghost: {
     name: 'Ghost', body: 'ghost', kind: 'hover', seats: ['driver'],
     pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7ad8ff' },
     speed: 230, accel: 600, jump: 260, health: 300, weapon: 'ghost-plasma', splatter: 70,
+    seatAt: { driver: [27, 2] },
   },
   banshee: {
     name: 'Banshee', body: 'banshee', kind: 'air', seats: ['driver'],
@@ -184,6 +213,7 @@ export const VEHICLES = {
     name: 'Chopper', body: 'chopper', kind: 'ground', seats: ['driver'],
     pal: { armor: '#5a4a3a', trim: '#a89070', dark: '#2a221a', glow: '#ff8a3a' },
     speed: 260, accel: 640, jump: 280, health: 420, weapon: 'chopper-cannons', splatter: 120,
+    seatAt: { driver: [24, 4] },
   },
   scorpion: {
     name: 'Scorpion', body: 'scorpion', kind: 'ground', seats: ['driver'],
@@ -194,6 +224,7 @@ export const VEHICLES = {
     name: 'Mongoose', body: 'mongoose', kind: 'ground', seats: ['driver', 'gunner'],
     pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
     speed: 290, accel: 700, jump: 320, health: 260, weapon: 'warthog-chaingun', splatter: 60,
+    seatAt: { driver: [28, 0], gunner: [16, 0] },
   },
   hornet: {
     name: 'Hornet', body: 'hornet', kind: 'air', seats: ['driver'],

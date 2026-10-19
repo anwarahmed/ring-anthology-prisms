@@ -76,6 +76,7 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
   leave(p) {
     if (this[p.seat] === p) this[p.seat] = null;
     p.vehicle = null;
+    p.setDepth(20);
     p.body.enable = true;
     p.body.reset(this.x - this.facing * 30, this.y - 12);
     p.setVisible(true);
@@ -123,9 +124,19 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
     if (!this.alive) return;
     this.cooldown -= dt;
     this.setFlipX(this.facing < 0);
+    // Riders: shown in their seats (behind the vehicle's sides, so only the head and
+    // shoulders show), or hidden inside closed vehicles.
     for (const r of this.riders) {
-      r.x = this.x;
-      r.y = this.y - 6;
+      const seat = this.def.seatAt?.[r.seat];
+      if (!seat) {
+        r.x = this.x;
+        r.y = this.y - 6;
+        r.setVisible(false);
+        continue;
+      }
+      r.setPosition(this.x + (seat[0] - this.bodyDef.w / 2) * this.facing, this.y + (seat[1] - this.bodyDef.h / 2));
+      r.setFlipX(this.facing < 0).setDepth(this.depth - 0.5).setVisible(true);
+      r.playAnim(r.seat === 'gunner' && this.def.gunnerStands ? 'idle' : 'crouch');
     }
     if (this.y > this.scene.worldH + 60) this.hurt(9999, 'explosive');
     for (const u of this.scene.units) {
