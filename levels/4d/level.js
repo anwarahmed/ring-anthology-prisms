@@ -23,16 +23,19 @@ export default {
         title: 'The Drop', when: 'October 20, 2552', where: 'New Mombasa',
         text: 'Orbital Drop Shock Troopers, or ODSTs, dropped from space into New Mombasa in drop pods. Then the Covenant ship above the city jumped into slipspace, and the shockwave scattered the squad.',
         source: 'Halo 3: ODST; Halopedia: Battle of Mombasa',
+        scene: 'C=ship:covenant-big@0.62,0.14; pods 0.24 0.9 4; flash & shake & C hide',
       },
       {
         title: 'Alone', when: 'October 20, 2552', where: 'New Mombasa',
         text: 'The newest member of the squad, the Rookie, woke up hours later. It was night, and he was alone.',
         source: 'Halopedia: The Rookie',
+        scene: 'dark; R=rookie@0.42; R kneel; wait 0.8; R stand',
       },
       {
         title: 'The Superintendent',
         text: 'New Mombasa\'s city AI, the Superintendent, helped guide him through the dark streets.',
         source: 'Halopedia: Superintendent',
+        scene: 'dark; R=rookie@0.28; beam 0.72 #f0a03a; R>0.6',
       },
     ],
     after: [
@@ -40,6 +43,7 @@ export default {
         title: 'Together Again', when: 'October 21, 2552', where: 'New Mombasa',
         text: 'The Rookie followed the clues his squad had left behind, found them, and together they escaped the city.',
         source: 'Halo 3: ODST; Halopedia: The Rookie',
+        scene: 'R=rookie@0.18; O=odst-squadmate@0.62< & P=odst-squadmate@0.72<; R>0.48; R talk; O face > & P face >',
       },
     ],
   },

@@ -22,11 +22,13 @@ export default {
         title: 'Home', when: 'October 20, 2552', where: 'Earth orbit',
         text: 'After Installation 04, Master Chief came home to Earth. The UNSC defended it with huge orbital defense platforms, like Cairo Station.',
         source: 'Halo 2; Halopedia: Cairo Station',
+        scene: 'bg space; planet 0.3 1.05 0.42 #3a7ac8; A=ship:unsc-big@0.74,0.28; S=ship:unsc@-0.2,0.52; S>0.46,0.5',
       },
       {
         title: 'The Covenant Arrives', when: 'October 20, 2552',
         text: 'That same day, a Covenant fleet appeared over Earth and attacked. Covenant troops boarded Cairo Station.',
         source: 'Halopedia: Battle of Earth',
+        scene: 'bg space; planet 0.3 1.05 0.42 #3a7ac8; A=ship:unsc-big@0.74,0.3; fleet covenant 5; boom 0.7 0.3 & boom 0.78 0.28',
       },
     ],
     after: [
@@ -34,11 +36,13 @@ export default {
         title: 'The Bomb', when: 'October 20, 2552', where: 'Cairo Station',
         text: 'The Covenant had left a bomb aboard Cairo Station. Master Chief found it and carried it back to the Covenant ship it came from, so the station was saved.',
         source: 'Halo 2; Halopedia: Cairo Station',
+        scene: 'C=ship:covenant-big@0.76,0.2; M=master-chief@0.24; M glow #ffb84a; M>>0.6; M^; boom 0.76 0.2 big & C down; M face <',
       },
       {
         title: 'Earth Under Attack',
         text: 'Earth had been found. The Covenant were landing in the city of New Mombasa.',
         source: 'Halopedia: Battle of Earth',
+        scene: 'bg sky #f0a060 #f8e0b0 #8a7060; ship covenant 1.2>0.62 0.18 big; beam 0.62 #c890ff & E=elite@0.62<; G=grunt@0.72<',
       },
     ],
   },

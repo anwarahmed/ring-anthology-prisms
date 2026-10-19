@@ -23,11 +23,13 @@ export default {
         title: 'Delta Halo', when: 'November 3, 2552', where: 'Delta Halo',
         text: 'Installation 05, called Delta Halo, was another Forerunner ring. The Prophets wanted its Activation Index, which they called the Sacred Icon.',
         source: 'Halopedia: Installation 05; Activation Index',
+        scene: 'bg space; ring 0.5 0.4; fleet covenant 3; beam 0.5 #9ff4ff',
       },
       {
         title: 'The Library',
         text: 'The Index was kept deep in the Library. The Arbiter was sent to bring it back. The Flood had broken loose inside.',
         source: 'Halo 2; Halopedia: Library',
+        scene: 'T=arbiter@0.2 & S=spec-ops-sangheili@0.1; F=flood-elite@0.76< & I=flood-infection@0.64<; flood 0.72; T fire I & S fire F; I down',
       },
     ],
     after: [
@@ -35,11 +37,13 @@ export default {
         title: 'The Index', when: 'November 3, 2552', where: 'Delta Halo',
         text: 'The Arbiter reached the Index.',
         source: 'Halo 2',
+        scene: 'T=arbiter@0.3; beam 0.62 #9ff4ff; T>0.55; T glow #9ff4ff',
       },
       {
         title: 'Betrayal',
         text: 'But the Brute chieftain Tartarus took the Index from him, and the Arbiter fell into a deep chasm. He survived.',
         source: 'Halo 2; Halopedia: Tartarus',
+        scene: 'T=arbiter@0.42; R=tartarus@0.84<; R>0.58; R talk; R glow #ff8a3a; T>0.4,1.4',
       },
     ],
   },

@@ -22,11 +22,13 @@ export default {
         title: 'Disgrace', when: '2552',
         text: 'Thel \'Vadamee had commanded the Covenant fleet at Installation 04, and the ring was lost. He was to be punished, but the Prophets spared him and made him the Arbiter, a title of shame.',
         source: 'Halo 2; Halopedia: Thel \'Vadamee',
+        scene: 'T=arbiter@0.42; P=sanshyuum@0.76<; P unarm; T kneel; P talk; T glow #ffd27a',
       },
       {
         title: 'The Heretics', when: '2552', where: 'Threshold',
         text: 'Some Covenant had begun to doubt the Prophets. The Arbiter was sent to a gas mine on the planet Threshold to stop them and their leader, Sesa \'Refumee.',
         source: 'Halopedia: Sesa \'Refumee',
+        scene: 'T=arbiter@0.16 & S=spec-ops-sangheili@0.06; T>0.4 & S>0.3; H=heretic-elite@0.86< & G=heretic-grunt@0.76<; T face >',
       },
     ],
     after: [
@@ -34,11 +36,13 @@ export default {
         title: 'The Heretic Leader', when: '2552', where: 'Threshold',
         text: 'The Arbiter defeated Sesa \'Refumee.',
         source: 'Halo 2; Halopedia: Sesa \'Refumee',
+        scene: 'T=arbiter@0.3; R=sesa-refumee@0.76<; R fire T; T fire R; R down',
       },
       {
         title: 'A Warning',
         text: 'The heretics had been told something by a Forerunner Monitor, 343 Guilty Spark: the Halos were weapons, not a path to the Great Journey. The Arbiter did not believe it yet.',
         source: 'Halopedia: Sesa \'Refumee; 343 Guilty Spark',
+        scene: 'T=arbiter@0.3; O=guilty-spark@0.7,0.4<; O talk; T talk; T face <',
       },
     ],
   },

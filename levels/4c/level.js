@@ -23,11 +23,13 @@ export default {
         title: 'New Mombasa', when: 'October 20, 2552', where: 'New Mombasa',
         text: 'The Covenant Prophet of Regret landed in the African city of New Mombasa, on Earth.',
         source: 'Halopedia: Battle of Mombasa',
+        scene: 'ship covenant 1.2>0.62 0.16 big; beam 0.62 #c890ff & P=sanshyuum@0.62<; P unarm; P talk',
       },
       {
         title: 'The Bridge',
         text: 'Master Chief and the Marines crossed the city in a Scorpion tank. A Scarab, a huge Covenant walker, was rampaging through the streets.',
         source: 'Halo 2',
+        scene: 'S=veh:scorpion@0.08; K=scarab@0.86<; S>0.42; S fire K; boom 0.8 0.6',
       },
     ],
     after: [
@@ -35,16 +37,19 @@ export default {
         title: 'The Scarab', when: 'October 20, 2552', where: 'New Mombasa',
         text: 'Master Chief stopped the Scarab.',
         source: 'Halo 2; Halopedia: Scarab',
+        scene: 'M=master-chief@0.28; K=scarab@0.76<; M fire K; boom 0.76 0.55 big; K down; M face >',
       },
       {
         title: 'Into Slipspace',
         text: 'The Prophet of Regret\'s ship jumped away into slipspace, right out of the city. The UNSC ship In Amber Clad followed it, with Master Chief aboard.',
         source: 'Halopedia: Battle of Mombasa; In Amber Clad',
+        scene: 'bg space; C=ship:covenant-big@0.4,0.34; portal 0.68 0.34; C>0.68,0.34; C hide; A=ship:unsc-big@0.06,0.42; A>0.6,0.38',
       },
       {
         title: 'Delta Halo',
         text: 'On the other side was another ring: Installation 05, called Delta Halo.',
         source: 'Halopedia: Installation 05',
+        scene: 'bg space; portal 0.22 0.5; A=ship:unsc-big@0.22,0.5; A>0.42,0.5; ring 0.74 0.3',
       },
     ],
   },
