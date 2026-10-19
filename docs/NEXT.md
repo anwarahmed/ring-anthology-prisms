@@ -26,7 +26,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Replace fixed waits with waiting on outcomes; retry key presses (passes at load 20)
    - [x] `--level <id>` runs skip the general checks; `--checks` runs only them
 4. **Part II:** bot-finish 2a, 2b, 2c, 2e, 2f (2d done); set `done` in CAMPAIGN.md.
-   - [x] 2a  - [ ] 2b  - [ ] 2c  - [x] 2e  - [x] 2f  - [ ] statuses + commit
+   - [x] 2a  - [x] 2b  - [x] 2c  - [x] 2e  - [x] 2f  - [x] statuses + commit
    (Write batches of standard levels with `scripts/levelgen.py` + `scripts/genmap.py`.)
    (Bot runs: `test-results/verify.sh <ids>` runs three at a time; logs in
    test-results/finish/. If lost: a loop over `node tests/smoke.mjs --level <id> --finish`.)
@@ -35,15 +35,15 @@ Tick boxes and commit after each step. Everything ticked is committed.
    Noble Team, Johnson, Forge, Red Team, Atriox, Decimus, Itho 'Hesiikee, Maccabeus,
    Choppers; themes for Janjur Qom (2100 BCE), Ulgethon, Rentus, High Charity,
    Doisac, Reach, Harvest, Trove, Algolis.
-   - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [x] 3a - [ ] 3b - [x] 3c - [x] 3d - [x] 3e - [x] 3f - [x] 3g
-   - [ ] 3h - [x] 3i - [x] 3j - [x] 3k - [ ] 3l - [ ] 3m
+   - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [x] 3a - [x] 3b - [x] 3c - [x] 3d - [x] 3e - [x] 3f - [x] 3g
+   - [x] 3h - [x] 3i - [x] 3j - [x] 3k - [x] 3l - [x] 3m
    Status: all 13 written and committed (validator passes). A box is ticked once the
    bot finishes the level (`node tests/smoke.mjs --level <id> --finish`) and its
    CAMPAIGN.md status is set to done. Map generator for standard
    levels: `python3 scripts/genmap.py SEED [--hazard] [--indoor] [--ceiling]`.
 6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
-   - [ ] Part IV (4a–4f) (written + committed; bot pending)  - [ ] Part V (5a–5h) (written + committed; bot pending)  - [ ] Part VI (6a–6g) (written + committed; bot pending)
+   - [ ] Part IV (4a–4f) (written; bot done: 4a 4c 4d 4e 4f; pending: 4b)  - [ ] Part V (5a–5h) (written; bot done: 5a; pending: 5b–5h)  - [ ] Part VI (6a–6g) (written + committed; bot pending)
    - [ ] Part VII (7a–7g) (written + committed; bot pending)  - [x] Firefight  - [x] publish
 7. **Halo 3 chiptune arrangements:** blocked until the user supplies MIDI files
    (docs/LEGAL.md: Halo 3 music only, into the gitignored home-soundtrack folder).

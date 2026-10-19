@@ -157,14 +157,14 @@ Flood. *(Source: Forerunner Saga; Halopedia: Precursors)*
 - **Players:** P1 Master Chief · P2 a Marine
 - **Story:** The Chief rescues the Marines scattered across the ring.
 - **Enemies:** Covenant. **Vehicles:** Warthog. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 2c · The Silent Cartographer
 - **Era:** Covenant War · **When/where:** Installation 04 · **Source:** *Halo: Combat Evolved*
 - **Players:** P1 Master Chief · P2 a Marine
 - **Story:** A beach assault to find the map to the control room.
 - **Enemies:** Covenant. **Vehicles:** Warthog. **Boss:** Hunters.
-- **Status:** planned
+- **Status:** done
 
 ### 2d · 343 Guilty Spark
 - **Era:** Covenant War · **When/where:** Installation 04 · **Source:** *Halo: Combat Evolved*
@@ -207,7 +207,7 @@ Installation 04 is branded a heretic. *(Source: Halo 2)*
 - **Players:** P1 and P2 Sangheili warriors serving Arbiter Vema 'Togad
 - **Story:** The San'Shyuum Reformists land on Ulgethon, thinking it uninhabited, and meet the Sangheili. They announce they will dig up Forerunner relics. Arbiter Vema 'Togad, a ruler and judge of the clans, has their delegation killed, and the War of Beginnings starts. The Dreadnought, the *Anodyne Spirit*, is almost impossible to damage; on the ground the Sangheili are stronger. The war lasts 86 years.
 - **Enemies:** San'Shyuum forces; later in the war, Aggressor Sentinels fought for the San'Shyuum (staging). **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 3c · Writ of Union
 - **Era:** Covenant War · **When/where:** 852 BCE (the place is not recorded) · **Source:** Halopedia: War of Beginnings, Covenant
@@ -264,7 +264,7 @@ High Charity is built (851–791 BCE).
 - **Story:** First contact (2525). Johnson trains the Harvest militia. The Jiralhanae chieftain Maccabeus attacks Harvest; at Gladsheim, Johnson and Byrne ram him with a Warthog. The Oracle reveals that the Luminary's readings show humans, the Forerunners' "Reclaimers". Three Covenant leaders (who become the Prophets of Truth, Regret and Mercy) hide this and declare war on humanity. Tartarus later kills the wounded Maccabeus.
 - **Sacrifice:** The Prophets sacrifice the truth to keep their power.
 - **Enemies:** Jiralhanae, Unggoy, Kig-Yar. **Vehicles:** Warthog. **Boss:** Maccabeus (rammed with the Warthog).
-- **Status:** planned
+- **Status:** done
 
 ### 3i · Harvest
 - **Era:** Covenant War · **When/where:** 2531, Harvest · **Source:** *Halo Wars*
@@ -296,7 +296,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Noble Six · P2 Kat-B320
 - **Story:** July 24, 2552, Visegrád. Noble Team investigates a dead relay and finds the first Covenant ground forces on Reach. Zealots attack; the team restores the relay and declares Winter Contingency.
 - **Enemies:** Covenant (Zealots, Grunts, Jackals, Skirmishers). **Vehicles:** Warthog. **Boss:** Zealots.
-- **Status:** planned
+- **Status:** done
 
 ### 3m · The Pillar of Autumn (Reach)
 - **Era:** Covenant War · **When/where:** 2552, Reach · **Source:** *Halo: Reach*
@@ -305,7 +305,7 @@ High Charity is built (851–791 BCE).
 - **Story:** August 29–30, 2552. Six and Emile carry Cortana to the *Pillar of Autumn* across the Aszod ship-breaking yards. Emile mans a mass driver against the Covenant until he falls (told gently). When a cruiser threatens the ship, Six takes the gun: "Negative. I have the gun. Good luck, sir." The *Autumn* escapes; Six fights on to the end (told gently). The ship reaches Installation 04, which is Part II.
 - **Sacrifice:** Six gives up any chance of escape so the ship can get away.
 - **Enemies:** Covenant. **Boss:** none (a last stand).
-- **Status:** planned
+- **Status:** done
 
 ## Part IV · The Great Schism
 
@@ -314,7 +314,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Master Chief · P2 a Marine
 - **Story:** The Covenant attacks Earth. The Chief stops a bomb.
 - **Enemies:** Covenant. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 4b · The Arbiter
 - **Era:** Covenant War · **When/where:** 2552, a gas mine on Threshold · **Source:** *Halo 2*
@@ -329,7 +329,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Master Chief · P2 a Marine
 - **Story:** A Scarab rampages through the city.
 - **Enemies:** Covenant. **Vehicles:** Scorpion, Warthog. **Boss:** the Scarab.
-- **Status:** planned
+- **Status:** done
 
 ### 4d · The Rookie
 - **Era:** Covenant War · **When/where:** 2552, New Mombasa · **Source:** *Halo 3: ODST*
@@ -337,14 +337,14 @@ High Charity is built (851–791 BCE).
 - **Story:** The Rookie searches for his squad. The Superintendent, the city's AI, guides him.
 - **Play:** No shields, VISR night vision.
 - **Enemies:** Brutes, Grunts. **Boss:** none (ODST has no boss fight).
-- **Status:** planned
+- **Status:** done
 
 ### 4e · Sacred Icon
 - **Era:** Covenant War · **When/where:** 2552, Delta Halo · **Source:** *Halo 2*
 - **Players:** P1 the Arbiter · P2 a Spec Ops Sangheili
 - **Story:** The Arbiter fights through the Library for the Index.
 - **Enemies:** Sentinels, Flood. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 4f · The Great Journey
 - **Era:** Covenant War · **When/where:** 2552, Delta Halo · **Source:** *Halo 2*
@@ -352,7 +352,7 @@ High Charity is built (851–791 BCE).
 - **Story:** The Prophets replace the Elites with the Brutes, and the Great Schism begins. The Arbiter learns the truth about the Halos. Elites and humans fight together to stop Tartarus from firing the ring.
 - **Sacrifice:** The Elites give up the faith they lived for.
 - **Enemies:** Brutes. **Vehicles:** Banshee, Scarab. **Boss:** Tartarus.
-- **Status:** planned
+- **Status:** done
 
 ## Part V · The Ark
 
@@ -364,7 +364,7 @@ High Charity is built (851–791 BCE).
 - **Sacrifice:** The Forerunners give up their own civilization.
 - **Play:** Hold the Ark while the Array charges (staging). The firing is shown on the Archive's star map, never in gameplay.
 - **Enemies:** Flood. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 5b · Sierra 117
 - **Era:** Covenant War · **When/where:** 2552, Kenya · **Source:** *Halo 3*
