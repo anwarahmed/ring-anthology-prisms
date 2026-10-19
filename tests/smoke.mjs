@@ -473,6 +473,18 @@ await run('arena-spawns', '?level=1a&god=1', async (page) => {
     return { x0: L.arena.x0, x1: L.arena.x1, xs: units.map((u) => Math.round(u.x)) };
   });
   if (out.xs.some((x) => x < out.x0 || x > out.x1)) throw new Error(`units spawned outside the arena: ${JSON.stringify(out)}`);
+  // ...and they cannot walk out of it either.
+  const later = await page.evaluate(async () => {
+    const L = window.__game.scene.getScene('Level');
+    for (const u of L.units) {
+      if (!u.alive || u.team !== 'enemies') continue;
+      u.body.reset(L.arena.x1 - 24, u.y);
+      u.brain = () => u.setVelocityX(260);
+    }
+    await window.__gameWait(1500);
+    return { x1: L.arena.x1, xs: L.units.filter((u) => u.alive && u.team === 'enemies').map((u) => Math.round(u.x)) };
+  });
+  if (later.xs.some((x) => x > later.x1)) throw new Error(`units walked out of the arena: ${JSON.stringify(later)}`);
 });
 
 for (const id of levels) {

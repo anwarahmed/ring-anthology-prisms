@@ -203,6 +203,18 @@ export class LevelScene extends Phaser.Scene {
     }
     for (const v of this.vehicles) v.tick(dt);
     for (const u of this.units) u.tick(dt);
+    // A locked arena holds enemies too: one that wandered out through the walls could
+    // never be reached, and the wave could never be cleared.
+    if (this.arena) {
+      for (const u of this.units) {
+        if (!u.alive || u.team !== 'enemies') continue;
+        const x = Phaser.Math.Clamp(u.x, this.arena.x0 + 10, this.arena.x1 - 10);
+        if (x !== u.x) {
+          u.setX(x);
+          u.setVelocityX(0);
+        }
+      }
+    }
     this.units = this.units.filter((u) => u.alive || u.active);
     updateProjectiles(this);
     updatePickups(this, dt);
