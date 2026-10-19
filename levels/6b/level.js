@@ -24,11 +24,13 @@ export default {
         title: 'Adrift', when: 'July 2557',
         text: 'For four years, Master Chief slept in cryo in the drifting back half of the Forward Unto Dawn. In 2557, Cortana woke him.',
         source: 'Halo 4; Halopedia: Forward Unto Dawn',
+        scene: 'M=master-chief@0.45; M seal; wait 0.6; beam 0.45 #7ad8ff; M wake',
       },
       {
         title: 'Requiem', when: 'July 2557', where: 'Requiem',
         text: 'The ship was being pulled toward a Forerunner shield world: Requiem.',
         source: 'Halopedia: Requiem',
+        scene: 'bg space; planet 0.76 0.5 0.18 #5a6a8a; A=ship:unsc-big@0.08,0.4; A>0.58,0.48',
       },
     ],
     after: [
@@ -36,11 +38,13 @@ export default {
         title: 'The Didact Wakes', when: 'July 2557', where: 'Requiem',
         text: 'Without knowing it, Master Chief opened the Cryptum and set the Didact free.',
         source: 'Halo 4; Halopedia: Ur-Didact',
+        scene: 'D=didact@0.64; D seal; M=master-chief@0.22; M>0.44; D wake; D talk; M face >',
       },
       {
         title: 'Cortana',
         text: 'Cortana was getting old for an AI. Her mind was starting to break down, a condition called rampancy.',
         source: 'Halopedia: Cortana; Rampancy',
+        scene: 'M=master-chief@0.42; M glow #7ad8ff; flash #ff6a8a; M talk',
       },
     ],
   },

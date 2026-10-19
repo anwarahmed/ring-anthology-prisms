@@ -22,11 +22,13 @@ export default {
         title: 'Cortana\'s Message', when: 'October 2558',
         text: 'After a mission at a station called Argent Moon, Master Chief heard a message from Cortana. It pointed to the colony Meridian.',
         source: 'Halo 5: Guardians; Halopedia: Blue Team',
+        scene: 'bg space; planet 0.8 0.45 0.12 #c8a070; S=ship:unsc-big@0.3,0.52; beam 0.3 #7ad8ff',
       },
       {
         title: 'AWOL', when: 'October 2558', where: 'Meridian',
         text: 'Blue Team, Master Chief and his oldest friends from the Spartan program, disobeyed orders and went to Meridian.',
         source: 'Halopedia: Blue Team',
+        scene: 'F=fred-104@0.2 & M=master-chief@0.3 & K=kelly-087@0.4; M face >; ship unsc -0.2>1.2 0.2',
       },
     ],
     after: [
@@ -34,11 +36,13 @@ export default {
         title: 'The Guardian', when: 'October 2558',
         text: 'On Meridian, Blue Team boarded a Guardian, a giant Forerunner machine. It carried them to the Forerunner world Genesis.',
         source: 'Halo 5: Guardians; Halopedia: Meridian',
+        scene: 'G=ship:forerunner-big@0.62,0.28; F=fred-104@0.2 & M=master-chief@0.3 & K=kelly-087@0.4; beam 0.62 #9ff4ff & M beamout & F beamout & K beamout; G>1.05,0.15',
       },
       {
         title: 'Reunion',
         text: 'On Genesis, Master Chief found Cortana again.',
         source: 'Halopedia: Genesis',
+        scene: 'M=master-chief@0.3; beam 0.62 #7ad8ff; M>0.48; M talk',
       },
     ],
   },

@@ -22,11 +22,13 @@ export default {
         title: 'Genesis', when: 'October 2558', where: 'Genesis',
         text: 'Fireteam Osiris followed Blue Team to Genesis.',
         source: 'Halo 5: Guardians; Halopedia: Genesis',
+        scene: 'ship unsc -0.2>0.45 0.25; B=buck@0.2 & L=locke@0.3 & V=vale@0.4; L face >',
       },
       {
         title: 'Cortana Lives',
         text: 'Cortana was alive. She had healed herself using the Domain, a great Forerunner network.',
         source: 'Halopedia: Cortana; Domain',
+        scene: 'L=locke@0.24 & V=vale@0.34; beam 0.62 #7ad8ff; V talk; flash #7ad8ff',
       },
     ],
     after: [
@@ -34,16 +36,19 @@ export default {
         title: 'The Created', when: 'October 2558',
         text: 'Cortana and the Created, the AIs who followed her, took control of the Guardians. They meant to keep the galaxy at peace, by force.',
         source: 'Halopedia: Created',
+        scene: 'fleet forerunner 4; beam 0.5 #7ad8ff; W=warden-eternal@0.76<; W glow #ffd27a',
       },
       {
         title: 'The Cryptum',
         text: 'Cortana sealed Blue Team inside a Cryptum. Fireteam Osiris got them out, and together they escaped Genesis.',
         source: 'Halo 5: Guardians',
+        scene: 'M=master-chief@0.64 & F=fred-104@0.76; M seal & F seal; L=locke@0.18 & V=vale@0.28; L>0.44; M wake & F wake',
       },
       {
         title: 'The Price',
         text: 'The Created gave up the galaxy\'s freedom for peace.',
         source: 'Halopedia: Created',
+        scene: 'bg space; planet 0.5 0.62 0.15 #3a7ac8; G=ship:forerunner-big@0.5,0.24; G glow #7ad8ff',
       },
     ],
   },

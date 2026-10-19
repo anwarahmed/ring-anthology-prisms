@@ -22,6 +22,7 @@ export default {
         title: 'Midnight', when: 'August 2557', where: 'Earth orbit',
         text: 'The Didact\'s ship, the Mantle\'s Approach, reached Earth. Master Chief chased it in a Broadsword fighter and got inside.',
         source: 'Halo 4; Halopedia: Mantle\'s Approach',
+        scene: 'bg space; planet 0.5 1.12 0.45 #3a7ac8; D=ship:forerunner-big@0.62,0.3; B=ship:unsc@-0.1,0.62; B>0.6,0.32; B hide',
       },
     ],
     after: [
@@ -29,11 +30,13 @@ export default {
         title: 'Cortana', when: 'August 2557',
         text: 'Cortana held the Didact back long enough for Master Chief to stop him. Earth was saved, but Cortana did not come back.',
         source: 'Halo 4; Halopedia: Cortana',
+        scene: 'D=didact@0.72<; M=master-chief@0.3; beam 0.52 #7ad8ff; D kneel; flash #7ad8ff; D down',
       },
       {
         title: 'The Price',
         text: 'Cortana gave herself to save Master Chief and Earth.',
         source: 'Halopedia: Cortana',
+        scene: 'M=master-chief@0.45; beam 0.52 #7ad8ff; M kneel; dark',
       },
     ],
   },

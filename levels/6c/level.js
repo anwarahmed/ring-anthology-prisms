@@ -22,11 +22,13 @@ export default {
         title: 'Ivanoff Station', when: '2557', where: 'Ivanoff Station',
         text: 'Humans had found the Composer and taken it to Ivanoff Station, a research station near the ring Installation 03.',
         source: 'Halopedia: Ivanoff Research Station; Composer',
+        scene: 'bg space; ring 0.74 0.3; S=ship:unsc-big@0.3,0.56; beam 0.3 #ff9a3a',
       },
       {
         title: 'The Didact Comes',
         text: 'The Didact wanted the Composer back. Master Chief raced to the station to stop him.',
         source: 'Halo 4',
+        scene: 'bg space; ring 0.74 0.3; S=ship:unsc-big@0.3,0.6; D=ship:forerunner-big@1.25,0.24<; D>0.68,0.28; B=ship:unsc@-0.2,0.3; B>0.3,0.36',
       },
     ],
     after: [
@@ -34,11 +36,13 @@ export default {
         title: 'Composed', when: '2557', where: 'Ivanoff Station',
         text: 'The Didact used the Composer on the station\'s people, turning them into data. Master Chief could not stop it in time.',
         source: 'Halo 4; Halopedia: Composer',
+        scene: 'A=marine@0.46 & B=marine@0.58 & C=marine@0.7; A unarm & B unarm & C unarm; beam 0.58 #ff9a3a; A data & B data & C data; M=master-chief@0.14; M>0.34',
       },
       {
         title: 'To Earth',
         text: 'Then the Didact set off for Earth, with the Composer aboard his ship.',
         source: 'Halo 4',
+        scene: 'bg space; planet 0.8 0.56 0.15 #3a7ac8; D=ship:forerunner-big@0.08,0.34; D>0.62,0.42',
       },
     ],
   },

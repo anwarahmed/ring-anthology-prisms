@@ -23,11 +23,13 @@ export default {
         title: 'Sanghelios', when: 'October 2558', where: 'Sanghelios',
         text: 'On the Sangheili homeworld, the Arbiter\'s Swords of Sanghelios were fighting the last of the Covenant, the Covenant remnant.',
         source: 'Halopedia: Swords of Sanghelios; Battle of Sunaion',
+        scene: 'A=arbiter@0.25 & E=elite-ally@0.14; R=remnant-elite@0.76< & G=grunt@0.86<; A fire R & E fire G & R fire A',
       },
       {
         title: 'Fireteam Osiris',
         text: 'Fireteam Osiris, led by Spartan Jameson Locke, came to help the Arbiter, and to find a way to Blue Team.',
         source: 'Halo 5: Guardians; Halopedia: Fireteam Osiris',
+        scene: 'ship unsc -0.2>0.42 0.2; L=locke@0.4 & B=buck@0.5; A=arbiter@0.76<; L talk; A talk',
       },
     ],
     after: [
@@ -35,11 +37,13 @@ export default {
         title: 'Sunaion', when: 'October 2558', where: 'Sanghelios',
         text: 'Together they won the battle for Sunaion, and the Covenant remnant was finished.',
         source: 'Halopedia: Battle of Sunaion',
+        scene: 'L=locke@0.2 & B=buck@0.3 & A=arbiter@0.4; R=remnant-elite@0.8< & J=jackal@0.9<; L fire R & A fire J & B fire R; R down & J down',
       },
       {
         title: 'An Honor',
         text: 'The title of Arbiter had once been a mark of shame. Now it was a title of honor.',
         source: 'Halopedia: Arbiter',
+        scene: 'E=elite-ally@0.3 & A=arbiter@0.45 & F=elite-ally@0.6<; A glow #ffd27a; E face > & F face <',
       },
     ],
   },

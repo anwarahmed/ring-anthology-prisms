@@ -21,11 +21,13 @@ export default {
         title: 'The Didact\'s War', when: 'Forerunner-Flood war',
         text: 'The Didact led the Forerunners\' warriors against the Flood. The war was going badly.',
         source: 'Halopedia: Ur-Didact; Forerunner-Flood war',
+        scene: 'D=didact@0.2 & W=forerunner-warrior@0.3; F=flood-warrior@0.74< & I=flood-infection@0.84<; D fire F & W fire I; G=flood-warrior@1.1<; G>0.64; W kneel',
       },
       {
         title: 'The Composer',
         text: 'To win, the Didact used a terrible device called the Composer. It turned living humans into hard-light data, and he made them into Promethean Knights.',
         source: 'Halopedia: Composer; Promethean Knight',
+        scene: 'D=didact@0.18; A=ancient-human-soldier@0.56 & B=ancient-human-soldier@0.7; A unarm & B unarm; beam 0.62 #ff9a3a; A data & B data; K=promethean-knight@0.56< & L=promethean-knight@0.7<',
       },
     ],
     after: [
@@ -33,11 +35,13 @@ export default {
         title: 'The Cryptum',
         text: 'The Librarian, the Didact\'s wife, stopped him. She sealed him away in a Cryptum, deep inside the shield world Requiem.',
         source: 'Halopedia: Librarian; Requiem',
+        scene: 'D=didact@0.5; beam 0.5 #bff4ff; D seal',
       },
       {
         title: 'The Price',
         text: 'The Didact gave up his conscience to win.',
         source: 'Halopedia: Ur-Didact',
+        scene: 'D=didact@0.45; D glow #ff6a3a; dark',
       },
     ],
   },
