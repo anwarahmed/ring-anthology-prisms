@@ -22,6 +22,10 @@ function digiLeg(hip, [t, k], L, near) {
       { t: 'cap', a: knee, b: ankle, r1: L.r * 0.9, r2: L.r * 0.7, m: `armor${f}`, z: z + 0.1 },
       { t: 'cap', a: ankle, b: toe, r1: L.r * 0.7, r2: L.r * 0.5, m: `dark${f}`, z: z + 0.15 },
       { t: 'ell', c: add(toe, [1.5, 0.5]), rx: L.r * 1.2, ry: 1.5, m: `dark${f}`, z: z + 0.2 },
+      // Knee guard, a shin ridge and a toe claw.
+      { t: 'ell', c: add(knee, [0.8, 0]), rx: L.r * 1.05, ry: L.r * 1.2, m: `armor${f}`, z: z + 0.3 },
+      { t: 'cap', a: add(knee, [1.2, 2]), b: add(ankle, [1, -1.5]), r1: 0.4, r2: 0.3, m: near ? 'trim' : 'trimFar', z: z + 0.35, noSep: true },
+      { t: 'cap', a: add(toe, [2.6, 0.2]), b: add(toe, [4.6, 1.4]), r1: 0.6, r2: 0.25, m: 'metal', z: z + 0.25 },
     ],
   };
 }
@@ -51,6 +55,12 @@ function elite(f, def) {
   shapes.push({ t: 'ell', c: chestC, rx: 7.5, ry: 8, rot: lean, m: 'armor', z: 3 });
   shapes.push({ t: 'poly', pts: [add(chestC, [-8, -6]), add(chestC, [-12, -11]), add(chestC, [-4, -9])], m: 'trim', z: 2.6, bevel: 1.2 });
   shapes.push({ t: 'poly', pts: [[hip[0] - 5, hip[1] - 2], [hip[0] + 5, hip[1] - 2], [hip[0] + 4, hip[1] + 5], [hip[0] - 4, hip[1] + 5]], m: 'trim', z: 3.5, bevel: 1.2 });
+  // Curved armor ridges with glowing accent lights, and hip plates.
+  shapes.push({ t: 'cap', a: add(chestC, [-4, -5]), b: add(chestC, [5, -3]), r1: 0.45, r2: 0.45, m: 'trim', z: 3.4, noSep: true });
+  shapes.push({ t: 'cap', a: add(chestC, [-5, 0]), b: add(chestC, [6, 1.5]), r1: 0.4, r2: 0.4, m: 'trim', z: 3.4, noSep: true });
+  shapes.push({ t: 'ell', c: add(chestC, [4.5, -2]), rx: 0.8, ry: 0.8, m: 'glow', z: 3.5, hot: true });
+  shapes.push({ t: 'ell', c: add(chestC, [-1, 4.5]), rx: 0.7, ry: 0.7, m: 'glow', z: 3.5 });
+  shapes.push({ t: 'poly', pts: [[hip[0] + 2, hip[1] + 1], [hip[0] + 7, hip[1] + 2], [hip[0] + 6, hip[1] + 8], [hip[0] + 2.5, hip[1] + 7]], m: 'armor', z: 6.6, bevel: 1.2 });
   shapes.push(...digiLeg(hip, p.front, L, true).shapes);
   shapes.push({ t: 'cap', a: neck, b: add(neck, [3, -1]), r1: 2.6, r2: 2.4, m: 'dark', z: 4 });
   // Head: helmet over a long skull, mandibles below.
@@ -61,6 +71,9 @@ function elite(f, def) {
     shapes.push({ t: 'cap', a: add(headC, [2, dy]), b: add(headC, [8, dy + 1.5 + jaw]), r1: 1, r2: 0.6, m: 'skin', z: zz });
   }
   shapes.push({ t: 'ell', c: add(headC, [2.8, -0.6]), rx: 0.8, ry: 0.7, m: 'glow', z: 7.6, hot: true });
+  // Helmet crest and an edge seam.
+  shapes.push({ t: 'cap', a: add(headC, [-4.5, -2.5]), b: add(headC, [4, -4.6]), r1: 0.9, r2: 0.5, m: 'armor', z: 7.35 });
+  shapes.push({ t: 'cap', a: add(headC, [-4, 1.4]), b: add(headC, [3, 0.4]), r1: 0.3, r2: 0.3, m: 'seam', z: 7.4, noSep: true });
   if (def.infected) {
     shapes.push({ t: 'ell', c: add(chestC, [-4, -5]), rx: 5, ry: 4, m: 'cape', z: 8 });
     shapes.push({ t: 'ell', c: add(headC, [-4, -2]), rx: 3.4, ry: 2.8, m: 'cape', z: 8 });
@@ -92,12 +105,20 @@ function grunt(f) {
   // Methane tank on the back.
   shapes.push({ t: 'poly', pts: [add(chestC, [-6, -11]), add(chestC, [-1, -9]), add(chestC, [-2, 4]), add(chestC, [-9, 2])], m: 'trim', z: 1.5, bevel: 2 });
   shapes.push({ t: 'ell', c: add(chestC, [-4.5, -6]), rx: 1.6, ry: 2.4, m: 'glow', z: 1.8, hot: f % 2 === 0 });
+  shapes.push({ t: 'cap', a: add(chestC, [-5, -11]), b: add(chestC, [-3, -12.5]), r1: 0.9, r2: 0.9, m: 'metal', z: 1.9 });
   shapes.push({ t: 'ell', c: chestC, rx: 7, ry: 7.2, m: 'armor', z: 3 });
+  // Collar plate, harness straps and a belly seam.
+  shapes.push({ t: 'poly', pts: [add(chestC, [-4, -7]), add(chestC, [4, -6.5]), add(chestC, [5, -3.5]), add(chestC, [-3.5, -4])], m: 'trim', z: 3.3, bevel: 1 });
+  shapes.push({ t: 'cap', a: add(chestC, [-3, -4]), b: add(chestC, [2, 5]), r1: 0.5, r2: 0.5, m: 'dark', z: 3.35, noSep: true });
+  shapes.push({ t: 'cap', a: add(chestC, [-5, 2.5]), b: add(chestC, [5.5, 3]), r1: 0.35, r2: 0.35, m: 'seam', z: 3.35, noSep: true });
   shapes.push(...leg(hip, p.front, true));
   const headC = add(chestC, [5, -6]);
   shapes.push({ t: 'ell', c: headC, rx: 4.2, ry: 3.6, m: 'skin', z: 7 });
   shapes.push({ t: 'poly', pts: [add(headC, [1, -1]), add(headC, [6, 0]), add(headC, [5.5, 3.5]), add(headC, [1.5, 3])], m: 'dark', z: 7.5, bevel: 1 });
   shapes.push({ t: 'ell', c: add(headC, [1.5, -1.5]), rx: 1, ry: 0.9, m: 'glow', z: 7.6, hot: true });
+  // Mask grille and the breathing hose from the tank.
+  for (const dy of [0.6, 1.8]) shapes.push({ t: 'cap', a: add(headC, [3, dy]), b: add(headC, [5.4, dy + 0.2]), r1: 0.25, r2: 0.25, m: 'seam', z: 7.6, noSep: true });
+  shapes.push({ t: 'cap', a: add(chestC, [-3, -9]), b: add(headC, [1.5, 3]), r1: 0.7, r2: 0.6, m: 'dark', z: 7.1 });
   return { shapes, shoulder: add(chestC, [3, -2]), w: W, h: H };
 }
 
@@ -116,6 +137,8 @@ function jackal(f, def) {
   shapes.push(...digiLeg([hip[0] - 1, hip[1]], p.back, L, false).shapes);
   shapes.push({ t: 'cap', a: hip, b: chestC, r1: 3.2, r2: 3.8, m: 'dark', z: 2 });
   shapes.push({ t: 'ell', c: chestC, rx: 5, ry: 6, rot: lean, m: 'armor', z: 3 });
+  shapes.push({ t: 'poly', pts: [add(chestC, [-3, -6]), add(chestC, [3, -5]), add(chestC, [4, -1]), add(chestC, [-2, -1.5])], m: 'trim', z: 3.3, bevel: 1 });
+  shapes.push({ t: 'cap', a: add(chestC, [-3.5, 2]), b: add(chestC, [4, 2.6]), r1: 0.3, r2: 0.3, m: 'seam', z: 3.35, noSep: true });
   shapes.push(...digiLeg(hip, p.front, L, true).shapes);
   shapes.push({ t: 'cap', a: neck, b: add(neck, [2, -2]), r1: 1.8, r2: 1.6, m: 'skin', z: 4 });
   shapes.push({ t: 'ell', c: headC, rx: 4.2, ry: 3, rot: 0.2, m: 'skin', z: 7 });
@@ -123,7 +146,11 @@ function jackal(f, def) {
   for (let q = 0; q < 3; q++) shapes.push({ t: 'cap', a: add(headC, [-2, -1 + q]), b: add(headC, [-8, -5 + q * 2]), r1: 0.9, r2: 0.4, m: 'trim', z: 6.5 });
   shapes.push({ t: 'ell', c: add(headC, [1.5, -0.8]), rx: 0.8, ry: 0.7, m: 'glow', z: 7.5, hot: true });
   // The energy shield, held out in front.
-  if (!def.noShield) shapes.push({ t: 'ell', c: add(chestC, [9, 2]), rx: 3.4, ry: 10, m: 'glow', z: 9, noSep: true });
+  if (!def.noShield) {
+    shapes.push({ t: 'ell', c: add(chestC, [9, 2]), rx: 3.4, ry: 10, m: 'glow', z: 9, noSep: true });
+    shapes.push({ t: 'ell', c: add(chestC, [9.4, 2]), rx: 2.2, ry: 8.4, m: 'glow', z: 9.1, hot: true, noSep: true });
+    shapes.push({ t: 'ell', c: add(chestC, [8.6, 2]), rx: 0.9, ry: 1.2, m: 'metal', z: 9.2 });
+  }
   return { shapes, shoulder: add(neck, [2, 3]), w: W, h: H };
 }
 
@@ -148,8 +175,12 @@ function hunter(f) {
   const back = add(hip, [-4, -22 + p.breathe * 0.4]);
   shapes.push(...leg([hip[0] - 3, hip[1]], p.back, false));
   shapes.push({ t: 'poly', pts: [add(hip, [-12, -4]), add(back, [-10, 0]), add(back, [6, -8]), add(back, [20, 2]), add(hip, [12, -2])], m: 'armor', z: 3, bevel: 3, tilt: [0, -0.2] });
-  for (let s = 0; s < 4; s++) shapes.push({ t: 'cap', a: add(back, [-4 + s * 4, -2]), b: add(back, [-8 + s * 4, -11 - s]), r1: 1.4, r2: 0.5, m: 'trim', z: 2.5 });
+  for (let s = 0; s < 6; s++) shapes.push({ t: 'cap', a: add(back, [-6 + s * 3.4, -2]), b: add(back, [-10 + s * 3.4, -10 - s * 0.9 - (s % 2) * 2]), r1: 1.3, r2: 0.4, m: 'trim', z: 2.5 });
+  // Plate seams and glowing worms showing through the gaps.
+  shapes.push({ t: 'cap', a: add(back, [-6, 2]), b: add(back, [14, 4]), r1: 0.45, r2: 0.45, m: 'seam', z: 3.2, noSep: true });
+  shapes.push({ t: 'cap', a: add(hip, [-8, -10]), b: add(hip, [10, -8]), r1: 0.45, r2: 0.45, m: 'seam', z: 3.2, noSep: true });
   shapes.push({ t: 'ell', c: add(back, [12, 6]), rx: 4, ry: 3, m: 'skin', z: 3.5, hot: true });
+  for (const [dx, dy] of [[-3, 3], [5, 3.6], [-1, 12.5]]) shapes.push({ t: 'ell', c: add(back, [dx, dy]), rx: 1.4, ry: 0.7, m: 'glow', z: 3.25, noSep: true });
   shapes.push(...leg(hip, p.front, true));
   // Shield arm in front.
   shapes.push({ t: 'poly', pts: [add(hip, [10, -26]), add(hip, [24, -22]), add(hip, [26, 2]), add(hip, [14, 4])], m: 'trim', z: 8, bevel: 3, tilt: [0.3, 0] });
@@ -186,16 +217,28 @@ function brute(f, def) {
   shapes.push({ t: 'cap', a: hip, b: chestC, r1: 7, r2: 8, m: 'dark', z: 2 });
   shapes.push({ t: 'ell', c: chestC, rx: 11, ry: 12, rot: lean, m: 'armor', z: 3 });
   shapes.push({ t: 'poly', pts: [add(chestC, [-4, -9]), add(chestC, [8, -6]), add(chestC, [9, 4]), add(chestC, [-2, 6])], m: 'trim', z: 3.4, bevel: 2 });
+  for (const [dx, dy] of [[-2, -7], [6.5, -4.5], [7, 2.5], [-0.5, 4]]) shapes.push({ t: 'ell', c: add(chestC, [dx, dy]), rx: 0.8, ry: 0.8, m: 'metal', z: 3.6 });
+  shapes.push({ t: 'cap', a: add(chestC, [2, -7.5]), b: add(chestC, [4, 5]), r1: 0.4, r2: 0.4, m: 'seam', z: 3.55, noSep: true });
   shapes.push({ t: 'poly', pts: [[hip[0] - 7, hip[1] - 2], [hip[0] + 7, hip[1] - 2], [hip[0] + 6, hip[1] + 6], [hip[0] - 6, hip[1] + 6]], m: 'armor', z: 3.5, bevel: 1.5 });
+  shapes.push({ t: 'poly', pts: [[hip[0] - 1.6, hip[1] - 2.6], [hip[0] + 2.4, hip[1] - 2.6], [hip[0] + 2.4, hip[1] + 1], [hip[0] - 1.6, hip[1] + 1]], m: 'metal', z: 3.7, bevel: 0.8 });
   shapes.push(...leg(hip, p.front, true));
   // Shoulder plate on the near side and a mane of fur behind the head.
   shapes.push({ t: 'ell', c: add(neck, [-2, 4]), rx: 7, ry: 5, rot: -0.3, m: 'armor', z: 8.5 });
   shapes.push({ t: 'ell', c: add(neck, [-5, 1]), rx: 7, ry: 6, m: 'dark', z: 4 });
+  // Shaggy fur tufts around the mane, and a trim edge on the shoulder plate.
+  for (let k = 0; k < 6; k++) {
+    const a = -2.6 + k * 0.55;
+    const base = add(neck, [-5 + Math.cos(a) * 5, 1 + Math.sin(a) * 4.5]);
+    shapes.push({ t: 'cap', a: base, b: add(base, [Math.cos(a) * 3.4 - 0.6, Math.sin(a) * 3 + 0.8]), r1: 1.4, r2: 0.3, m: 'dark', z: 4.1 });
+  }
+  shapes.push({ t: 'cap', a: add(neck, [-8, 6.5]), b: add(neck, [4, 3]), r1: 0.6, r2: 0.6, m: 'trim', z: 8.6, noSep: true });
   // Head: heavy brow, beard and small glowing eyes.
   shapes.push({ t: 'ell', c: headC, rx: 6, ry: 5.4, m: 'skin', z: 7 });
   shapes.push({ t: 'poly', pts: [add(headC, [-3, 2]), add(headC, [6, 2.5]), add(headC, [4, 8]), add(headC, [-2, 7])], m: 'dark', z: 7.2, bevel: 1.2 });
   shapes.push({ t: 'cap', a: add(headC, [0, -2]), b: add(headC, [6, -1.4]), r1: 1.6, r2: 1.2, m: 'skin', z: 7.4 });
   shapes.push({ t: 'ell', c: add(headC, [3.6, -0.4]), rx: 0.9, ry: 0.7, m: 'glow', z: 7.6, hot: true });
+  // Tusks.
+  shapes.push({ t: 'cap', a: add(headC, [4, 3.4]), b: add(headC, [5.4, 0.8]), r1: 0.7, r2: 0.25, m: 'shine', z: 7.5 });
   if (!def.bare) shapes.push({ t: 'poly', pts: [add(headC, [-6, -1]), add(headC, [-2, -6.5]), add(headC, [5, -6]), add(headC, [6, -2.5]), add(headC, [-1, -2])], m: 'armor', z: 7.8, bevel: 1.4 });
   if (def.chieftain) shapes.push({ t: 'poly', pts: [add(headC, [-3, -6]), add(headC, [-1, -14]), add(headC, [3, -6])], m: 'trim', z: 7.9, bevel: 1 });
   return { shapes, shoulder: add(neck, [3, 6]), w: W, h: H };
