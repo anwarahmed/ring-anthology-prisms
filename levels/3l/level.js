@@ -24,11 +24,13 @@ export default {
         title: 'Reach', when: 'July 24, 2552', where: 'Reach',
         text: "Reach was one of humanity's most important worlds. Contact was lost with a communications relay near the town of Visegrád.",
         source: 'Halopedia: Battle of Visegrád Relay',
+        scene: 'fire 0.76; N=noble-six@0.2 & K=kat@0.1; N face >',
       },
       {
         title: 'Noble Team',
         text: 'Noble Team, a squad of Spartans, was sent to find out why. Its newest member was Noble Six. Kat, Noble Two, was the team\'s tech expert.',
         source: 'Halopedia: Noble Team',
+        scene: 'ship unsc -0.2>0.4 0.25; N=noble-six@0.38 & K=kat@0.28 & J=spartan-ally@0.48; K talk',
       },
     ],
     after: [
@@ -36,11 +38,13 @@ export default {
         title: 'They Are Here', when: 'July 24, 2552', where: 'Visegrád',
         text: 'Noble Team found Covenant forces on the ground. It was the first sign that the Covenant had come to Reach.',
         source: 'Halopedia: Battle of Visegrád Relay',
+        scene: 'N=noble-six@0.25 & K=kat@0.15; S=skirmisher@0.8< & E=elite@0.9<; N fire S & K fire E; S down',
       },
       {
         title: 'Winter Contingency',
         text: 'Noble Team brought the relay back online, and the UNSC declared Winter Contingency: the alert that Reach was being invaded.',
         source: 'Halopedia: Winter Contingency',
+        scene: 'N=noble-six@0.4 & K=kat@0.6; K kneel; beam 0.7 #9fd8ff; ship unsc -0.2>1.2 0.15 & ship unsc -0.4>1.2 0.26',
       },
     ],
   },

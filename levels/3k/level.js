@@ -23,11 +23,13 @@ export default {
         title: 'The Survivor',
         text: "The Covenant sent Atriox's packs on the most dangerous missions, again and again. Atriox survived every one, and he became a legend among the Jiralhanae.",
         source: 'Halopedia: Atriox',
+        scene: 'A=atriox@0.4; E=elite@0.76< & G=grunt@0.86<; boom 0.56 0.8 & boom 0.7 0.75; E down & G down; A glow #ff7a3a',
       },
       {
         title: 'Algolis', when: '2549', where: 'Algolis',
         text: "The Covenant had had enough of Atriox. On Algolis, the Sangheili officer Itho 'Hesiikee was sent to put an end to him.",
         source: "Halopedia: Atriox; Itho 'Hesiikee",
+        scene: 'A=atriox@0.3; I=itho-hesiikee@1.1<; I>0.66; I talk',
       },
     ],
     after: [
@@ -35,16 +37,19 @@ export default {
         title: 'The Sword', when: '2549', where: 'Algolis',
         text: "Atriox caught Itho 'Hesiikee's energy sword in his hand and defeated him.",
         source: 'Halopedia: Atriox',
+        scene: 'A=atriox@0.35; I=itho-hesiikee@0.62<; I>0.46; flash #9ad8ff; I down',
       },
       {
         title: 'The Banished', when: '2549',
         text: 'Decimus and the other Jiralhanae joined Atriox. Together they turned away from the Covenant and became the Banished.',
         source: 'Halopedia: Banished; Decimus',
+        scene: 'A=atriox@0.45; D=decimus-ally@1.1< & J=jiralhanae-warrior@1.2<; D>0.62 & J>0.72; A glow #ff4a2a',
       },
       {
         title: 'The Price',
         text: "The Banished gave up the Covenant's protection to be free.",
         source: 'Halopedia: Banished',
+        scene: 'A=atriox@0.45 & D=decimus-ally@0.6<; ship covenant 0.5>1.25 0.15',
       },
     ],
   },

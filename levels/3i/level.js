@@ -24,11 +24,13 @@ export default {
         title: 'Six Years Later', when: '2531', where: 'Harvest',
         text: 'The war had spread across human space. In 2531 the UNSC ship Spirit of Fire came to Harvest to fight the Covenant.',
         source: 'Halo Wars; Halopedia: Spirit of Fire',
+        scene: 'bg space; planet 0.3 0.62 0.14 #c8b070; S=ship:unsc-big@-0.2,0.3; S>0.58,0.3; fleet covenant 3',
       },
       {
         title: 'Sergeant Forge',
         text: "Sergeant John Forge led the Spirit of Fire's Marines on the ground.",
         source: 'Halopedia: John Forge',
+        scene: 'M=marine@0.2 & F=forge@0.3 & N=marine@0.4; F talk; F>0.5 & M>0.4 & N>0.6',
       },
     ],
     after: [
@@ -36,6 +38,7 @@ export default {
         title: 'Harvest Retaken', when: '2531', where: 'Harvest',
         text: 'The UNSC took back Harvest. The crew discovered that the Covenant had been searching the planet for Forerunner technology.',
         source: 'Halo Wars',
+        scene: 'F=forge@0.3 & M=marine@0.2; E=elite@0.8<; F fire E & M fire E; E down; beam 0.76 #9ff4ff',
       },
     ],
   },
