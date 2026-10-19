@@ -1,4 +1,5 @@
-// Graphics: art style, CRT emulation and the FPS counter. Opened from the title menu or
+// Graphics: art style, CRT emulation, the FPS counter, and (with a home soundtrack
+// installed) music. Opened from the title menu or
 // the pause menu (data.returnTo). CRT changes show at once (the effect is drawn over
 // the whole screen, this menu included); a new art style reloads the page, because
 // the art is generated when the game starts.
@@ -32,6 +33,7 @@ const ROWS = [
   { label: 'PERSISTENCE', key: 'persistence' },
   { label: 'NOISE', key: 'noise' },
   { label: 'SHOW FPS', kind: 'fps' },
+  { label: 'MUSIC', kind: 'music', home: true },
   { label: 'BACK', kind: 'back' },
 ];
 
@@ -58,10 +60,13 @@ export class GraphicsScene extends Phaser.Scene {
     [0xffffff, 0xffd23a, 0x45e6ff, 0x5fd35f, 0xd04fd0, 0xe0453a, 0x3f6cf5].forEach((c, i) => g.fillStyle(c, 0.9).fillRect(16 + i * 18, VIEW.h - 30, 16, 20));
     for (let i = 0; i < 8; i++) g.fillStyle(0x111111 * (i * 2 + 1), 1).fillRect(VIEW.w - 160 + i * 18, VIEW.h - 30, 16, 20);
     header(this, 'GRAPHICS', 14, 0x45e6ff);
-    this.rows = ROWS.map((r, i) => ({
+    // MUSIC only shows when a home soundtrack is installed (public/home-soundtrack/).
+    const rows = ROWS.filter((r) => !r.home || audio.home);
+    this.gap = rows.length > 14 ? 12 : 13;
+    this.rows = rows.map((r, i) => ({
       ...r,
-      name: txt(this, 60, 34 + i * 13, r.label, { size: 8 }),
-      value: txt(this, VIEW.w - 60, 34 + i * 13, '', { size: 8 }).setOrigin(1, 0),
+      name: txt(this, 60, 34 + i * this.gap, r.label, { size: 8 }),
+      value: txt(this, VIEW.w - 60, 34 + i * this.gap, '', { size: 8 }).setOrigin(1, 0),
     }));
     this.bars = this.add.graphics();
     this.hint = txt(this, VIEW.w / 2, VIEW.h - 50, '', { font: 'read', size: 14, color: '#8899aa', align: 'center' }).setOrigin(0.5, 0);
@@ -76,21 +81,23 @@ export class GraphicsScene extends Phaser.Scene {
     this.rows.forEach((r, i) => {
       const on = i === this.row;
       r.name.setColor(on ? '#ffffff' : '#9fb0d8');
-      if (on) this.bar.place(52, 34 + i * 13 - 2, VIEW.w - 104, 12);
+      if (on) this.bar.place(52, 34 + i * this.gap - 2, VIEW.w - 104, 12);
       let v = '';
       if (r.kind === 'style') v = `< ${STYLE_NAMES[this.style]} >`;
       else if (r.kind === 'preset') v = `< ${PRESET_NAMES[graphics.preset].toUpperCase()} >`;
       else if (r.kind === 'maskType') v = `< ${MASK_NAMES[graphics.maskType]} >`;
       else if (r.kind === 'fps') v = graphics.fps ? '< ON >' : '< OFF >';
+      else if (r.kind === 'music') v = audio.useHome ? '< HOME SOUNDTRACK >' : '< BUILT-IN >';
       else if (r.key) {
         v = `${Math.round(graphics[r.key] * 10)}`;
-        bar(this.bars, VIEW.w - 150, 36 + i * 13, 70, 4, graphics[r.key], on ? 0x45e6ff : 0x8899aa);
+        bar(this.bars, VIEW.w - 150, 36 + i * this.gap, 70, 4, graphics[r.key], on ? 0x45e6ff : 0x8899aa);
       }
       r.value.setText(v).setColor(on ? '#ffffff' : '#9fb0d8');
     });
     const r = this.rows[this.row];
     this.hint.setText(
       r.kind === 'style' ? (this.style === STYLE ? 'LEFT / RIGHT to choose how the game is drawn.' : 'Press JUMP to restart the game in this style.')
+        : r.kind === 'music' ? 'LEFT / RIGHT: your home soundtrack or the game\'s own music.'
         : r.kind === 'back' ? 'Settings are saved in this browser.'
           : 'LEFT / RIGHT to change.',
     );
@@ -104,6 +111,11 @@ export class GraphicsScene extends Phaser.Scene {
       graphics.maskType = cycle(MASKS, graphics.maskType, d);
       graphics.preset = 'custom';
     } else if (r.kind === 'fps') graphics.fps = !graphics.fps;
+    else if (r.kind === 'music') {
+      audio.setUseHome(!audio.useHome);
+      audio.sfx('uiMove');
+      return this.refresh();
+    }
     else if (r.key) {
       graphics[r.key] = Math.round(Math.min(1, Math.max(0, graphics[r.key] + d * 0.1)) * 10) / 10;
       graphics.preset = 'custom';

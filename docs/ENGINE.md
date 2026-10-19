@@ -197,6 +197,9 @@ menus, `src/scenes/GraphicsScene.js`), saved in localStorage:
   0 to 1; presets are Off, Subtle, Arcade and Consumer TV. When every effect is 0,
   the pass is skipped and costs nothing. Scenes need no CRT code.
 - **Show FPS:** a small counter in the bottom-right corner.
+- **Music** (only when a home soundtrack is installed, `public/home-soundtrack/`): the
+  home soundtrack or the built-in music. `audio.setUseHome()` saves the choice
+  (localStorage `ring-anthology-prisms.music`) and switches the music playing at once.
 - **Compare:** `node scripts/compare-graphics.mjs [--level 2a]` writes screenshots of
   each style and preset to `test-results/compare/`.
 

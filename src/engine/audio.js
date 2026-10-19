@@ -24,6 +24,8 @@ export function parseNotes(str) {
   });
 }
 
+const MUSIC_KEY = 'ring-anthology-prisms.music';
+
 class Audio {
   constructor() {
     this.ctx = null;
@@ -31,7 +33,29 @@ class Audio {
     this.intensity = 0;
     this.home = undefined; // undefined = not checked yet, null = none
     this.homeEl = null;
+    // The player's choice when a home soundtrack is installed: play it, or the
+    // built-in music. Saved in this browser.
+    try {
+      this.useHome = window.localStorage.getItem(MUSIC_KEY) !== 'built-in';
+    } catch {
+      this.useHome = true;
+    }
+    this.current = null; // [trackId, ctx] of the music playing, to switch it on a change
     this.muted = false;
+  }
+
+  setUseHome(on) {
+    this.useHome = on;
+    try {
+      window.localStorage.setItem(MUSIC_KEY, on ? 'home' : 'built-in');
+    } catch {
+      // Storage unavailable: the choice lasts for this session only.
+    }
+    if (!this.current) return;
+    this.stopHome();
+    this.stopMusic();
+    this.homeEntry = null;
+    this.playMusic(this.current[0], this.intensity, this.current[1]);
   }
 
   unlock() {
@@ -161,10 +185,12 @@ class Audio {
   // { calm, combat, boss } files that follow the music's intensity like the built-in
   // tracks do. Looked up by level, then era, then the built-in track's id.
   async playMusic(trackId, intensity = 0, ctx = {}) {
+    const loading = this.loadHome();
     this.unlock();
     if (!this.ctx) return;
-    const home = await this.loadHome();
-    const entry = home && (home.levels?.[ctx.level] ?? home.eras?.[ctx.era] ?? home.tracks?.[trackId]);
+    this.current = [trackId, ctx];
+    const home = await loading;
+    const entry = home && this.useHome && (home.levels?.[ctx.level] ?? home.eras?.[ctx.era] ?? home.tracks?.[trackId]);
     if (entry) {
       this.homeEntry = entry;
       this.intensity = intensity;
