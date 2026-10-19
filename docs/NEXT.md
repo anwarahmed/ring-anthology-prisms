@@ -77,6 +77,10 @@ Tick boxes and commit after each step. Everything ticked is committed.
   drawn black; units falling through the floor; stacked allies; floating arms after
   defeat; checkpoint restart loop; indoor spawns above the ceiling; level select
   points at the next level. Each has a smoke check.
+- **Playtest fixes (2026-10-19):** softer explosions; level select after a level; held
+  directions repeat in menus; breakable Jackal shields; arenas keep enemies inside;
+  Halo rings drawn as 3D ribbons (off-ring) and a new arching ring-rise sky (on-ring,
+  with pristine / damaged / unfinished states); new Warthog with visible riders.
 
 ## User decisions to respect
 
