@@ -108,7 +108,11 @@ export class ScriptRunner {
       const alive = all.filter((u) => u.alive).length;
       if (alive < 10) all.push(...(await s.spawnGroup(groups[i % groups.length])));
       i++;
-      await this.wait(every * 1000);
+      // The next group comes after `every` seconds, or 1.5 s after the field is
+      // cleared, so a defense never stands empty.
+      const spawned = s.time.now;
+      await this.until(() => s.time.now - spawned >= every * 1000
+        || (s.time.now - spawned >= 1500 && all.every((u) => !u.alive)));
     }
     s.hud.timer(null);
     await this.until(() => all.every((u) => !u.alive));

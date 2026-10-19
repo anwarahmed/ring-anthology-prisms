@@ -127,10 +127,16 @@ export class HudScene extends Phaser.Scene {
     this.timerEnd = this.time.now + seconds * 1000;
   }
 
+  // One announcement at a time: a new one (a medal chain) replaces the last.
   announce(text, color = '#ffffff', big = false) {
+    if (this.announced?.active) {
+      this.tweens.killTweensOf(this.announced);
+      this.announced.destroy();
+    }
     const t = txt(this, VIEW.w / 2, VIEW.h * 0.42, text, { size: big ? 16 : 8, color }).setOrigin(0.5).setScale(2).setAlpha(0);
     this.tweens.add({ targets: t, scale: 1, alpha: 1, duration: 180, ease: 'Back.Out' });
     this.tweens.add({ targets: t, alpha: 0, y: t.y - 14, delay: 1300, duration: 500, onComplete: () => t.destroy() });
+    this.announced = t;
   }
 
   go() {
@@ -140,6 +146,9 @@ export class HudScene extends Phaser.Scene {
 
   letterbox(on) {
     this.tweens.add({ targets: this.bars, height: on ? 34 : 0, duration: 500, ease: 'Cubic.InOut' });
+    // The player readouts sit where the top bar slides in: hide them for the cinematic.
+    const readouts = [this.frame, this.g, ...this.panels.flatMap((pn) => [pn.name, pn.weapon, pn.kit])];
+    this.tweens.add({ targets: readouts, alpha: on ? 0 : 1, duration: 300 });
   }
 
   // A cinematic title card. Resolves when the boss should appear.
