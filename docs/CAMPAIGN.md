@@ -241,7 +241,7 @@ High Charity is built (851–791 BCE).
 - **Sacrifice:** The Unggoy risk everything for their families.
 - **Play:** Plays from the Unggoy's side. Methane tanks, plasma grenades, and lots of them.
 - **Enemies:** Kig-Yar, Sangheili. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 3f · Doisac
 - **Era:** Covenant War · **When/where:** 2492, Doisac · **Source:** Halopedia: Jiralhanae
@@ -256,7 +256,7 @@ High Charity is built (851–791 BCE).
 - **Story:** Dr. Catherine Halsey's SPARTAN-II program. In 2517, 75 children are taken to Reach and trained under Chief Petty Officer Franklin Mendez (told gently). They grow up to wear MJOLNIR armor.
 - **Play:** A training course that teaches the controls.
 - **Enemies:** training drills. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 3h · Contact Harvest
 - **Era:** Covenant War · **When/where:** 2525, Harvest · **Source:** *Halo: Contact Harvest*
@@ -271,7 +271,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Sgt. John Forge · P2 a Marine
 - **Story:** The *Spirit of Fire* fights the Covenant on Harvest.
 - **Enemies:** Covenant. **Vehicles:** Warthog, Scorpion. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 3j · The Shield World
 - **Era:** Covenant War · **When/where:** 2531, the shield world Trove · **Source:** *Halo Wars*
@@ -280,7 +280,7 @@ High Charity is built (851–791 BCE).
 - **Story:** Arbiter Ripa 'Moramee uses Professor Anders to wake a hidden Forerunner fleet. Forge kills the Arbiter with an energy sword. The crew moves the *Spirit of Fire*'s FTL drive into the shield world to detonate it, sending the sun supernova and destroying the fleet. Forge stays behind to set it off (told gently); the ship escapes and drifts, its crew in cryo sleep.
 - **Sacrifice:** Forge gives his life for the crew.
 - **Enemies:** Covenant, Flood. **Boss:** Ripa 'Moramee.
-- **Status:** planned
+- **Status:** done
 
 ### 3k · Rise of Atriox
 - **Era:** Banished (era color) · **When/where:** 2549, Algolis · **Source:** *Halo Wars 2* backstory; Halopedia: Atriox
@@ -289,7 +289,7 @@ High Charity is built (851–791 BCE).
 - **Story:** The Covenant sends Atriox's packs on suicide missions; he survives them all and becomes a legend. In 2549, on Algolis, the Sangheili officer Itho 'Hesiikee is sent to execute him. Atriox catches the energy sword and defeats him; Decimus and the other Jiralhanae join him. The Banished are born.
 - **Sacrifice:** The Banished give up the Covenant's protection to be free.
 - **Enemies:** Sangheili. **Vehicles:** Chopper. **Boss:** Itho 'Hesiikee.
-- **Status:** planned
+- **Status:** done
 
 ### 3l · Winter Contingency
 - **Era:** Covenant War · **When/where:** 2552, Reach · **Source:** *Halo: Reach*

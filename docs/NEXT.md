@@ -35,8 +35,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
    Noble Team, Johnson, Forge, Red Team, Atriox, Decimus, Itho 'Hesiikee, Maccabeus,
    Choppers; themes for Janjur Qom (2100 BCE), Ulgethon, Rentus, High Charity,
    Doisac, Reach, Harvest, Trove, Algolis.
-   - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [x] 3a - [ ] 3b - [x] 3c - [x] 3d - [ ] 3e - [x] 3f - [ ] 3g
-   - [ ] 3h - [ ] 3i - [ ] 3j - [ ] 3k - [ ] 3l - [ ] 3m
+   - [x] content (brute rig, 15 characters, 16 units, weapons, Chopper, Scorpion, 11 themes, 3 tracks)  - [x] 3a - [ ] 3b - [x] 3c - [x] 3d - [x] 3e - [x] 3f - [x] 3g
+   - [ ] 3h - [x] 3i - [x] 3j - [x] 3k - [ ] 3l - [ ] 3m
    Status: all 13 written and committed (validator passes). A box is ticked once the
    bot finishes the level (`node tests/smoke.mjs --level <id> --finish`) and its
    CAMPAIGN.md status is set to done. Map generator for standard
