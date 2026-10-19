@@ -23,7 +23,11 @@ const ERA_LIST = ['forerunner', 'covenant', 'created', 'banished'];
 export function anyDevice(controls) {
   for (const d of ['kb1', 'kb2', 'pad0', 'pad1', 'pad2', 'pad3']) {
     const s = controls.read(d);
-    if (s.pressed.jump || s.pressed.fire || s.pressed.pause || controls.anyButton(d)) return { device: d, s };
+    // anyButton tracks which buttons were down last frame, so it must run every frame:
+    // skipped on the frame a press is caught, it would report the same press again on
+    // the next one (one press confirming twice).
+    const button = controls.anyButton(d);
+    if (s.pressed.jump || s.pressed.fire || s.pressed.pause || button) return { device: d, s };
     if (s.pressed.up || s.pressed.down || s.pressed.left || s.pressed.right) return { device: d, s, nav: true };
   }
   return null;
