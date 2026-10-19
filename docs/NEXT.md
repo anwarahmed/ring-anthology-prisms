@@ -90,6 +90,29 @@ Tick boxes and commit after each step. Everything ticked is committed.
     the user's request ("let's go back to before the larger sprites and zoom changes").
     Don't zoom the camera or enlarge sprites without new mock-ups the user approves.
 
+11. **Scripted Archive scenes (user, 2026-10-19: option B, "a scene written for every
+    card"; work may span several quota resets).** Every Archive card (113 before, 114
+    after) and every prologue/epilogue beat (6 + 5) gets its own staged animation that
+    acts out what the card says, instead of heroes walking across.
+    Working notes:
+    - A card's scene is `scene: '...'`, a short script (see "Scene scripts" in
+      docs/ENGINE.md once written). Cards without one keep the old motifs.
+    - Canon only: stage what the card states; kid-friendly (defeats are light puffs,
+      deaths never shown). Characters and units come from src/content.
+    - Per part: write the scenes, run `node scripts/archive-sheet.mjs <ids>` (one frame
+      per card at the end of its scene) and fix what reads wrong, commit, push, tick.
+   - [ ] Scene engine: script parser + actions in src/engine/vignette.js; one sample card
+     (5a "The Firing"); docs; archive-sheet script
+   - [ ] Part I scenes (1a-1f)
+   - [ ] Part II scenes (2a-2f)
+   - [ ] Part III scenes (3a-3m)
+   - [ ] Part IV scenes (4a-4f)
+   - [ ] Part V scenes (5a-5h)
+   - [ ] Part VI scenes (6a-6g)
+   - [ ] Part VII scenes (7a-7g)
+   - [ ] Prologue and epilogue beats (src/content/saga.js)
+   - [ ] Final review: every card's sheet checked; npm test + smoke checks
+
 ## Published
 
 - Repo: https://github.com/anwarahmed/ring-anthology-prisms (public). Play:
