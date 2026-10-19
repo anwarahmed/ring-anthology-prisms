@@ -1,7 +1,7 @@
 // Painted 16-bit art for the title and menu screens: nebula sky, a ring megastructure,
 // a planet horizon, the prism, and gradient logo lettering. Generated once, cached.
 
-import { VIEW, ERAS } from './config.js';
+import { VIEW, ERAS, HD } from './config.js';
 import { hexRgb, render, material } from './raster.js';
 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => v / 16);
@@ -71,51 +71,92 @@ export function spaceSky(scene) {
 
 // A ring megastructure seen at an angle: the far half shows its inner landscape, the
 // near half its metal hull. Two textures so things can sit between the halves.
-export function ringHalves(scene, R = 230, k = 0.2, band = 0.075, name = 'title-ring') {
-  const W = R * 2 + 8, H = Math.ceil(R * k * 2 + 30), cx = W / 2, cy = H / 2;
-  const land = [hexRgb('#2a9a6a'), hexRgb('#3fc07a'), hexRgb('#2a6fc8'), hexRgb('#c8b070')];
-  const hull = hexRgb('#8a9ab8'), hullDark = hexRgb('#3a4466'), edge = hexRgb('#e8f4ff');
-  const paint = (front) => (d, w, h) => {
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const u = (x - cx) / R, v = (y - cy) / (R * k);
-        const r = Math.hypot(u, v);
-        // The band thickens smoothly toward the near side (we see more of its wall), so
-        // the far and near halves meet without a step at the ends.
-        const inner = 1 - band * (1 + 0.6 * Math.max(0, v));
-        if (r > 1 || r < inner || (v >= 0) !== front) continue;
-        const th = Math.atan2(v, u);
-        const radial = (r - inner) / (1 - inner);
+// A Halo ring seen from off the ring, drawn in 3D: not a flat disc but a thin ribbon
+// (a Bishop-ring band) whose width runs along the ring's axis. Canon proportions:
+// 10,000 km across, 318 km wide, a 22.3 km deep hull. The far half shows the concave
+// inner habitat (land, sea, cloud) lit across its width; the near half shows the flat
+// metal outer hull with panel seams; bright lines mark the atmosphere walls on both
+// edges. R is the radius in world pixels; k is how open the ring looks (the ratio of
+// its apparent height to its width). Drawn at HD resolution: show the halves at
+// scale 1 / HD. `back` goes behind whatever sits inside the ring, `front` in front.
+export function ringHalves(scene, R = 230, k = 0.2, _band, name = 'title-ring') {
+  const S = HD;
+  const Rp = R * S;
+  const wp = Math.max(3 * S, R * 2 * (318 / 10000) * S);
+  const hullDepth = Math.max(1, R * 2 * (22.3 / 10000) * S);
+  const sinA = Math.sqrt(1 - k * k);
+  const W = Math.ceil(Rp * 2 + 16), H = Math.ceil((Rp * k + wp) * 2 + 16), cx = W / 2, cy = H / 2;
+  // A point on the ribbon at angle t around the ring, s across its width (-0.5..0.5).
+  const P = (t, s) => [cx + Rp * Math.cos(t), cy + Rp * Math.sin(t) * k - s * wp * sinA];
+  const land = [hexRgb('#2f7a4e'), hexRgb('#4a9a5a'), hexRgb('#2a5f9a'), hexRgb('#a8946a'), hexRgb('#6a8a4a')];
+  const hull = hexRgb('#8a93a3'), hullDark = hexRgb('#2e3440'), wall = hexRgb('#eaf4ff'), haze = hexRgb('#9ec8f0');
+  const css = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  const N = 900;
+  const draw = (far) => (ctx) => {
+    for (let i = 0; i < N; i++) {
+      const t0 = (i / N) * Math.PI * 2, t1 = ((i + 1) / N) * Math.PI * 2, tm = (t0 + t1) / 2;
+      if ((Math.sin(tm) < 0) !== far) continue;
+      const lit = 0.55 + 0.45 * Math.cos(tm + 2.3);
+      const strips = far ? 4 : 1;
+      for (let j = 0; j < strips; j++) {
+        const s0 = -0.5 + j / strips, s1 = -0.5 + (j + 1) / strips;
         let c;
-        // Near the ends of the ring both surfaces show, so they blend into each other.
-        const side = Math.max(0, 1 - Math.abs(v) / 0.35);
-        if (!front) {
-          const n = fbm(th * 18, radial * 3, 11);
-          c = n < 0.42 ? land[2] : n < 0.55 ? land[0] : n < 0.7 ? land[1] : land[3];
-          if (fbm(th * 30 + 5, radial * 4, 21) > 0.68) c = [240, 248, 255];
-          c = mix(c, [10, 10, 40], 0.25 + 0.35 * Math.abs(Math.cos(th)));
+        if (far) {
+          // Inner habitat: continents and seas along the ring, cloud streaks, haze
+          // toward the walls, and darker toward the shadowed side.
+          const n = fbm(tm * 22, j * 0.9, 11);
+          c = n < 0.4 ? land[2] : n < 0.52 ? land[0] : n < 0.64 ? land[1] : n < 0.74 ? land[4] : land[3];
+          if (fbm(tm * 40 + 7, j * 1.3, 21) > 0.66) c = mix(c, [236, 242, 248], 0.75);
+          if (j === 0 || j === strips - 1) c = mix(c, haze, 0.35);
+          c = mix([8, 12, 28], c, 0.35 + 0.65 * lit);
         } else {
-          const lit = 0.5 - 0.5 * Math.cos(th) * 0.8;
+          // Outer hull: flat metal plating with seams.
           c = mix(hullDark, hull, lit);
-          if (Math.floor(th * 60) % 4 === 0) c = mix(c, hullDark, 0.4);
-          if (radial < 0.5 && hash(Math.floor(th * 120), 3, 7) > 0.93) c = [120, 230, 255];
+          if (i % 9 === 0) c = mix(c, hullDark, 0.5);
         }
-        {
-          const lit = 0.5 - 0.5 * Math.cos(th) * 0.8;
-          const hullC = mix(hullDark, hull, lit);
-          const n = fbm(th * 18, radial * 3, 11);
-          const landC = mix(n < 0.42 ? land[2] : n < 0.55 ? land[0] : n < 0.7 ? land[1] : land[3], [10, 10, 40], 0.25 + 0.35 * Math.abs(Math.cos(th)));
-          if (side > 0) c = mix(c, front ? landC : hullC, side * 0.5);
-        }
-        if (radial > 0.86 || radial < 0.1) c = mix(c, edge, 0.55 * (dither(x, y) < 0.6 ? 1 : 0.5));
-        d.set([...c, 255], (y * w + x) * 4);
+        const a = P(t0, s0), b = P(t1, s0), d = P(t1, s1), e = P(t0, s1);
+        ctx.fillStyle = css(c);
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(d[0], d[1]); ctx.lineTo(e[0], e[1]);
+        ctx.closePath();
+        ctx.fill();
+        // Overdraw a hair so neighboring quads leave no seams.
+        ctx.strokeStyle = css(c);
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
       }
     }
+    // The atmosphere walls along both edges, and on the near half the hull's depth.
+    const edge = (s, color, width, alpha) => {
+      ctx.strokeStyle = css(color, alpha);
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      let started = false;
+      for (let i = 0; i <= N; i++) {
+        const t = (i / N) * Math.PI * 2;
+        if ((Math.sin(t) < 0) !== far) { started = false; continue; }
+        const [x, y] = P(t, s);
+        if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    };
+    if (far) {
+      edge(-0.5, haze, 3 * S, 0.25);
+      edge(0.5, haze, 3 * S, 0.25);
+    }
+    edge(-0.5, wall, 0.9 * S, far ? 0.9 : 0.6);
+    edge(0.5, wall, 0.9 * S, far ? 0.9 : 0.6);
+    if (!far) edge(-0.5, hullDark, hullDepth, 0.9);
   };
-  return {
-    back: canvasKey(scene, `${name}-back`, W, H, paint(false)),
-    front: canvasKey(scene, `${name}-front`, W, H, paint(true)),
+  const make = (key, far) => {
+    if (!scene.textures.exists(key)) {
+      const tex = scene.textures.createCanvas(key, W, H);
+      draw(far)(tex.getContext());
+      tex.refresh();
+    }
+    return key;
   };
+  return { back: make(`${name}-back`, true), front: make(`${name}-front`, false), scale: 1 / S };
 }
 
 // The top of a planet filling the bottom of the screen, with clouds and a bright limb.

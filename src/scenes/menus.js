@@ -66,10 +66,10 @@ export class TitleScene extends Phaser.Scene {
     gradeCamera(this.cameras.main, this);
     const ring = ringHalves(this);
     const rc = { x: VIEW.w / 2, y: 132 };
-    const back = this.add.image(rc.x, rc.y, ring.back);
+    const back = this.add.image(rc.x, rc.y, ring.back).setScale(ring.scale);
     this.add.image(0, VIEW.h - 90, planetHorizon(this)).setOrigin(0);
     this.add.image(VIEW.w / 2, VIEW.h - 74, 'glow').setTint(0x45e6ff).setBlendMode('ADD').setScale(18, 1.2).setAlpha(0.35);
-    const front = this.add.image(rc.x, rc.y, ring.front);
+    const front = this.add.image(rc.x, rc.y, ring.front).setScale(ring.scale);
     this.tweens.add({ targets: [back, front], rotation: 0.035, duration: 7000, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
 
     // Prism and beams.

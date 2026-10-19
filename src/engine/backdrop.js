@@ -121,7 +121,7 @@ export function buildBackdrop(scene, theme, worldW) {
         // A painted ring (landscape inside, hull outside). Only where canon puts one.
         const ring = ringHalves(scene, L.r, L.k ?? 0.22, L.band ?? 0.08, `ring-${L.r}-${L.k ?? 0.22}`);
         for (const key of [ring.back, ring.front]) {
-          scene.add.image(L.x * VIEW.w, L.y * VIEW.h, key).setScrollFactor(L.scroll ?? 0.02).setDepth(depth).setRotation(L.rot ?? 0);
+          scene.add.image(L.x * VIEW.w, L.y * VIEW.h, key).setScale(ring.scale).setScrollFactor(L.scroll ?? 0.02).setDepth(depth).setRotation(L.rot ?? 0);
         }
         if (L.glow) {
           const g = scene.add.image(L.x * VIEW.w, L.y * VIEW.h, 'glow').setTint(hexNum(L.glow)).setBlendMode('ADD')
