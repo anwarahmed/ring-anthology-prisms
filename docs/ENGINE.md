@@ -118,6 +118,15 @@ screen.
 
 Use hooks for set pieces only. Anything two levels need belongs in the engine.
 
+## Art generation (no mid-level freezes)
+
+Character, arm, gun and vehicle art is generated at HD the first time it's needed,
+which takes a noticeable moment. `src/engine/prewarm.js` lists everything a level can
+show (script, legend, holds, bosses and their summons, pilots, units named in hooks,
+weapons players can pick up) and makes it ahead of time: one piece per frame while the
+Archive cards are read, the rest when the level loads. A unit spawned only from a hook
+must be named there in quotes so it's found.
+
 ## Firefight
 
 `src/engine/firefight.js` (pure, unit-tested) builds a Firefight from any level: its
