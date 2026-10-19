@@ -66,6 +66,19 @@ Tick boxes and commit after each step. Everything ticked is committed.
      starting with an apostrophe, allies left behind or shut out of arenas (the 4f
      Scarab never followed)
 
+9. **Next round (user, 2026-10-19: "let's do those" + animations, prologue, epilogue).**
+   The user will playtest later; the 30-minute quota check-in resumes from here.
+   - [ ] Halo Infinite OST (zip in the private repo's sources/): clips for the Zeta
+     Halo levels (7c–7g), music plan + manifest, commit+push PRIVATE repo only
+   - [ ] Two-player + difficulty pass: bot-finish levels with 2 players on Easy and
+     Normal (no god mode); fix stuck spots, far checkpoints, P2 off screen
+   - [ ] Leftovers: 3m glowing decoration; bot leaves a stuck vehicle sooner
+   - [ ] Level intro/outro animations that match the Archive cards (before/after)
+   - [ ] Prologue (before Part I) and grand animated epilogue after the last level;
+     canon-only text (lore-check), kid-friendly
+   - [ ] Extras: medals and best times on the level select; Skulls menu (fun
+     modifiers); more Firefight maps
+
 ## Published
 
 - Repo: https://github.com/anwarahmed/ring-anthology-prisms (public). Play:
