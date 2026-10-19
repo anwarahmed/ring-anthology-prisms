@@ -50,10 +50,10 @@ Tick boxes and commit after each step. Everything ticked is committed.
    (created, PRIVATE) holds game-ready clips + manifest.json; `npm run soundtrack`
    clones it into public/home-soundtrack/private/ (gitignored, stripped from builds,
    blocked by the Pages workflow). The game plays manifest entries per level/era/track,
-   with calm/combat/boss files following intensity (src/engine/audio.js). NEXT: the
-   user supplies the soundtrack audio files (into private/sources/, gitignored); make
-   clips with tools/analyze.sh + tools/prepare.sh, fill manifest.json (Halo 3 suites
-   for Part V levels, the rest by mood), commit and push in the PRIVATE repo only.
+   with calm/combat/boss files following intensity (src/engine/audio.js). [x] DONE
+   2026-10-18: every level and the menus have home music, built by the private repo's
+   tools/build.mjs from its music plan (tools/soundtrack.txt); verified playing in the
+   browser, including intensity switches.
    `music-sources/` (sheet references) is no longer needed.
 
 ## Published
