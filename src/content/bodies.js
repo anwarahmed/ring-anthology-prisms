@@ -35,6 +35,10 @@ function legShapes(hip, [t, k], L, near, m, detail = null) {
     out.push({ t: 'cap', a: along(hip, knee, 0.3), b: along(hip, knee, 0.62), r1: 0.22, r2: 0.22, m: 'seam', z: z + 0.35, noSep: true });
     out.push({ t: 'cap', a: along(knee, ankle, 0.35), b: along(knee, ankle, 0.75), r1: 0.22, r2: 0.22, m: 'seam', z: z + 0.35, noSep: true });
     out.push({ t: 'cap', a: add(ankle, [-1.6, 2.8]), b: add(ankle, [4.8, 2.8]), r1: 0.55, r2: 0.55, m: 'seam', z: z + 0.32, noSep: true });
+  } else if (detail === 'forerunner') {
+    // Angled thigh and shin plates with a glowing seam between them.
+    out.push({ t: 'poly', pts: [along(hip, knee, 0.15), add(along(hip, knee, 0.15), [L.thighR * 1.1, 0.5]), add(along(hip, knee, 0.8), [L.thighR * 0.9, 0]), along(hip, knee, 0.85)], m: `${m}${f}`, z: z + 0.25, bevel: 1 });
+    out.push({ t: 'cap', a: add(along(knee, ankle, 0.15), [L.shinR * 0.6, 0]), b: add(along(knee, ankle, 0.7), [L.shinR * 0.5, 0]), r1: 0.3, r2: 0.3, m: 'glow', z: z + 0.36, noSep: true });
   } else if (detail === 'soldier') {
     // Kneepad, boot laces, sole.
     out.push({ t: 'ell', c: add(knee, [1.2, 0]), rx: L.shinR * 0.8, ry: L.shinR, m: near ? 'trim' : 'trimFar', z: z + 0.35 });
@@ -170,14 +174,19 @@ function forerunner(f, def) {
   const neck = add(hip, up(17.5 - p.breathe * 0.5));
   const headC = add(neck, [1.5, -4]);
   const shapes = [];
-  shapes.push(...legShapes([hip[0] - 1, hip[1]], p.back, L, false, 'armor').shapes);
+  shapes.push(...legShapes([hip[0] - 1, hip[1]], p.back, L, false, 'armor', 'forerunner').shapes);
   shapes.push({ t: 'cap', a: hip, b: chestC, r1: 4.2, r2: 4.8, m: 'dark', z: 2 });
   shapes.push({ t: 'poly', pts: [add(chestC, [-7, -7.5]), add(chestC, [8, -6.5]), add(chestC, [6.5, 4]), add(chestC, [0, 8]), add(chestC, [-7, 4])], m: 'armor', z: 3, bevel: 2.2, tilt: [0.1, -0.15] });
   shapes.push({ t: 'poly', pts: [add(chestC, [-4, 6]), add(chestC, [4, 6]), add(chestC, [3, 11]), add(chestC, [-3, 11])], m: 'trim', z: 3.1, bevel: 1.2 });
   shapes.push({ t: 'cap', a: add(chestC, [0.5, 6]), b: add(chestC, [1.5, -5]), r1: 0.6, r2: 0.6, m: 'glow', z: 3.5, noSep: true });
+  // Layered upper plate and thin glowing circuit lines.
+  shapes.push({ t: 'poly', pts: [add(chestC, [-5, -7]), add(chestC, [7, -6]), add(chestC, [6, -1.5]), add(chestC, [-4, -2.5])], m: 'armor', z: 3.3, bevel: 1.4, tilt: [0.15, -0.2] });
+  shapes.push({ t: 'cap', a: add(chestC, [-4, -2]), b: add(chestC, [6, -1]), r1: 0.3, r2: 0.3, m: 'glow', z: 3.45, noSep: true });
+  shapes.push({ t: 'cap', a: add(chestC, [-5, 1.5]), b: add(chestC, [-1.5, 4.5]), r1: 0.28, r2: 0.28, m: 'glow', z: 3.45, noSep: true });
+  shapes.push({ t: 'cap', a: add(chestC, [4, 1]), b: add(chestC, [2.5, 4.5]), r1: 0.28, r2: 0.28, m: 'glow', z: 3.45, noSep: true });
   shapes.push({ t: 'poly', pts: [add(chestC, [-6, -7]), add(chestC, [-9.5, -8]), add(chestC, [-9, -3]), add(chestC, [-6, -2])], m: 'trim', z: 2.8, bevel: 1.2 });
   shapes.push({ t: 'poly', pts: [[hip[0] - 4, hip[1] - 2.5], [hip[0] + 4.5, hip[1] - 2.5], [hip[0] + 3.5, hip[1] + 3], [hip[0] - 3.5, hip[1] + 3]], m: 'trim', z: 3.6, bevel: 1.2 });
-  shapes.push(...legShapes(hip, p.front, L, true, 'armor').shapes);
+  shapes.push(...legShapes(hip, p.front, L, true, 'armor', 'forerunner').shapes);
   shapes.push({ t: 'cap', a: add(neck, [0, 2]), b: neck, r1: 2.6, r2: 2.4, m: 'dark', z: 4 });
   // Swept-back crested helm with an eye slit.
   shapes.push({ t: 'poly', pts: [add(headC, [4.5, -1]), add(headC, [3.5, -4]), add(headC, [-3, -5]), add(headC, [-11, -7.5]), add(headC, [-5, -1.5]), add(headC, [-3, 3.5]), add(headC, [3.5, 3.2])], m: 'armor', z: 7, bevel: 1.8, tilt: [0.1, -0.2] });
