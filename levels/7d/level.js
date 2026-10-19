@@ -22,6 +22,7 @@ export default {
         title: 'The Conservatory', when: '2560', where: 'Zeta Halo',
         text: 'Master Chief made for the Conservatory, a Forerunner installation on Zeta Halo.',
         source: 'Halo Infinite',
+        scene: 'M=master-chief@0.14; M>0.5; beam 0.82 #9ff4ff',
       },
     ],
     after: [
@@ -29,6 +30,7 @@ export default {
         title: 'The Harbinger', when: '2560',
         text: 'The Harbinger, the last of the Endless on the ring, was searching for a way to set her people free.',
         source: 'Halopedia: Harbinger; Endless',
+        scene: 'M=master-chief@0.2; H=harbinger@0.66<; H glow #9ff4ff; H talk',
       },
     ],
   },

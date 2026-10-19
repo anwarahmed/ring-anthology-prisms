@@ -23,16 +23,19 @@ export default {
         title: 'The Endless',
         text: 'Long ago, the Forerunners imprisoned a race called the Endless on Zeta Halo.',
         source: 'Halo Infinite; Halopedia: Endless',
+        scene: 'bg space; ring 0.66 0.36; H=harbinger@0.36; H seal',
       },
       {
         title: 'Zeta Halo', when: '2559',
         text: 'In 2559, the Banished attacked the UNSC Infinity at Zeta Halo, and the ring was badly damaged. Master Chief was lost in space.',
         source: 'Halopedia: Zeta Halo; Halo Infinite',
+        scene: 'bg space; ring 0.64 0.4; I=ship:unsc-big@0.3,0.52; fleet banished 4; boom 0.3 0.52 big & boom 0.64 0.4 big; flash',
       },
       {
         title: 'Found', when: 'May 2560',
         text: 'Six months later, a pilot found Master Chief drifting in space.',
         source: 'Halo Infinite',
+        scene: 'bg space; M=master-chief@0.62,0.5; P=ship:unsc@-0.1,0.3; P>0.5,0.42',
       },
     ],
     after: [
@@ -40,11 +43,13 @@ export default {
         title: 'The Weapon', when: 'May 2560',
         text: 'Aboard the Banished warship, Master Chief found the Weapon: an AI built to stop Cortana.',
         source: 'Halopedia: The Weapon',
+        scene: 'M=master-chief@0.35; beam 0.62 #9ad8ff; M glow #9ad8ff; M talk',
       },
       {
         title: 'Cortana',
         text: 'Cortana was gone.',
         source: 'Halo Infinite',
+        scene: 'M=master-chief@0.45; beam 0.62 #7ad8ff & dark; M kneel',
       },
     ],
   },

@@ -21,11 +21,13 @@ export default {
         title: 'Escharum', when: '2560', where: 'House of Reckoning',
         text: 'War Chief Escharum led the Banished on Zeta Halo. Old and proud, he wanted one last great battle against Master Chief.',
         source: 'Halopedia: Escharum',
+        scene: 'M=master-chief@0.25; E=escharum@0.7<; E talk; M face >',
       },
       {
         title: 'The Blademaster',
         text: 'First, the Banished Blademaster Jega \'Rdomnai stood in the way.',
         source: 'Halopedia: Jega \'Rdomnai',
+        scene: 'M=master-chief@0.25; J=jega-rdomnai@0.62<; J hide; J show; J fire M; M fire J; J down',
       },
     ],
     after: [
@@ -33,11 +35,13 @@ export default {
         title: 'A Legend', when: '2560',
         text: 'Escharum fell with honor. He had given his life for the legend of the Banished.',
         source: 'Halopedia: Escharum',
+        scene: 'M=master-chief@0.3; E=escharum@0.66<; M fire E; E kneel; E glow #ffd27a',
       },
       {
         title: 'The Price',
         text: 'Escharum gave his life for the Banished\'s legend.',
         source: 'Halopedia: Escharum',
+        scene: 'E=escharum@0.5; E kneel; beam 0.5 #ffd27a',
       },
     ],
   },

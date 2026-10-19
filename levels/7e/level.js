@@ -22,6 +22,7 @@ export default {
         title: 'The Spire', when: '2560', where: 'Zeta Halo',
         text: 'The Banished held a giant Forerunner spire on Zeta Halo. Master Chief went to take it.',
         source: 'Halo Infinite',
+        scene: 'beam 0.74 #ff6a3a; B=banished-brute@0.62< & G=banished-grunt@0.72<; M=master-chief@0.14; M fire B; B down; G kneel',
       },
     ],
     after: [
@@ -29,6 +30,7 @@ export default {
         title: 'Pelican Down', when: '2560',
         text: 'Soon after, the Pilot\'s Pelican was shot down, and two Banished hunters called the Spartan Killers, Hyperius and Tovarus, came for Master Chief. He defeated them both.',
         source: 'Halopedia: Pelican Down; Hyperius; Tovarus',
+        scene: 'P=ship:unsc@0.3,0.24; boom 0.3 0.24 big & P down; M=master-chief@0.4; H=banished-elite@0.76< & T=banished-brute@0.88<; H fire M; M fire H; H down; M fire T; T down',
       },
     ],
   },

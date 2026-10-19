@@ -23,11 +23,13 @@ export default {
         title: 'Stranded', when: 'c. 97,450 BCE', where: 'Installation 07',
         text: 'Chakas, a young human, was stranded on Installation 07. He set out to find his small friend Riser.',
         source: 'Halo: Primordium; Halopedia: Chakas',
+        scene: 'C=chakas@0.14; C>0.46; C talk',
       },
       {
         title: 'The Pull',
         text: 'The Primordial now controlled the ring. It drew the humans living there toward the places where the Flood was kept.',
         source: 'Halopedia: Primordial',
+        scene: 'C=chakas@0.28 & R=riser@0.38; flood 0.82; C>0.54 & R>0.62',
       },
     ],
     after: [
@@ -35,11 +37,13 @@ export default {
         title: 'The Secret',
         text: 'The Primordial told its secret: long ago the Forerunners had defeated the Precursors, who turned themselves into a dust that could rise again. That dust became the Flood.',
         source: 'Halopedia: Primordial; Precursor',
+        scene: 'P=proto-gravemind@0.74<; C=chakas@0.2 & R=riser@0.3; P talk; planet 0.42 0.24 0.06 #8a6ab0; flood 0.42',
       },
       {
         title: 'The Gravemind',
         text: 'The Primordial\'s body was destroyed, but its mind lived on in the Gravemind.',
         source: 'Halopedia: Primordial',
+        scene: 'P=proto-gravemind@0.7<; boom 0.7 0.6 big; P down; flood 0.7; dark',
       },
     ],
   },

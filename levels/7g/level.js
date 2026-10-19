@@ -21,6 +21,7 @@ export default {
         title: 'The Silent Auditorium', when: '2560', where: 'Silent Auditorium',
         text: 'Deep inside Zeta Halo, the Harbinger tried to free the Endless.',
         source: 'Halo Infinite; Halopedia: Harbinger',
+        scene: 'M=master-chief@0.14; H=harbinger@0.62<; H glow #9ff4ff; beam 0.62 #9ff4ff; M>0.34',
       },
     ],
     after: [
@@ -28,16 +29,19 @@ export default {
         title: 'Stopped', when: '2560', where: 'Zeta Halo',
         text: 'Master Chief stopped the Harbinger before she could free the Endless.',
         source: 'Halo Infinite; Halopedia: Harbinger',
+        scene: 'S=spartan-iv@0.2 & M=master-chief@0.3; H=harbinger@0.66<; M fire H; flash #9ff4ff; H down',
       },
       {
         title: 'For Now',
         text: 'This is where Halo Infinite\'s story ends, and where this Archive ends: from the Forerunners to Zeta Halo, the whole timeline.',
         source: 'Halo Infinite',
+        scene: 'bg space; ring 0.5 0.42; ship forerunner -0.2>0.22 0.16 & ship covenant 1.2>0.8 0.2 & ship unsc -0.2>0.2 0.7 & ship banished 1.2>0.82 0.74',
       },
       {
         title: 'The Archive Is Complete',
         text: 'Every era you played is now in the Archive. Thank you for remembering it all.',
         source: 'Ring Anthology: Prisms',
+        scene: 'I=isodidact@0.16 & F=forthencho@0.3 & T=arbiter@0.44 & M=master-chief@0.58 & L=locke@0.72; I face > & F face > & T face > & L face <; M glow #ffd27a',
       },
     ],
   },

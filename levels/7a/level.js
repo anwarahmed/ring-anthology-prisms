@@ -21,11 +21,13 @@ export default {
         title: 'The First Test', when: 'c. 97,495 BCE', where: 'Installation 07',
         text: 'The Forerunner AI Mendicant Bias was given the first test of a Halo: Installation 07, a ring that would one day be called Zeta Halo.',
         source: 'Halopedia: Installation 07; Mendicant Bias',
+        scene: 'bg space; ring 0.6 0.42; S=sentinel@0.18,0.34 & T=sentinel@0.3,0.52; ringfire',
       },
       {
         title: 'The Prisoner',
         text: 'The test released an ancient prisoner, the Primordial. It was really a Gravemind, left behind by the Precursors.',
         source: 'Halopedia: Primordial',
+        scene: 'W=forerunner-warrior@0.2; P=proto-gravemind@0.72<; flash #b8e04a; flood 0.72; W face >',
       },
     ],
     after: [
@@ -33,11 +35,13 @@ export default {
         title: 'Bias Turns',
         text: 'Mendicant Bias was told to question the Primordial. Instead, the Primordial\'s words turned Bias against the Forerunners.',
         source: 'Halopedia: Mendicant Bias',
+        scene: 'P=proto-gravemind@0.74<; S=sentinel@0.4,0.4; S talk; P talk; S glow #ff4a3a; S face <',
       },
       {
         title: 'The Capital',
         text: 'About 43 years later, Bias attacked the Forerunner Capital. The IsoDidact stunned it with a control code, and Bias was finally shut down with a failsafe code.',
         source: 'Halopedia: Installation 07; Mendicant Bias',
+        scene: 'bg space; planet 0.28 0.56 0.15 #c8d0e0; S=ship:forerunner-big@1.1,0.3<; S>0.62,0.34; S fire 0.3,0.55; flash #9ff4ff; S down',
       },
     ],
   },
