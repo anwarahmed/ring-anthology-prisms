@@ -8,11 +8,12 @@ import { CHARACTERS } from '../content/characters.js';
 import { UNITS } from '../content/units.js';
 import { BODIES } from '../content/bodies.js';
 import { THEMES } from '../content/themes.js';
-import { TILE, ERAS, DIFFICULTY, VIEW, GRAVITY, HD, WORLD_ZOOM } from '../engine/config.js';
+import { TILE, ERAS, DIFFICULTY, VIEW, GRAVITY } from '../engine/config.js';
 import { skulls } from '../engine/skulls.js';
 import { parseMap, groundBelow, TILES } from '../engine/mapparse.js';
 import { TILESET, COLLIDES, isSolid, isPlatform, isHazard } from '../engine/tileset.js';
 import { tilesTexture, baseTextures, hexNum, TILE_PX } from '../engine/textures.js';
+import { buildBackdrop } from '../engine/backdrop.js';
 import { firefightLevel } from '../engine/firefight.js';
 import { prewarm } from '../engine/prewarm.js';
 import { buildScenery } from '../engine/scenery.js';
@@ -63,10 +64,7 @@ export class LevelScene extends Phaser.Scene {
     this.worldW = W;
     this.worldH = H;
 
-    // The backdrop is its own scene under this one, with an unzoomed camera.
-    this.theme = theme;
-    this.scene.launch('Backdrop', { level: this });
-    this.events.once('shutdown', () => this.scene.stop('Backdrop'));
+    buildBackdrop(this, theme, W);
     this.buildTiles(theme);
     buildScenery(this, L.theme, theme, this.map);
 
@@ -104,9 +102,7 @@ export class LevelScene extends Phaser.Scene {
 
     // The camera glides after the middle of the living players (see updateCamera).
     this.focus = { x: spawn.x, y: spawn.y };
-    const cam = this.cameras.main.setZoom(HD * WORLD_ZOOM);
-    this.viewW = VIEW.w / WORLD_ZOOM;
-    this.viewH = VIEW.h / WORLD_ZOOM;
+    const cam = this.cameras.main;
     this.arena = null;
     this.updateCamera(0, true);
     cam.fadeIn(600);
@@ -254,13 +250,11 @@ export class LevelScene extends Phaser.Scene {
   // co-op shifts scroll continuously instead of snapping.
   updateCamera(dt, snap = false) {
     const cam = this.cameras.main;
-    const vw = this.viewW, vh = this.viewH;
+    const vw = VIEW.w, vh = VIEW.h;
     const lo = this.arena ? this.arena.x0 : 0;
     const hi = (this.arena ? this.arena.x1 : this.worldW) - vw;
     const tx = hi < lo ? (lo + hi) / 2 : Phaser.Math.Clamp(this.focus.x - vw / 2, lo, hi);
-    // The players' feet sit low in the frame: the view shows play space, not much
-    // solid ground below the floor.
-    const ty = Phaser.Math.Clamp(this.focus.y - vh * 0.66, 0, Math.max(0, this.worldH - vh));
+    const ty = Phaser.Math.Clamp(this.focus.y - vh * 0.58, 0, Math.max(0, this.worldH - vh));
     if (snap) {
       cam.setScroll(tx, ty);
       return;
@@ -282,7 +276,7 @@ export class LevelScene extends Phaser.Scene {
       const o = p.vehicle ?? p;
       if (!p.vehicle && p.y > this.worldH + 40) p.hurt(9999, 'explosive');
       const half = o.body.width / 2 + 3;
-      const vLo = cam.scrollX + half, vHi = cam.scrollX + this.viewW - half;
+      const vLo = cam.scrollX + half, vHi = cam.scrollX + VIEW.w - half;
       if (o.x < vLo || o.x > vHi) {
         o.x = Phaser.Math.Clamp(o.x, vLo, vHi);
         o.body.velocity.x = 0;
@@ -524,7 +518,7 @@ export class LevelScene extends Phaser.Scene {
   api() {
     return {
       scene: this, players: this.players, units: this.units, fx: this.fx, hud: this.hud, audio,
-      tile: TILE, view: { w: this.viewW, h: this.viewH }, marker: (k) => this.map.markers[k],
+      tile: TILE, view: VIEW, marker: (k) => this.map.markers[k],
       spawn: (list, ally) => this.spawnGroup(list, ally),
       // An explosion that hurts enemies only (orbital strikes, collapses on the enemy).
       explode: (x, y, radius = 40, damage = 50) => explode(this, x, y, radius, damage, 'players', null),

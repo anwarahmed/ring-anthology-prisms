@@ -309,7 +309,7 @@ await run('vehicle', '?level=1a&god=1', async (page) => {
   const r = await page.evaluate(() => ({ moved: window.__v.x, grunt: window.__g.alive, inside: !!window.__game.scene.getScene('Level').players[0].vehicle }));
   if (!r.inside) throw new Error('thrown out of the Warthog while driving');
   if (r.moved - x0 < 80) throw new Error(`Warthog did not drive: ${x0} -> ${r.moved}`);
-  if (r.grunt) throw new Error(`driving into the Grunt did not run it over: ${JSON.stringify(await page.evaluate(() => ({ v: [window.__v.x, window.__v.y], g: [window.__g.x, window.__g.y, window.__g.alive], cam: window.__game.scene.getScene('Level').cameras.main.worldView })))}`);
+  if (r.grunt) throw new Error('driving into the Grunt did not run it over');
   await page.screenshot({ path: join(shots, 'vehicle-driving.png') });
   await tap(page, 'r');
   const out = await page.evaluate(() => { const p = window.__game.scene.getScene('Level').players[0]; return !p.vehicle && p.visible && p.body.enable; });
@@ -341,10 +341,10 @@ await run('screen-edge', '?level=1d&god=1', async (page) => {
   const cull = await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level'), cam = L.cameras.main, s = L.layer.scaleX;
     const xs = L.layer.culledTiles.map((t) => t.pixelX * s);
-    return { scroll: cam.scrollX, view: cam.width / cam.zoom, min: Math.min(...xs), max: Math.max(...xs) + 16 };
+    return { scroll: cam.scrollX, min: Math.min(...xs), max: Math.max(...xs) + 16 };
   });
   if (cull.scroll < 8) throw new Error(`camera did not scroll: ${JSON.stringify(cull)}`);
-  if (cull.min > cull.scroll || cull.max < cull.scroll + cull.view) throw new Error(`tiles not drawn across the screen: ${JSON.stringify(cull)}`);
+  if (cull.min > cull.scroll || cull.max < cull.scroll + 480) throw new Error(`tiles not drawn across the screen: ${JSON.stringify(cull)}`);
   await page.keyboard.down('a');
   await gameWait(page, 2500);
   await page.keyboard.up('a');
