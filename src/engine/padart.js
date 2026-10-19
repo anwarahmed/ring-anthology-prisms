@@ -43,6 +43,34 @@ export function padBindingLabel(layout, binding) {
   return binding.a === layout.dpad.axes[0] || binding.a === layout.dpad.axes[1] ? `DPAD ${dir}` : null;
 }
 
+// The M30's outline: two round grips, a top edge that dips a little between them and a
+// scooped notch along the bottom. inset shrinks it (for the rim and the face).
+function bodyOutline(ox, oy, inset = 0) {
+  const r = 44 - inset;
+  const cy = oy + 56;
+  const lx = ox + 44;
+  const rx = ox + 136;
+  const pts = [];
+  const arc = (cx, a0, a1) => {
+    for (let k = 0; k <= 24; k++) {
+      const a = ((a0 + ((a1 - a0) * k) / 24) * Math.PI) / 180;
+      pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+    }
+  };
+  const curve = (p0, c, p1) => {
+    for (let k = 1; k < 16; k++) {
+      const t = k / 16;
+      pts.push({ x: (1 - t) ** 2 * p0.x + 2 * (1 - t) * t * c.x + t * t * p1.x, y: (1 - t) ** 2 * p0.y + 2 * (1 - t) * t * c.y + t * t * p1.y });
+    }
+  };
+  const at = (cx, deg) => ({ x: cx + r * Math.cos((deg * Math.PI) / 180), y: cy + r * Math.sin((deg * Math.PI) / 180) });
+  arc(lx, 60, 300);
+  curve(at(lx, 300), { x: ox + 90, y: cy - r + 8 }, at(rx, 240));
+  arc(rx, 240, 480);
+  curve(at(rx, 120), { x: ox + 90, y: cy + r * 0.45 }, at(lx, 60));
+  return pts;
+}
+
 // Draws the pad at (ox, oy). selected: bindings of the selected action (outlined);
 // pad: the live Phaser Gamepad (pressed buttons and directions light up).
 export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
@@ -62,12 +90,9 @@ export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
     g.fillStyle(pressed(n) ? HELD : k.fill, 1).fillRoundedRect(ox + k.x - k.w / 2, oy + k.y - 6, k.w, 14, 5);
     if (on(n)) g.lineStyle(2, SEL, 1).strokeRoundedRect(ox + k.x - k.w / 2 - 1, oy + k.y - 7, k.w + 2, 16, 6);
   }
-  g.fillStyle(L.shadow, 1).fillEllipse(ox + 44, oy + 59, 88, 90).fillEllipse(ox + 136, oy + 59, 88, 90)
-    .fillRoundedRect(ox + 44, oy + 16, 92, 88, 20);
-  g.fillStyle(L.edge, 1).fillEllipse(ox + 44, oy + 57, 88, 88).fillEllipse(ox + 136, oy + 57, 88, 88)
-    .fillRoundedRect(ox + 44, oy + 14, 92, 86, 20);
-  g.fillStyle(L.body, 1).fillEllipse(ox + 44, oy + 56, 84, 84).fillEllipse(ox + 136, oy + 56, 84, 84)
-    .fillRoundedRect(ox + 44, oy + 16, 92, 80, 18);
+  g.fillStyle(L.shadow, 1).fillPoints(bodyOutline(ox, oy + 3), true);
+  g.fillStyle(L.edge, 1).fillPoints(bodyOutline(ox, oy), true);
+  g.fillStyle(L.body, 1).fillPoints(bodyOutline(ox, oy - 0.5, 2), true);
   g.fillStyle(L.plate, 1).fillEllipse(ox + 138, oy + 48, 62, 54);
   g.lineStyle(1, L.edge, 0.8).strokeEllipse(ox + 138, oy + 48, 62, 54);
   g.fillStyle(L.dpadBase, 1).fillCircle(ox + 44, oy + 56, 24);
