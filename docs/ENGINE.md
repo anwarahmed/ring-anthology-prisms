@@ -255,7 +255,10 @@ character can override the kit when its technology differs from the era's.
 
 Every action can be rebound per keyboard layout or controller on the **Controls**
 screen (title menu and pause menu). Bindings are saved per controller name
-(`src/engine/input.js`). The defaults:
+(`src/engine/input.js`). A controller with a known layout (`src/engine/padart.js`,
+matched by its id: so far the 8BitDo M30 / Mega Drive Mini 6B, "6B controller") is drawn
+beside the list; bindings are named by its button labels, the selected action's
+buttons are outlined and pressed ones light up. The defaults:
 
 
 | | Move/aim | Jump | Fire | Ability | Grenade | Swap | Melee | Pause |

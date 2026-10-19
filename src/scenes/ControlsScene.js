@@ -1,7 +1,8 @@
 // Controls: rebind every action per keyboard layout or controller, with a live tester.
 // Opened from the title menu or the pause menu (data.returnTo). With data.wizard set to
 // a device, it walks through every action in turn (first-time setup for a controller
-// the browser doesn't recognize).
+// the browser doesn't recognize). A controller with a known layout (src/engine/padart.js)
+// is shown as a picture beside the list, its buttons named by their labels.
 
 import Phaser from 'phaser';
 import { VIEW } from '../engine/config.js';
@@ -9,9 +10,12 @@ import { txt, go, hdCamera } from '../engine/ui.js';
 import { menuBackdrop, ornatePanel, header, selectBar } from '../engine/menuart.js';
 import { audio } from '../engine/audio.js';
 import { Controls, ACTIONS, bindingStore, bindingLabel } from '../engine/input.js';
+import { padLayout, padBindingLabel, drawPad, padLabels } from '../engine/padart.js';
 
 const NAMES = { up: 'UP / AIM UP', down: 'DOWN / CROUCH', left: 'LEFT', right: 'RIGHT', jump: 'JUMP', fire: 'FIRE', ability: 'ABILITY', grenade: 'GRENADE', swap: 'SWAP WEAPON', melee: 'MELEE', pause: 'PAUSE' };
 const KC = Phaser.Input.Keyboard.KeyCodes;
+const PAD_X = 250;
+const PAD_Y = 72;
 
 export class ControlsScene extends Phaser.Scene {
   constructor() { super('Controls'); }
@@ -39,6 +43,9 @@ export class ControlsScene extends Phaser.Scene {
       name: txt(this, 70, 54 + i * 13, NAMES[a], { size: 8 }),
       bind: txt(this, VIEW.w - 70, 54 + i * 13, '', { size: 8 }).setOrigin(1, 0),
     }));
+    this.padG = this.add.graphics();
+    this.padText = [];
+    this.layout = null;
     this.resetText = txt(this, VIEW.w / 2, 202, 'RESET TO DEFAULTS', { size: 8 }).setOrigin(0.5, 0);
     this.backText = txt(this, VIEW.w / 2, 216, 'BACK', { size: 8 }).setOrigin(0.5, 0);
     this.hint = txt(this, VIEW.w / 2, 236, '', { font: 'read', size: 14, color: '#9aa4c8', align: 'center', wrap: VIEW.w - 30 }).setOrigin(0.5, 0);
@@ -55,19 +62,44 @@ export class ControlsScene extends Phaser.Scene {
     return list[this.deviceIndex];
   }
 
+  // The picture for the selected device, if its layout is known.
+  setLayout(dev) {
+    const pad = dev.startsWith('pad') ? this.controls.pad(Number(dev.slice(3))) : null;
+    const layout = padLayout(pad?.id);
+    if (layout === this.layout) return;
+    this.layout = layout;
+    for (const t of this.padText) t.destroy();
+    this.padText = layout ? padLabels(this, layout, PAD_X, PAD_Y, txt) : [];
+    this.padG.clear();
+    this.rows.forEach((r) => { r.name.setX(layout ? 58 : 70); r.bind.setX(layout ? 246 : VIEW.w - 70); });
+  }
+
+  drawPicture() {
+    if (!this.layout) return;
+    const dev = this.device;
+    const key = this.controls.storeKey(dev);
+    const action = ACTIONS[this.row - 1];
+    const selected = key && action ? bindingStore.get(key)[action] : [];
+    this.padG.clear();
+    drawPad(this.padG, this.layout, PAD_X, PAD_Y, selected, this.controls.pad(Number(dev.slice(3))));
+  }
+
   refresh() {
     const dev = this.device;
+    this.setLayout(dev);
     const key = this.controls.storeKey(dev);
     const binds = key ? bindingStore.get(key) : null;
     const sel = (r) => (this.row === r ? '#ffffff' : '#9fb0d8');
     const rowY = this.row === 0 ? 36 : this.row <= ACTIONS.length ? 54 + (this.row - 1) * 13 : this.row === ACTIONS.length + 1 ? 202 : 216;
-    this.bar.place(52, rowY - 2, VIEW.w - 104, 12);
+    const listRow = this.row >= 1 && this.row <= ACTIONS.length;
+    this.bar.place(52, rowY - 2, this.layout && listRow ? 198 : VIEW.w - 104, 12);
+    const name = (b) => (this.layout && padBindingLabel(this.layout, b)) || bindingLabel(b);
     this.deviceText.setText(`< ${this.controls.label(dev).toUpperCase()} >`).setColor(sel(0));
     ACTIONS.forEach((a, i) => {
       const r = this.rows[i];
       const capturing = this.capture?.action === a;
       r.name.setColor(sel(i + 1));
-      r.bind.setText(capturing ? 'PRESS...' : binds ? binds[a].map(bindingLabel).join(' / ') : '-');
+      r.bind.setText(capturing ? 'PRESS...' : binds ? binds[a].map(name).join(' / ') : '-');
       r.bind.setColor(capturing ? '#ffd27a' : sel(i + 1));
     });
     this.resetText.setColor(sel(ACTIONS.length + 1));
@@ -124,6 +156,7 @@ export class ControlsScene extends Phaser.Scene {
   }
 
   update() {
+    this.drawPicture();
     if (!this.controls.armed()) return;
     const c = this.capture;
     if (c) {
