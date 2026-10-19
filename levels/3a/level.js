@@ -20,16 +20,19 @@ export default {
         title: 'The Dreadnought', when: 'c. 2200 BCE', where: 'Janjur Qom',
         text: "Long after the Forerunners were gone, a great Forerunner ship still rested on the San'Shyuum's world: a Dreadnought.",
         source: 'Halopedia: Forerunner Dreadnought; Janjur Qom',
+        scene: 'A=ship:keyship-big@0.62,0.62; S=sanshyuum@0.18; S face >; A glow #7ae8ff',
       },
       {
         title: 'Two Sides', where: 'Janjur Qom',
         text: "The Reformists wanted to explore the ship and use it. The Stoics believed it was too sacred to touch. They argued, and then they fought, for about a hundred years.",
         source: 'Halopedia: Janjur Qom',
+        scene: 'R=sanshyuum@0.2 & T=sanshyuum-stoic@0.8<; R talk; T talk; R fire T & T fire R; boom 0.5 0.8',
       },
       {
         title: 'The Plan', when: '2100 BCE', where: 'Janjur Qom',
         text: 'About a thousand Reformists fought their way inside the Dreadnought and barricaded themselves in.',
         source: 'Halopedia: Janjur Qom',
+        scene: 'A=ship:keyship-big@0.66,0.6; R=sanshyuum@0.06 & Q=sanshyuum@0.16 & P=sanshyuum@0.26; R>>0.6 & Q>>0.62 & P>>0.64; R hide & Q hide & P hide',
       },
     ],
     after: [
@@ -37,11 +40,13 @@ export default {
         title: 'Lift-Off', when: '2100 BCE', where: 'Janjur Qom',
         text: 'The Reformists woke the Dreadnought. It rose into the sky, tearing away a piece of the planet. The Stoics could not bring themselves to harm the holy ship, so it got away.',
         source: 'Halopedia: Janjur Qom; Forerunner Dreadnought',
+        scene: 'A=ship:keyship-big@0.56,0.62; T=sanshyuum-stoic@0.12 & U=sanshyuum-stoic@0.22; shake & boom 0.56 0.88 big; A>0.6,0.16 & boom 0.5 0.9 big; T unarm & U unarm; T face > & U face >',
       },
       {
         title: 'Exile',
         text: 'The Reformists left their home behind and set out into the stars, searching for more Forerunner relics.',
         source: "Halopedia: San'Shyuum",
+        scene: 'bg space; planet 0.2 0.62 0.12 #c8a060; A=ship:keyship-big@0.3,0.48; A>0.82,0.3',
       },
     ],
   },

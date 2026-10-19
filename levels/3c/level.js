@@ -23,6 +23,7 @@ export default {
         title: 'The Last Battle', when: '852 BCE',
         text: "After 86 years of war, the Sangheili and the San'Shyuum met in battle once more. Nobody knows exactly where.",
         source: 'Halopedia: War of Beginnings',
+        scene: 'E=elite-ancient@0.12 & F=elite-ancient@0.24 & G=sangheili-warrior@0.36; R=sanshyuum-reformist@0.78< & T=sentinel@0.64,0.4<; E fire T & T fire F & R fire G; boom 0.5 0.8 & boom 0.42 0.84',
       },
     ],
     after: [
@@ -30,16 +31,19 @@ export default {
         title: 'The Writ of Union', when: '852 BCE',
         text: "The San'Shyuum sent a delegation with no weapons. Two leaders, Breaking Shadow and Pelahsar the Strident, agreed to a truce. The Writ of Union founded the Covenant.",
         source: 'Halopedia: Writ of Union; Covenant',
+        scene: 'B=sangheili-warrior@0.22; S=sanshyuum@0.82<; S unarm; S>0.58; S talk; B talk; B unarm; beam 0.4 #ffd27a',
       },
       {
         title: 'Prophets and Protectors',
         text: "The San'Shyuum became the Covenant's religious leaders, and the Sangheili became its protectors. The Hierarchs made the Arbiter a position of power in the military.",
         source: 'Halopedia: Covenant; Arbiter',
+        scene: 'E=sangheili-warrior@0.3 & S=sanshyuum@0.5 & F=elite-ancient@0.7<; S unarm; S glow #ffd27a; E face > & F face <',
       },
       {
         title: 'The Price',
         text: 'The Sangheili gave up their independence for a shared faith.',
         source: 'Halopedia: Writ of Union',
+        scene: 'E=sangheili-warrior@0.45; E kneel; ship covenant 1.2>0.6 0.15 slow',
       },
     ],
   },

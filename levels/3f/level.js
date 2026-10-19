@@ -20,11 +20,13 @@ export default {
         title: 'The Great Immolation', where: 'Doisac',
         text: 'On Doisac, the Jiralhanae packs once fought a war so terrible that they nearly destroyed themselves. It was called the Great Immolation.',
         source: 'Halopedia: Jiralhanae; Doisac',
+        scene: 'bg sky #4a2010 #c85a2a #3a2010; boom 0.3 0.8 big; fire 0.2 & fire 0.5 & fire 0.82; B=jiralhanae@0.38 & C=jiralhanae-pack@0.66<; B fire C & C fire B; boom 0.6 0.7 big',
       },
       {
         title: 'Starting Again', when: '2492', where: 'Doisac',
         text: 'Slowly the Jiralhanae rebuilt. They had only just rediscovered radio and rockets, and the packs still fought each other.',
         source: 'Halopedia: Jiralhanae',
+        scene: 'B=jiralhanae@0.22 & C=jiralhanae@0.34; R=jiralhanae-pack@0.8<; B talk; B fire R & R fire C; fire 0.66',
       },
     ],
     after: [
@@ -32,6 +34,7 @@ export default {
         title: 'The Covenant Arrives', when: '2492', where: 'Doisac',
         text: 'The Covenant came to Doisac. Some packs, like Chieftain Maccabeus\'s, joined quickly. The packs that resisted were defeated and brought into the Covenant.',
         source: 'Halopedia: Jiralhanae; Maccabeus',
+        scene: 'ship covenant 1.2>0.62 0.16 big; M=maccabeus@0.3; M kneel; P=jiralhanae-pack@0.78<; E=elite@0.6<; E fire P; P kneel',
       },
     ],
   },

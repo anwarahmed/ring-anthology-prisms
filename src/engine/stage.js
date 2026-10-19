@@ -9,8 +9,8 @@
 //   E=elite@0.8<             vehicle, or ship:unsc / ship:covenant-big for a ship that
 //   A=ship:unsc-big@0.5,0.4  can move, leave or be destroyed. '<' faces left; @x,y
 //                            floats it (flyers, ships)
-//   C>0.5   C>>0.5           walk / run to x
-//   C^   C kneel   C stand   jump, crouch, stand up
+//   C>0.5   C>>0.5   A>0.6,0.2   walk / run to x (flyers and ships: to x,y)
+//   C^   C kneel   C stand   jump, crouch, stand up;  C unarm  no weapon in hand
 //   C face <   C face >      turn
 //   C fire E   C fire 0.7,0.3   three shots at an actor or a point
 //   E down                   defeated: a light puff (never shown hurt)
@@ -96,6 +96,7 @@ export class Stage {
       const [kind, size] = id.slice(5).split('-');
       const img = this.s.add.image(this.X(Number(xs)), this.Y(Number(ys ?? 0.3)), SHIPS[kind] ?? SHIPS.unsc).setScale((size === 'big' ? 1.6 : 0.9) / HD).setFlipX(!!left);
       if (kind === 'flood') img.setTint(0xb8e04a);
+      if (kind === 'keyship') img.setTint(0xd8e8ff).setScale(2.4 / HD);
       this.v.add(img);
       this.cast[name] = { name, body: img, arm: null, flying: true, light: FACTION_LIGHT[kind] ?? 0xffc26a };
       img.setAlpha(0);
@@ -138,12 +139,13 @@ export class Stage {
     a.body.play(this.s.anims.exists(k) ? k : `${a.key}-idle`, true);
   }
 
-  async move(a, x, run) {
+  async move(a, x, run, y) {
     const to = this.X(x);
-    a.body.setFlipX(to < a.body.x);
+    if (Math.abs(to - a.body.x) > 1) a.body.setFlipX(to < a.body.x);
     if (!a.flying) this.anim(a, 'run');
     const ms = (Math.abs(to - a.body.x) / this.v.rect.w) * (run ? 1400 : a.meta ? 2600 : 4200) + 150;
-    await this.tween({ targets: a.body, x: to, duration: ms, ease: 'Sine.InOut' });
+    const dy = y === undefined ? 0 : Math.abs(this.Y(y) - a.body.y) / this.v.rect.h * 2600;
+    await this.tween({ targets: a.body, x: to, ...(y === undefined ? {} : { y: this.Y(y) }), duration: Math.max(ms, dy), ease: 'Sine.InOut' });
     if (!a.flying) this.anim(a, 'idle');
   }
 
@@ -183,6 +185,7 @@ export class Stage {
     switch (verb) {
       case 'fire': return this.fire(a, arg);
       case 'down': return this.down(a);
+      case 'unarm': if (a.arm) { a.arm.destroy(); a.arm = null; } return Promise.resolve();
       case 'kneel': this.anim(a, 'crouch'); return this.wait(200);
       case 'stand': this.anim(a, 'idle'); return this.wait(150);
       case 'face': a.body.setFlipX(arg === '<'); return Promise.resolve();
@@ -422,8 +425,8 @@ export class Stage {
     if (!cmd || this.dead) return Promise.resolve();
     let m = cmd.match(/^(\w+)=(.+)$/);
     if (m) return this.spawn(m[1], m[2]);
-    m = cmd.match(/^(\w+)(>>?)(-?[\d.]+)$/);
-    if (m) return this.move(this.need(m[1]), Number(m[3]), m[2] === '>>');
+    m = cmd.match(/^(\w+)(>>?)(-?[\d.]+)(?:,(-?[\d.]+))?$/);
+    if (m) return this.move(this.need(m[1]), Number(m[3]), m[2] === '>>', m[4] === undefined ? undefined : Number(m[4]));
     m = cmd.match(/^(\w+)\^$/);
     if (m) {
       const a = this.need(m[1]);

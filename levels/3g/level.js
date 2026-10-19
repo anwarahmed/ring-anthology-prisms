@@ -20,16 +20,19 @@ export default {
         title: 'SPARTAN-II', when: '2517',
         text: 'Dr. Catherine Halsey led a secret UNSC program to make super-soldiers: SPARTAN-II.',
         source: 'Halopedia: SPARTAN-II Program',
+        scene: 'J=john-117-recruit@0.3 & K=kelly-087@0.42; J unarm & K unarm; beam 0.7 #9fd8ff; J talk',
       },
       {
         title: 'Reach', when: '2517', where: 'Reach',
         text: 'Seventy-five children were taken to the planet Reach to be trained. They had to leave their families behind, which was very hard.',
         source: 'Halo: The Fall of Reach',
+        scene: 'ship unsc -0.2>0.5 0.2; beam 0.5 & J=john-117-recruit@0.44 & K=kelly-087@0.54; J unarm & K unarm; J face <',
       },
       {
         title: 'Chief Mendez', where: 'Reach',
         text: 'Chief Petty Officer Franklin Mendez trained them. Two of the recruits were John-117 and Kelly-087.',
         source: 'Halo: The Fall of Reach',
+        scene: 'J=john-117-recruit@0.3 & K=kelly-087@0.42; T=training-target@0.8<; J fire T & K fire T; T down',
       },
     ],
     after: [
@@ -37,11 +40,13 @@ export default {
         title: 'Growing Up', when: '2517–2525', where: 'Reach',
         text: "The Spartans trained for years. They grew up to be humanity's strongest soldiers and wore powerful MJOLNIR armor.",
         source: 'Halo: The Fall of Reach',
+        scene: 'J=john-117-recruit@0.32; J unarm; flash; J hide; M=master-chief@0.32; M glow #7ad8ff',
       },
       {
         title: 'Friends',
         text: 'John and Kelly became close friends. Kelly was the fastest of all the Spartans.',
         source: 'Halo: The Fall of Reach',
+        scene: 'J=john-117-recruit@0.2 & K=kelly-087@0.3; J unarm & K unarm; K>>0.85 & J>0.6',
       },
     ],
   },

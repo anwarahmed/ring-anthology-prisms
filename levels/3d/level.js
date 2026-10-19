@@ -20,16 +20,19 @@ export default {
         title: 'The Rending', when: '851 BCE',
         text: "Not every Sangheili accepted the Writ of Union. A rebellion led by Ussa 'Xellus, called the Rending, tried to break the Covenant apart. It failed.",
         source: 'Halopedia: The Rending',
+        scene: 'E=elite-major@0.18 & F=elite@0.3; U=elite@0.7< & V=elite@0.82<; U fire E & E fire U & F fire V; U down & V down',
       },
       {
         title: 'High Charity', when: '851–791 BCE',
         text: 'The Covenant built its holy city, High Charity, around the Forerunner Dreadnought.',
         source: 'Halopedia: High Charity',
+        scene: 'bg space; A=ship:keyship-big@0.5,0.52; fleet covenant 4; A glow #c890ff',
       },
       {
         title: 'The Lekgolo', when: '784 BCE', where: 'Rentus',
         text: 'The Covenant met the Lekgolo: colonies of small worm-like creatures that join together into one body. The two sides went to war.',
         source: 'Halopedia: Lekgolo; Arbiter',
+        scene: 'E=elite@0.18 & F=elite@0.3; L=lekgolo@0.74< & H=hunter-rentus@0.88<; E fire L & L fire F & H fire E; boom 0.6 0.84',
       },
     ],
     after: [
@@ -37,11 +40,13 @@ export default {
         title: "The Arbiter's Idea", when: '784 BCE', where: 'Rentus',
         text: "Arbiter Jeht 'Lcmutee studied the Lekgolo and saw how strong they were. He proposed bringing them into the Covenant instead of fighting them.",
         source: 'Halopedia: Arbiter',
+        scene: 'J=jeht-lcmutee@0.24; L=lekgolo@0.72<; J>0.46; J talk',
       },
       {
         title: 'Hunters',
         text: "The Hierarchs reluctantly agreed. Lekgolo colonies in heavy armor became the Covenant's Hunters.",
         source: 'Halopedia: Lekgolo; Mgalekgolo',
+        scene: 'J=jeht-lcmutee@0.24; L=lekgolo@0.62<; J talk; flash #c890ff & L hide; H=hunter@0.62<; H face <',
       },
     ],
   },
