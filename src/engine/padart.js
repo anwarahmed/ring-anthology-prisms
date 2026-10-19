@@ -25,7 +25,7 @@ const M30 = {
   // The light grey M30 with colorful buttons. Outline and positions measured from a
   // photo of the controller (in the 180 x 104 box).
   outline: [[-1.1, 59.0], [2.2, 42.2], [9.7, 25.5], [17.3, 17.4], [24.9, 11.4], [32.4, 8.7], [40.0, 7.1], [47.6, 7.1], [55.1, 8.2], [62.7, 9.2], [70.3, 13.0], [77.8, 13.6], [85.4, 13.6], [93.0, 13.6], [100.5, 13.6], [108.1, 13.0], [115.7, 9.8], [123.2, 8.2], [130.8, 7.1], [138.4, 7.1], [145.9, 8.2], [153.5, 10.9], [161.1, 16.8], [168.6, 24.4], [176.2, 40.1], [178.9, 50.9], [180.0, 57.9], [178.9, 75.7], [176.2, 84.9], [168.6, 93.6], [161.1, 96.8], [153.5, 98.4], [145.9, 97.9], [138.4, 96.8], [130.8, 94.1], [123.2, 90.3], [115.7, 87.1], [108.1, 84.9], [100.5, 83.3], [93.0, 82.8], [85.4, 82.8], [77.8, 83.3], [70.3, 84.9], [62.7, 87.6], [55.1, 90.9], [47.6, 94.1], [40.0, 96.8], [32.4, 98.4], [24.9, 98.4], [17.3, 96.8], [9.7, 93.0], [2.2, 83.3]],
-  look: { body: 0xebe9e4, edge: 0xa8a59e, shadow: 0x8a877f, ring: 0xe0ddd7, square: 0x4c4e54, dpad: 0x2a2c31, small: 0xe6e3dd },
+  look: { body: 0xebe9e4, edge: 0xa8a59e, shadow: 0x8a877f, ring: 0xe0ddd7, disc: 0x4c4e54, dpad: 0x2a2c31, small: 0xe6e3dd },
   decor: [{ x: 89.2, y: 66.5, r: 4.8 }, { x: 103.2, y: 66.5, r: 4.8 }],
   face: { x: 136, y: 50, r: 34 },
   dpad: { x: 43.8, y: 47.6, axes: [0, 1] },
@@ -74,15 +74,15 @@ export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
     if (on(n)) g.lineStyle(2, SEL, 1).strokePoints(strip.map((p) => ({ x: p.x, y: p.y + (p.y > oy + 20 ? 1 : -1) })), true);
   }
 
-  // D-pad: a big dark disc with a rounded cross and a center dimple.
+  // D-pad: a dark disc in a raised ring, with a cross and a center dimple.
   const d = layout.dpad;
   const [ax, ay] = d.axes;
   const cx = ox + d.x;
   const cy = oy + d.y;
   g.fillStyle(L.ring, 1).fillCircle(cx, cy, 26);
   g.lineStyle(1, L.edge, 0.6).strokeCircle(cx, cy, 26);
-  g.fillStyle(L.shadow, 1).fillRoundedRect(cx - 18, cy - 18, 36, 38, 9);
-  g.fillStyle(L.square, 1).fillRoundedRect(cx - 18, cy - 19, 36, 38, 9);
+  g.fillStyle(L.shadow, 1).fillCircle(cx, cy + 1, 19);
+  g.fillStyle(L.disc, 1).fillCircle(cx, cy, 19);
   g.fillStyle(L.dpad, 1).fillRoundedRect(cx - 15, cy - 5, 30, 10, 2).fillRoundedRect(cx - 5, cy - 15, 10, 30, 2);
   const arm = (dx, dy, lit, sel) => {
     const x = cx + dx * 10 - 5;
