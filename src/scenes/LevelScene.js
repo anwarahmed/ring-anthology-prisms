@@ -14,6 +14,7 @@ import { TILESET, COLLIDES, isSolid, isPlatform, isHazard } from '../engine/tile
 import { tilesTexture, baseTextures, hexNum, TILE_PX } from '../engine/textures.js';
 import { buildBackdrop } from '../engine/backdrop.js';
 import { firefightLevel } from '../engine/firefight.js';
+import { prewarm } from '../engine/prewarm.js';
 import { buildScenery } from '../engine/scenery.js';
 import { Fx, gradeCamera } from '../engine/fx.js';
 import { Controls } from '../engine/input.js';
@@ -49,6 +50,8 @@ export class LevelScene extends Phaser.Scene {
   create() {
     hdCamera(this);
     baseTextures(this);
+    // All the level's character, weapon and vehicle art, so nothing is made mid-fight.
+    prewarm(this, this.level);
     const L = this.level;
     const theme = THEMES[L.theme];
     this.map = parseMap(L.map, L.legend);

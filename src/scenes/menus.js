@@ -11,6 +11,7 @@ import { baseTextures, hexNum } from '../engine/textures.js';
 import { spaceSky, ringHalves, planetHorizon, prismTexture, logoText, ERA_COLORS } from '../engine/titleart.js';
 import { buildBackdrop } from '../engine/backdrop.js';
 import { gradeCamera } from '../engine/fx.js';
+import { prewarmJobs } from '../engine/prewarm.js';
 import { menuBackdrop, ornatePanel, header, emblem, selectBar } from '../engine/menuart.js';
 import { LEVELS, CAMPAIGN, ORDER } from '../../levels/index.js';
 import { THEMES } from '../content/themes.js';
@@ -358,6 +359,7 @@ export class TimelineScene extends Phaser.Scene {
 export class ArchiveScene extends Phaser.Scene {
   constructor() { super('Archive'); }
   init(data) {
+    this.jobs = null;
     this.levelId = data.levelId;
     this.which = data.which;
     this.level = LEVELS[this.levelId];
@@ -410,6 +412,11 @@ export class ArchiveScene extends Phaser.Scene {
   }
   update(_t, dms) {
     if (!this.controls) return;
+    // Make the coming level's art while the cards are read (one piece per frame).
+    if (this.which === 'before') {
+      this.jobs ??= prewarmJobs(this.level);
+      this.jobs.shift()?.(this);
+    }
     if (this.typed < this.full.length) {
       this.typed = Math.min(this.full.length, this.typed + dms * 0.06);
       this.body.setText(this.full.slice(0, Math.floor(this.typed)));
