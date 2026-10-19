@@ -76,9 +76,10 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [ ] Two-player + difficulty pass: bot-finish levels with 2 players on Easy and
      Normal (no god mode); fix stuck spots, far checkpoints, P2 off screen
    - [ ] Leftovers: 3m glowing decoration; bot leaves a stuck vehicle sooner
-   - [ ] Level intro/outro animations that match the Archive cards (before/after)
-   - [ ] Prologue (before Part I) and grand animated epilogue after the last level;
-     canon-only text (lore-check), kid-friendly
+   - [x] Level intro/outro animations that match the Archive cards (before/after):
+     src/engine/vignette.js
+   - [x] Prologue (before Part I) and grand animated epilogue after the last level;
+     canon-only text, kid-friendly: src/content/saga.js + SagaScene (?saga=...)
    - [ ] Extras: medals and best times on the level select; Skulls menu (fun
      modifiers); more Firefight maps
 
