@@ -36,11 +36,11 @@ async function scan(id) {
   // Count announcements and sample who is on screen, in game time.
   await page.evaluate(() => {
     const L = window.__game.scene.getScene('Level');
-    const log = (window.__coop = { downs: 0, retries: 0, checkpoints: [L.time.now], samples: 0, off: 0, t0: L.time.now });
+    const log = (window.__coop = { downs: 0, retries: 0, where: [], checkpoints: [L.time.now], samples: 0, off: 0, t0: L.time.now });
     const hud = L.hud;
     const announce = hud.announce.bind(hud);
     hud.announce = (text, ...rest) => {
-      if (/DOWN$/.test(text)) log.downs++;
+      if (/DOWN$/.test(text)) { log.downs++; log.where.push(Math.round(L.players[Number(text[1]) - 1]?.x ?? 0)); }
       if (text === 'RETRY FROM CHECKPOINT') log.retries++;
       if (text === 'CHECKPOINT') log.checkpoints.push(L.time.now);
       return announce(text, ...rest);
@@ -69,11 +69,11 @@ async function scan(id) {
     const cps = [...c.checkpoints, end];
     let gap = 0;
     for (let i = 1; i < cps.length; i++) gap = Math.max(gap, cps[i] - cps[i - 1]);
-    return { t: Math.round((end - c.t0) / 1000), downs: c.downs, retries: c.retries, gap: Math.round(gap / 1000), off: c.samples ? Math.round((100 * c.off) / c.samples) : 0 };
+    return { where: c.where, t: Math.round((end - c.t0) / 1000), downs: c.downs, retries: c.retries, gap: Math.round(gap / 1000), off: c.samples ? Math.round((100 * c.off) / c.samples) : 0 };
   });
   await page.close();
   const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-  return `${id}  ${done ? 'finished' : 'NOT FINISHED'} ${fmt(r.t)}  downs ${r.downs}  retries ${r.retries}  longest without checkpoint ${fmt(r.gap)}  off-screen ${r.off}%${errors.length ? `\n    errors: ${[...new Set(errors)].join(' | ')}` : ''}`;
+  return `${id}  ${done ? 'finished' : 'NOT FINISHED'} ${fmt(r.t)}  downs ${r.downs}  retries ${r.retries}  longest without checkpoint ${fmt(r.gap)}  off-screen ${r.off}%${r.downs >= 4 ? `\n    downs at x: ${r.where.slice(0, 30).join(' ')}` : ''}${errors.length ? `\n    errors: ${[...new Set(errors)].join(' | ')}` : ''}`;
 }
 
 const queue = [...ids];

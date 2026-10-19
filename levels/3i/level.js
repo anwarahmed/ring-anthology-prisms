@@ -86,7 +86,7 @@ export default {
         { vehicle: { id: 'scorpion', at: 'E' } },
         { objective: 'A Scorpion! Get in with SWAP' },
         { hold: { seconds: 45, every: 6, label: 'HOLD', groups: [
-          [{ unit: gh, n: 2, from: 'right' }],
+          [{ unit: gh, n: 1, from: 'right' }, { unit: gr, n: 2, from: 'sky' }],
           [{ unit: br, n: 2, from: 'M' }, { unit: gr, n: 2, from: 'sky' }],
           [{ unit: el, n: 2, from: 'right' }, { unit: gh, n: 1, from: 'right' }],
         ] } },
@@ -100,7 +100,7 @@ export default {
         { lock: ['H', 'I'] },
         { objective: 'Break the Covenant line' },
         { intensity: 2 },
-        { wave: [{ unit: gh, n: 2, from: 'right' }, { unit: el, n: 2, from: 'L' }, { unit: gr, n: 3, from: 'sky' }] },
+        { wave: [{ unit: gh, n: 1, from: 'right' }, { unit: el, n: 2, from: 'L' }, { unit: gr, n: 3, from: 'sky' }] },
         { wave: [{ unit: 'elite-major', n: 2, from: 'right' }, { unit: br, n: 2, from: 'sky' }] },
         { unlock: true },
       ],

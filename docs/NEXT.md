@@ -73,9 +73,11 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Controller picture on the CONTROLS screen (user's 8BitDo M30, drawn in code;
      src/engine/padart.js). L/R = buttons 6/7 per SDL's mapping: unverified on the
      real pad (the live highlight shows it)
-   - [ ] Two-player + difficulty pass: bot-finish levels with 2 players on Easy and
-     Normal (no god mode); fix stuck spots, far checkpoints, P2 off screen
-   - [ ] Leftovers: 3m glowing decoration; bot leaves a stuck vehicle sooner
+   - [x] Two-player + difficulty pass (`node tests/coop.mjs`): Easy 53/53, Normal 53/53
+     after the fixes (quiet arena checkpoints, cleared ground stays clear, boss barrage
+     and summon caps, 3i Ghosts trimmed). Hardest on Normal for the bot: 1b, 5d, 6d, 3i
+   - [x] Leftovers: 3m glowing decoration (a wall window eroded into a cross); bot
+     leaves a stalled vehicle sooner
    - [x] Level intro/outro animations that match the Archive cards (before/after):
      src/engine/vignette.js
    - [x] Prologue (before Part I) and grand animated epilogue after the last level;
