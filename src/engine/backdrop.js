@@ -131,50 +131,162 @@ export function buildBackdrop(scene, theme, worldW) {
         break;
       }
       case 'ringrise': {
-        // Standing on a ring: the far side of the ring rises from the horizon as a band
-        // that widens toward its base and climbs high into the sky. Its inner surface
-        // reads like a satellite image (muted land, cloud and snow, little water) with
-        // detail shrinking with distance, faint Forerunner circuit lines, and metal rims.
+        // Standing on a ring: the ring's far side rises from the horizon as a wide band
+        // that tapers as it climbs and arches overhead, off the top of the screen. Its
+        // surface is a map (land, sea, cloud) that gets finer with distance; blue haze
+        // is strongest low down and thins as it climbs, and beside the band the sky
+        // darkens to the black of space, with stars and a distant sun. A sharp shadow
+        // line splits day from night across the arch, and the night side glows with
+        // lights. Thin bright lines are the atmosphere walls.
+        //   state: 'pristine' (Forerunner era: hard-light bridges, gleaming citadels),
+        //          'damaged' (Banished era: missing chunks, glowing breaks, smoke, sparks),
+        //          'unfinished' (bare framework in places), or normal.
+        //   dim: 0..1 for night levels (the whole arch in darkness, lit up).
         const W = VIEW.w * HD, H = VIEW.h * HD;
-        const cx = (L.x ?? 0.5) * W, horizon = (L.horizon ?? 0.9) * H;
-        const wTop = (L.top ?? 0.1) * W, wBot = (L.bottom ?? 0.34) * W, lean = (L.lean ?? 0.03) * W;
-        const haze = hexRgb(L.haze ?? '#c8d4f0');
-        const pal = {
-          dark: hexRgb('#3e3a3e'), brown: hexRgb('#6c5c4c'), tan: hexRgb('#a08c70'), grey: hexRgb('#8a8278'),
-          snow: hexRgb('#e6eaf0'), water: hexRgb('#4a5868'), circuit: hexRgb('#5ab8ff'),
-        };
-        const rimLight = hexRgb('#eef4ff'), rimDark = hexRgb('#2a2c3a');
-        const fbm2 = (x, y, sd) => { let v = 0, a = 0.5, f = 1; for (let o = 0; o < 5; o++) { v += noise2(x * f, y * f, sd + o) * a; a *= 0.5; f *= 2.05; } return v; };
-        const key = canvasTex(scene, W, H, (d) => {
-          for (let y = 0; y < horizon; y++) {
-            const t = y / horizon; // 0 at the top of the sky, 1 at the horizon
-            const flare = Math.pow(t, 2.2);
-            const w = wTop + (wBot - wTop) * flare;
-            const c = cx + lean * (1 - t) - w * 0.06 * flare;
-            const left = c - w / 2, right = c + w / 2;
-            const dist = 1 / (0.08 + (1 - t)) * 3; // distance along the ring (compressed far away)
-            for (let x = Math.max(0, Math.floor(left)); x < Math.min(W, Math.ceil(right)); x++) {
-              const u = (x - left) / w; // 0..1 across the band
-              let col;
-              const rim = Math.min(u, 1 - u) * w;
-              if (rim < 1.2 + flare * 2.5) col = u < 0.5 ? rimLight : rimDark;
-              else {
-                const n = fbm2(u * 3.2, dist, 5);
-                col = n < 0.36 ? mix(pal.water, pal.dark, (n - 0.2) * 3) : n < 0.46 ? mix(pal.dark, pal.brown, (n - 0.36) * 10)
-                  : n < 0.56 ? mix(pal.brown, pal.tan, (n - 0.46) * 10) : mix(pal.tan, pal.grey, Math.min(1, (n - 0.56) * 6));
-                const cl = fbm2(u * 4 + 9, dist * 1.3, 21);
-                if (cl > 0.55) col = mix(col, pal.snow, Math.min(0.92, (cl - 0.55) * 5));
-                const ci = noise2(u * 26, dist * 6, 33);
-                if (Math.abs(ci - 0.5) < 0.012 && n > 0.4) col = mix(col, pal.circuit, 0.6);
-                col = mix(col, [16, 14, 26], 0.4 * u * u); // the side away from the light
+        const key = `ringrise-${L.x}-${L.horizon}-${L.haze}-${L.state ?? 'normal'}-${L.dim ?? 0}`;
+        if (!scene.textures.exists(key)) {
+          const tex = scene.textures.createCanvas(key, W, H);
+          const ctx = tex.getContext();
+          const fbm2 = (x, y, sd) => { let v = 0, a = 0.5, f = 1; for (let o = 0; o < 5; o++) { v += noise2(x * f, y * f, sd + o) * a; a *= 0.5; f *= 2.05; } return v; };
+          const css = (c, al = 1) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${al})`;
+          const haze = hexRgb(L.haze ?? '#c8d4f0');
+          const dim = L.dim ?? 0;
+          const state = L.state ?? 'normal';
+          const horizon = (L.horizon ?? 0.74) * H;
+          // The sky above the haze: darker toward the top, the void of space.
+          const sky = ctx.createLinearGradient(0, 0, 0, horizon);
+          sky.addColorStop(0, `rgba(3,5,16,${0.88 - dim * 0.1})`);
+          sky.addColorStop(0.55, 'rgba(6,10,30,0.35)');
+          sky.addColorStop(1, 'rgba(6,10,30,0)');
+          ctx.fillStyle = sky;
+          ctx.fillRect(0, 0, W, horizon);
+          for (let k = 0; k < 90; k++) {
+            const x = hash(k, 1, 77) * W, y = Math.pow(hash(k, 2, 77), 1.6) * horizon * 0.6;
+            ctx.fillStyle = `rgba(255,255,255,${0.3 + 0.6 * hash(k, 3, 77)})`;
+            ctx.fillRect(x, y, HD * 0.6, HD * 0.6);
+          }
+          if (dim < 0.5) {
+            const sx = W * 0.12, sy = H * 0.14;
+            const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, 40 * HD);
+            g.addColorStop(0, 'rgba(255,250,230,1)');
+            g.addColorStop(0.12, 'rgba(255,240,200,0.9)');
+            g.addColorStop(1, 'rgba(255,220,160,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(sx - 40 * HD, sy - 40 * HD, 80 * HD, 80 * HD);
+          }
+          // The arch: a curve from the horizon up and over, off the top of the screen.
+          const bx = (L.x ?? 0.5) * W * 0.6;
+          const P = [[bx, horizon + 6 * HD], [bx + 0.02 * W, 0.2 * H], [bx + 0.2 * W, -0.12 * H], [bx + 0.85 * W, -0.32 * H]];
+          const at = (u) => {
+            const m = 1 - u;
+            const x = m * m * m * P[0][0] + 3 * m * m * u * P[1][0] + 3 * m * u * u * P[2][0] + u * u * u * P[3][0];
+            const y = m * m * m * P[0][1] + 3 * m * m * u * P[1][1] + 3 * m * u * u * P[2][1] + u * u * u * P[3][1];
+            return [x, y];
+          };
+          const wBase = 0.34 * W, wTop = 0.05 * W;
+          const halfW = (u) => (wTop + (wBase - wTop) * Math.pow(1 - u, 1.5)) / 2;
+          const M = 420, NV = 10;
+          const pal = {
+            sea: hexRgb('#3a5a7a'), deep: hexRgb('#2a405e'), green: hexRgb('#4f7a48'), forest: hexRgb('#3a5e3a'),
+            tan: hexRgb('#a8946e'), rock: hexRgb('#7a7268'), snow: hexRgb('#e8eef4'),
+          };
+          const corner = (u, v) => {
+            const [x, y] = at(u), [x2, y2] = at(Math.min(1, u + 0.002));
+            let nx = -(y2 - y), ny = x2 - x;
+            const n = Math.hypot(nx, ny) || 1;
+            nx /= n; ny /= n;
+            const hw = halfW(u);
+            return [x + nx * (v - 0.5) * 2 * hw, y + ny * (v - 0.5) * 2 * hw];
+          };
+          const gaps = [];
+          for (let i = 0; i < M; i++) {
+            const u0 = i / M, u1 = (i + 1) / M, um = (u0 + u1) / 2;
+            const along = um * 14 + um * um * 40; // the surface gets finer with distance
+            const shadow = 0.36;
+            for (let j = 0; j < NV; j++) {
+              const v0 = j / NV, v1 = (j + 1) / NV, vm = (v0 + v1) / 2;
+              const missing = state === 'damaged' && fbm2(along * 0.16, vm * 1.2 + 3, 91) > 0.53 && um > 0.1;
+              if (missing) { if (hash(i, j, 5) < 0.12) gaps.push(corner(um, vm)); continue; }
+              const frame = state === 'unfinished' && fbm2(along * 0.1, 7, 61) > 0.58 && um > 0.15;
+              let c;
+              if (frame) {
+                // Bare framework: ribs across the band, open to space between them.
+                if (i % 6 > 1 && j % 3 !== 0) continue;
+                c = mix(hexRgb('#6a7280'), hexRgb('#a8b0bc'), 0.5);
+              } else {
+                const n = fbm2(along, vm * 3, 5);
+                c = n < 0.4 ? mix(pal.deep, pal.sea, n / 0.4) : n < 0.5 ? pal.green : n < 0.6 ? pal.forest : n < 0.7 ? pal.tan : pal.rock;
+                const cl = fbm2(along * 1.4 + 9, vm * 4, 21);
+                if (cl > 0.56) c = mix(c, pal.snow, Math.min(0.9, (cl - 0.56) * 5));
               }
-              const h = Math.max(Math.pow(t, 5) * 0.65, (1 - t) * 0.3);
-              col = mix(col, haze, h);
-              if (L.dim) col = mix(col, [8, 10, 22], L.dim); // night
-              d.set([...col, 255], (y * W + x) * 4);
+              // Night: past the shadow line, or the whole arch on night levels.
+              const night = dim > 0.4 || um + (vm - 0.5) * 0.06 > shadow;
+              if (night) c = mix(c, [8, 10, 22], 0.78);
+              // Haze: thick near the ground, thinning as the arch climbs.
+              c = mix(c, haze, Math.max(0, 0.62 * Math.pow(1 - um, 2.2) - (night ? 0.2 : 0)));
+              if (dim > 0) c = mix(c, [6, 8, 18], dim * 0.35);
+              const a = corner(u0, v0), b = corner(u1, v0), d2 = corner(u1, v1), e = corner(u0, v1);
+              ctx.fillStyle = css(c);
+              ctx.strokeStyle = css(c);
+              ctx.lineWidth = 0.8;
+              ctx.beginPath();
+              ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(d2[0], d2[1]); ctx.lineTo(e[0], e[1]);
+              ctx.closePath();
+              ctx.fill();
+              ctx.stroke();
+              // City lights on the night side: scattered dots, finer with distance.
+              if (night && !frame) {
+                for (let k = 0; k < 3; k++) {
+                  if (hash(i * 7 + k, j, 41) > 0.1 + dim * 0.12) continue;
+                  const t = hash(i, j * 5 + k, 43), q = hash(j, i * 3 + k, 47);
+                  const x = a[0] + (b[0] - a[0]) * t + (e[0] - a[0]) * q, y = a[1] + (b[1] - a[1]) * t + (e[1] - a[1]) * q;
+                  ctx.fillStyle = `rgba(255,${200 + ((k * 20) | 0)},120,${0.6 + 0.4 * t})`;
+                  const sz = HD * Math.max(0.35, 0.9 * (1 - um));
+                  ctx.fillRect(x, y, sz, sz);
+                }
+              }
+            }
+            // Pristine: hard-light bridges spanning the band, and gleaming citadels.
+            if (state === 'pristine' && i % 23 === 0 && um > 0.06) {
+              const a = corner(um, 0), b = corner(um, 1);
+              for (const [w, al] of [[3.2, 0.25], [1.2, 0.95]]) {
+                ctx.strokeStyle = `rgba(140,230,255,${al})`;
+                ctx.lineWidth = Math.max(0.6, HD * w * (1 - um));
+                ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+              }
+            }
+            if (state === 'pristine' && hash(i, 9, 3) < 0.05) {
+              const [x, y] = corner(um, 0.2 + 0.6 * hash(i, 8, 3));
+              ctx.fillStyle = 'rgba(255,255,240,0.95)';
+              ctx.fillRect(x, y, HD * (1.2 - um), HD * (1.2 - um));
             }
           }
-        });
+          // The atmosphere walls along both edges.
+          for (const v of [0, 1]) {
+            ctx.strokeStyle = 'rgba(230,240,255,0.7)';
+            ctx.lineWidth = HD * 0.6;
+            ctx.beginPath();
+            for (let i = 0; i <= M; i++) {
+              const [x, y] = corner(i / M, v);
+              if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          }
+          // Damaged: glowing breaks, smoke and sparks at the missing chunks.
+          for (const [x, y] of gaps) {
+            const g = ctx.createRadialGradient(x, y, 0, x, y, 8 * HD);
+            g.addColorStop(0, 'rgba(255,150,60,0.7)');
+            g.addColorStop(1, 'rgba(255,90,30,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(x - 8 * HD, y - 8 * HD, 16 * HD, 16 * HD);
+            ctx.fillStyle = 'rgba(70,64,64,0.35)';
+            ctx.beginPath(); ctx.ellipse(x + 3 * HD, y - 6 * HD, 7 * HD, 4 * HD, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = 'rgba(255,200,120,0.9)';
+            for (let k = 0; k < 3; k++) ctx.fillRect(x + (hash(x, k, 1) - 0.5) * 10 * HD, y + hash(y, k, 2) * 8 * HD, HD * 0.7, HD * 0.7);
+          }
+          tex.refresh();
+          if (STYLE === 'prerendered') tex.setFilter(Phaser.Textures.FilterMode.LINEAR);
+        }
         scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(L.scroll ?? 0.02, 0).setDepth(depth);
         break;
       }

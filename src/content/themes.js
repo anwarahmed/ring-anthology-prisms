@@ -2,7 +2,7 @@
 // Backdrop layer types (drawn by src/engine/backdrop.js):
 //   gradient {top, bottom}           stars {count}
 //   planet {x, y, r, color, shade}   halo {x, y, r, k, rot, scroll, glow}  (a whole ring seen from off it)
-//   ringrise {x, horizon, top, bottom, lean, haze, dim}  (standing on a ring: its far side rising into the sky)
+//   ringrise {x, horizon, haze, dim, state: pristine | damaged | unfinished}  (standing on a ring: the far side arching overhead)
 //   ships {count, color, scroll, beams}   spires {color, glow, scroll, height, density}
 //   smoke {color, alpha, scroll, y, height}   hills {color, rim, scroll, height}
 //   mountains {color, light, shadow, cap, scroll, height}   clouds {color, light, shade, y, height, count, scroll, alpha}
@@ -571,7 +571,7 @@ export const THEMES = {
     backdrop: [
       { type: 'gradient', top: '#0a0e1e', bottom: '#5a6a8a' },
       { type: 'stars', count: 90 },
-      { type: 'ringrise', x: 0.5, horizon: 0.74, haze: '#8aa0c0', dim: 0.3 },
+      { type: 'ringrise', x: 0.5, horizon: 0.74, haze: '#8aa0c0', state: 'unfinished' },
       { type: 'industrial', color: '#2e3238', rim: '#7a8a9a', light: '#7ad8ff', scroll: 0.12, height: 0.5 },
       { type: 'embers', color: '#ff9a4a' },
     ],
@@ -676,7 +676,7 @@ export const THEMES = {
     foreground: { kind: 'ferns', color: '#0a120a', rim: '#3a6a3a', every: 760 },
     backdrop: [
       { type: 'gradient', top: '#4a6a9a', bottom: '#e0ecf4' },
-      { type: 'ringrise', x: 0.5, horizon: 0.72, haze: '#d0e0ec' },
+      { type: 'ringrise', x: 0.5, horizon: 0.72, haze: '#d0e0ec', state: 'damaged' },
       { type: 'clouds', color: '#e0e8f0', light: '#ffffff', shade: '#8a9aa8', y: 0.1, height: 0.3, count: 5, scroll: 0.04 },
       { type: 'mountains', color: '#5a6a7a', light: '#c8d4e0', shadow: '#2a3440', cap: '#ffffff', scroll: 0.07, height: 0.5 },
       { type: 'hills', color: '#2e4a2e', rim: '#6a9a5a', scroll: 0.16, height: 0.36 },
@@ -730,4 +730,6 @@ THEMES['ark-ancient'] = {
 THEMES['zeta-halo-ancient'] = {
   ...THEMES['zeta-halo'],
   props: THEMES['zeta-halo'].props.filter((p) => p.kind !== 'crystal'),
+  // In the Forerunner era the ring is flawless: hard-light bridges, gleaming citadels.
+  backdrop: THEMES['zeta-halo'].backdrop.map((l) => (l.type === 'ringrise' ? { ...l, state: 'pristine' } : l)),
 };
