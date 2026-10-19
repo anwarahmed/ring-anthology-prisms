@@ -101,7 +101,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [ ] Detailed vehicles and weapons
    - [x] Terrain: richer tiles (seamless packed rock, sod lip, dense grass tufts, rocks;
      tiles designed on a 32-unit grid at ART resolution) (surface lip, strata, rocks, roots, wear) per theme
-   - [ ] Backgrounds: every theme brought up to the ring-rise standard (layered depth,
+   - [x] Backgrounds (industrial skylines, temple walls with alcoves and light beams,
+     HD mountains with gullies, hills with treelines): every theme brought up to the ring-rise standard (layered depth,
      atmosphere, light); ringrise skies unchanged
    - [ ] Full review: tests/sheets.mjs on all levels, perf scan, smoke checks
 

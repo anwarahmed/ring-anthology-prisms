@@ -614,26 +614,32 @@ export function buildBackdrop(scene, theme, worldW) {
           for (let o = 0; o < 4; o++) { v += (1 - Math.abs(noise1(x * f, seed + o) * 2 - 1)) * amp; amp *= 0.5; f *= 2.1; }
           return v / 1.875;
         };
-        const key = canvasTex(scene, width, H, (d, w) => {
+        // Painted at HD resolution (coordinates below are in screen pixels: x / HD).
+        const lw = Math.min(width, Math.floor(4096 / HD));
+        const key = canvasTex(scene, lw * HD, H * HD, (d, w) => {
           const tops = [];
-          for (let x = 0; x <= w; x++) tops.push(Math.round(H - H * L.height * (0.35 + 0.65 * ridge(x))));
-          for (let x = 0; x < w; x++) {
-            // Slope over a few columns, so faces shade in broad planes (no streaks).
-            const slope = Math.round((tops[Math.min(w, x + 3)] - tops[Math.max(0, x - 3)]) / 3);
-            for (let y = Math.max(0, tops[x]); y < H; y++) {
-              const depthIn = y - tops[x];
+          for (let X = 0; X <= w; X++) tops.push(H - H * L.height * (0.35 + 0.65 * ridge(X / HD)));
+          for (let X = 0; X < w; X++) {
+            const x = X / HD;
+            // Slope over a few pixels, so faces shade in broad planes (no streaks).
+            const slope = (tops[Math.min(w, X + 3 * HD)] - tops[Math.max(0, X - 3 * HD)]) / 3;
+            for (let Y = Math.max(0, Math.floor(tops[X] * HD)); Y < H * HD; Y++) {
+              const y = Y / HD;
+              const depthIn = y - tops[X];
               const strata = noise2(x / 30, y / 4, seed) - 0.5;
-              let c = slope > 0 ? lit : slope < 0 ? dark : base;
-              if (Math.abs(slope) <= 1 && depthIn > 3) c = mix(base, slope > 0 ? lit : dark, 0.5);
-              c = mix(c, strata > 0 ? lit : dark, Math.abs(strata) * 0.5);
-              if (cap && depthIn < 3 + noise1(x / 6, seed) * 4) c = cap;
+              const t = Math.max(-1, Math.min(1, slope * 0.7));
+              let c = t > 0 ? mix(base, lit, t) : mix(base, dark, -t);
+              c = mix(c, strata > 0 ? lit : dark, Math.abs(strata) * 0.45);
+              // Gullies: fine dark streaks running down the faces.
+              if (noise2(x / 3, y / 26, seed + 7) > 0.78) c = mix(c, dark, 0.35);
+              if (cap && depthIn < 3 + noise1(x / 6, seed) * 4) c = mix(cap, lit, depthIn < 0.8 ? 0.3 : 0);
               const fade = Math.min(1, depthIn / (H * 0.6));
-              if (atm && fade > BAYER[(y & 3) * 4 + (x & 3)] * 0.5 + 0.5) c = mix(c, hexRgb(atm.color), (fade - 0.5) * 0.3);
-              d.set([...c, 255], (y * w + x) * 4);
+              if (atm) c = mix(c, hexRgb(atm.color), Math.max(0, fade - 0.35) * 0.35);
+              d.set([...c, 255], (Y * w + X) * 4);
             }
           }
         });
-        scene.add.image(0, 0, key).setOrigin(0).setScrollFactor(sf2, 0).setDepth(depth);
+        scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(sf2, 0).setDepth(depth);
         break;
       }
       case 'clouds': {
@@ -720,17 +726,29 @@ export function buildBackdrop(scene, theme, worldW) {
         // Rolling hills with a lit rim, from layered sine noise.
         const H = VIEW.h, base = air(hexRgb(L.color), L.scroll), rim = air(hexRgb(L.rim), L.scroll);
         const seed = rnd.frac() * 100;
-        const key = canvasTex(scene, width, H, (d, w) => {
-          for (let x = 0; x < w; x++) {
+        // Painted at HD resolution: a lit rim, clumps of trees or bushes along the crest,
+        // shaded hollows, and a gentle darkening toward the bottom.
+        const lw = Math.min(width, Math.floor(4096 / HD));
+        const dark = mix(base, [0, 0, 0], 0.28);
+        const key = canvasTex(scene, lw * HD, H * HD, (d, w) => {
+          for (let X = 0; X < w; X++) {
+            const x = X / HD;
             const hgt = H * L.height * (0.55 + 0.25 * Math.sin(x / 47 + seed) + 0.15 * Math.sin(x / 19 + seed * 2) + 0.05 * Math.sin(x / 7));
-            const top = Math.round(H - hgt);
-            for (let y = Math.max(0, top); y < H; y++) {
-              const c = y - top < 2 ? rim : y - top < 4 && BAYER[(y & 3) * 4 + (x & 3)] < 0.5 ? rim : base;
-              d.set([...c, 255], (y * w + x) * 4);
+            const clump = Math.max(0, noise1(x / 5, seed * 13) - 0.45) * 9 * (L.trees === false ? 0 : 1);
+            const top = H - hgt - clump;
+            const slope = Math.cos(x / 47 + seed) * 0.25 / 47 * H * L.height + Math.cos(x / 19 + seed * 2) * 0.15 / 19 * H * L.height;
+            for (let Y = Math.max(0, Math.floor(top * HD)); Y < H * HD; Y++) {
+              const y = Y / HD;
+              const depthIn = y - top;
+              let c = depthIn < 1.2 ? rim : mix(base, slope > 0 ? dark : rim, Math.min(0.35, Math.abs(slope) * 0.6));
+              if (depthIn >= 1.2 && depthIn < clump + 2) c = mix(c, noise2(x / 1.5, y / 1.5, seed) > 0.5 ? rim : dark, 0.35);
+              c = mix(c, dark, Math.min(0.4, Math.max(0, depthIn - 6) / (H * 0.5)));
+              if (noise2(x / 9, y / 5, seed + 3) > 0.74) c = mix(c, dark, 0.2);
+              d.set([...c, 255], (Y * w + X) * 4);
             }
           }
         });
-        scene.add.image(0, 0, key).setOrigin(0).setScrollFactor(L.scroll, 0).setDepth(depth);
+        scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(L.scroll, 0).setDepth(depth);
         break;
       }
       case 'haze': {
