@@ -34,6 +34,18 @@ export default {
 Every card needs `title`, `text` and `source`. Cards that tell an archive scene from
 CAMPAIGN.md go in the `before` list of the level that follows that scene.
 
+Cards are animated with no extra data (`src/engine/vignette.js`): a window under the
+text shows the level's backdrop, its players running in (and off into the level, or
+away after it), and motifs picked from the card's words: fleets (styled by the side
+named), a Halo ring (firing, if the card says so), Flood spores, drop pods, slipspace,
+battle, glassing, or calm motes. Indoor backdrops skip the sky motifs. A card can set
+`motifs: [...]` to choose them.
+
+The **prologue** (first time the first level is started) and **epilogue** (after the
+last level's cards, ending on a finale) are beats in `src/content/saga.js`, played by
+`SagaScene` the same way, full screen. Canon only, each beat sourced. Watch them with
+`?saga=prologue` or `?saga=epilogue`. Home soundtrack ids: `prologue`, `epilogue`.
+
 ## The map
 
 Rows of characters, all the same width. One tile is 16 px. The screen is 30 × 17 tiles.

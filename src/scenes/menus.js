@@ -20,7 +20,7 @@ import { THEMES } from '../content/themes.js';
 const ERA_LIST = ['forerunner', 'covenant', 'created', 'banished'];
 
 // Any button on any device counts as "press start" / "confirm".
-function anyDevice(controls) {
+export function anyDevice(controls) {
   for (const d of ['kb1', 'kb2', 'pad0', 'pad1', 'pad2', 'pad3']) {
     const s = controls.read(d);
     if (s.pressed.jump || s.pressed.fire || s.pressed.pause || controls.anyButton(d)) return { device: d, s };
@@ -49,6 +49,8 @@ export class BootScene extends Phaser.Scene {
     } catch { /* fonts fall back to monospace */ }
     if (session.debug.level && LEVELS[session.debug.level]) {
       this.scene.start('Level', { levelId: session.debug.level });
+    } else if (['prologue', 'epilogue'].includes(session.debug.saga)) {
+      this.scene.start('Saga', { which: session.debug.saga, then: ['Title'] });
     } else {
       this.scene.start('Title');
     }
@@ -344,6 +346,10 @@ export class TimelineScene extends Phaser.Scene {
         audio.sfx('ui');
         this.registry.set('partIndex', this.partIndex);
         this.registry.set('levelIndex', this.levelIndex);
+        // The prologue plays once, before the first level's Archive cards.
+        if (l.id === ORDER[0].id && !session.seen('prologue')) {
+          return go(this, 'Saga', { which: 'prologue', then: ['Archive', { levelId: l.id, which: 'before' }] });
+        }
         return go(this, 'Archive', { levelId: l.id, which: 'before' });
       }
     } else if (s.pressed.ability) {
@@ -458,6 +464,7 @@ export class ArchiveScene extends Phaser.Scene {
       return;
     }
     if (this.which === 'before') go(this, 'Level', { levelId: this.levelId });
+    else if (this.levelId === ORDER.at(-1).id) go(this, 'Saga', { which: 'epilogue', then: ['Timeline', { after: this.levelId }] });
     else go(this, 'Timeline', { after: this.levelId });
   }
 }

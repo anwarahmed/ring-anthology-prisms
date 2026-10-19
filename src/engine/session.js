@@ -17,9 +17,10 @@ export const session = {
   players: [{ device: 'kb1' }],
   difficulty: params.get('difficulty') ?? 'normal',
   progress: load(),
-  // Debug and test switches: ?level=1a ?p2=kb2 ?bot=1 ?god=1 ?all=1 ?difficulty=easy
+  // Debug and test switches: ?level=1a ?saga=prologue|epilogue ?p2=kb2 ?bot=1 ?god=1 ?all=1 ?difficulty=easy
   debug: {
     level: params.get('level'),
+    saga: params.get('saga'),
     p2: params.get('p2'),
     bot: params.has('bot'),
     god: params.has('god'),
@@ -28,6 +29,20 @@ export const session = {
 
   complete(id) {
     this.progress.done[id] = this.difficulty;
+    this.save();
+  },
+
+  // Something shown once, like the prologue.
+  markSeen(key) {
+    this.progress.seen = { ...this.progress.seen, [key]: true };
+    this.save();
+  },
+
+  seen(key) {
+    return !!this.progress.seen?.[key];
+  },
+
+  save() {
     try {
       window.localStorage.setItem(KEY, JSON.stringify(this.progress));
     } catch {

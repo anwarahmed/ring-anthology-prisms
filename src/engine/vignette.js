@@ -86,8 +86,12 @@ function textures(scene) {
 }
 
 export class Vignette {
-  constructor(scene, rect, level) {
+  // level: { players, theme, era } (a level, or a saga beat). scale: hero size; frame:
+  // outline the window; max: how many heroes.
+  constructor(scene, rect, level, { scale = 1, frame = true, max = 2 } = {}) {
     this.scene = scene;
+    this.scale = scale;
+    this.max = max;
     this.rect = rect;
     this.level = level;
     this.era = ERAS[level.era];
@@ -95,8 +99,7 @@ export class Vignette {
     const layers = (THEMES[level.theme]?.backdrop ?? []).map((l) => l.type);
     this.outdoor = layers.some((t) => OUTDOOR.has(t));
     this.skyRing = layers.includes('halo') || layers.includes('ringrise'); // already drawn
-    const g = scene.add.graphics().setDepth(5);
-    g.lineStyle(1, this.era.color, 0.9).strokeRect(rect.x - 0.5, rect.y - 0.5, rect.w + 1, rect.h + 1);
+    if (frame) scene.add.graphics().setDepth(5).lineStyle(1, this.era.color, 0.9).strokeRect(rect.x - 0.5, rect.y - 0.5, rect.w + 1, rect.h + 1);
     this.ground = rect.y + rect.h - 5;
     this.layer = scene.add.container(0, 0).setDepth(2);
     this.front = scene.add.container(0, 0).setDepth(4);
@@ -111,22 +114,22 @@ export class Vignette {
 
   // The level's player characters, with their arm and weapon like in the level.
   makeHeroes() {
-    const ids = [...new Set(this.level.players ?? [])].filter((id) => CHARACTERS[id]).slice(0, 2);
+    const ids = [...new Set(this.level.players ?? [])].filter((id) => CHARACTERS[id]).slice(0, this.max);
     return ids.map((id, i) => {
       const def = CHARACTERS[id];
       const key = bodyTexture(this.scene, id, def);
       const meta = META.get(key);
-      const body = this.scene.add.sprite(-99, 0, key).setScale(1 / HD);
+      const body = this.scene.add.sprite(-99, 0, key).setScale(this.scale / HD);
       body.play(`${key}-idle`);
       const B = BODIES[def.body];
       let arm = null;
       if (B.reach && !B.flying) {
         const w = def.weapons?.[0] ?? null;
-        arm = this.scene.add.sprite(-99, 0, armTexture(this.scene, id, def, w ?? 'none', w ? WEAPONS[w] : null), aimFrame(1, 0.25).i).setScale(1 / HD);
+        arm = this.scene.add.sprite(-99, 0, armTexture(this.scene, id, def, w ?? 'none', w ? WEAPONS[w] : null), aimFrame(1, 0.25).i).setScale(this.scale / HD);
       }
       this.front.add(body);
       if (arm) this.front.add(arm);
-      return { key, meta, body, arm, home: this.rect.x + 54 + i * 30, y: this.ground - meta.h / 2 / HD };
+      return { key, meta, body, arm, home: this.rect.x + 54 * this.scale + i * 30 * this.scale, y: this.ground - (meta.h / 2 / HD) * this.scale };
     });
   }
 
@@ -136,7 +139,8 @@ export class Vignette {
       if (!h.arm) continue;
       const sh = h.meta.shoulders[h.body.frame.name] ?? h.meta.shoulders[0];
       const f = h.body.flipX ? -1 : 1;
-      h.arm.setPosition(h.body.x + (sh[0] - h.meta.w / 2) * f / HD, h.body.y + (sh[1] - h.meta.h / 2) / HD).setFlipX(h.body.flipX);
+      const k = this.scale / HD;
+      h.arm.setPosition(h.body.x + (sh[0] - h.meta.w / 2) * f * k, h.body.y + (sh[1] - h.meta.h / 2) * k).setFlipX(h.body.flipX);
     }
   }
 
@@ -175,7 +179,7 @@ export class Vignette {
     const old = this.parts;
     this.parts = [];
     for (const p of old) this.scene.tweens.add({ targets: p, alpha: 0, duration: 300, onComplete: () => p.destroy() });
-    for (const m of motifsFor(card, this.outdoor)) this[m](card);
+    for (const m of card.motifs ?? motifsFor(card, this.outdoor)) this[m](card);
   }
 
   add(obj, front = false) {

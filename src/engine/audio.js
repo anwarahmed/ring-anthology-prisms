@@ -224,7 +224,8 @@ class Audio {
     this.stopHome();
     if (this.track?.id === trackId) return this.setIntensity(intensity);
     this.stopMusic();
-    const def = TRACKS[trackId];
+    // ctx.fallback: the built-in track for an id only the home soundtrack has (the saga).
+    const def = TRACKS[trackId] ?? TRACKS[ctx.fallback];
     if (!def) return;
     const stepDur = 60 / def.bpm / 4;
     const layers = Object.entries(def.layers).map(([name, l]) => {
