@@ -181,6 +181,7 @@ class Audio {
       case 'uiMove': this.tone({ wave: 'square', freq: 440, dur: 0.04, vol: 0.04 }); break;
       case 'boss': this.tone({ wave: 'sawtooth', freq: 55, dur: 1.6, vol: 0.2 }); this.tone({ wave: 'sawtooth', freq: 82.4, dur: 1.6, vol: 0.15 }); this.noise({ dur: 1.5, vol: 0.3, freq: 200, type: 'lowpass' }); break;
       case 'down': this.tone({ wave: 'square', freq: 440, to: 110, dur: 0.6, vol: 0.08 }); break;
+      case 'party': [784, 988, 1175, 1568].forEach((f, i) => this.tone({ wave: 'triangle', freq: f, dur: 0.09, vol: 0.05, at: i * 0.05 })); this.noise({ dur: 0.25, vol: 0.08, freq: 5000, at: 0.05 }); break;
       case 'checkpoint': [523, 659, 784].forEach((f, i) => this.tone({ wave: 'square', freq: f, dur: 0.12, vol: 0.05, at: i * 0.08 })); break;
       default: break;
     }

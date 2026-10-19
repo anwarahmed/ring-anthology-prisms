@@ -13,6 +13,7 @@ import { fireWeapon, throwGrenade, melee } from './combat.js';
 import { makeKit } from './kits.js';
 import { BEHAVIORS, avoidHazards, keepApart, catchUp } from './ai.js';
 import { audio } from './audio.js';
+import { skulls } from './skulls.js';
 import { isSolid } from './tileset.js';
 import { HD } from './config.js';
 import { dropShadow } from './fx.js';
@@ -143,8 +144,9 @@ export class Unit extends Actor {
     super(scene, x, y, id, def, team ?? (ally ? 'players' : 'enemies'));
     this.id = id;
     this.ally = ally;
-    const k = ally ? { enemyHealth: 1 } : scene.diff;
-    this.stats = { health: Math.round(def.health * k.enemyHealth), shields: Math.round((def.shields ?? 0) * k.enemyHealth) };
+    // Thunderstorm skull: enemies get half again as much health and shields.
+    const k = ally ? 1 : scene.diff.enemyHealth * (skulls.has('thunderstorm') ? 1.5 : 1);
+    this.stats = { health: Math.round(def.health * k), shields: Math.round((def.shields ?? 0) * k) };
     this.health = this.stats.health;
     this.shields = this.stats.shields;
     this.shieldColor = hexNum(def.pal.glow ?? '#9fe8ff');

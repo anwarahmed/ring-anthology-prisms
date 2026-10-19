@@ -32,6 +32,17 @@ export const session = {
     this.save();
   },
 
+  // A finished run: keeps the level's best time (seconds) and most medals.
+  record(id, { time, medals }) {
+    const b = this.progress.best?.[id];
+    this.progress.best = { ...this.progress.best, [id]: { time: Math.min(time, b?.time ?? Infinity), medals: Math.max(medals, b?.medals ?? 0) } };
+    this.save();
+  },
+
+  best(id) {
+    return this.progress.best?.[id] ?? null;
+  },
+
   // Something shown once, like the prologue.
   markSeen(key) {
     this.progress.seen = { ...this.progress.seen, [key]: true };

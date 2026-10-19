@@ -8,7 +8,8 @@ import { CHARACTERS } from '../content/characters.js';
 import { UNITS } from '../content/units.js';
 import { BODIES } from '../content/bodies.js';
 import { THEMES } from '../content/themes.js';
-import { TILE, ERAS, DIFFICULTY, VIEW } from '../engine/config.js';
+import { TILE, ERAS, DIFFICULTY, VIEW, GRAVITY } from '../engine/config.js';
+import { skulls } from '../engine/skulls.js';
 import { parseMap, groundBelow, TILES } from '../engine/mapparse.js';
 import { TILESET, COLLIDES, isSolid, isPlatform, isHazard } from '../engine/tileset.js';
 import { tilesTexture, baseTextures, hexNum, TILE_PX } from '../engine/textures.js';
@@ -50,6 +51,8 @@ export class LevelScene extends Phaser.Scene {
   create() {
     hdCamera(this);
     baseTextures(this);
+    // Low Gravity skull: higher jumps, slower falls (for everything, grenades too).
+    this.physics.world.gravity.y = GRAVITY * (skulls.has('lowgrav') ? 0.55 : 1);
     // All the level's character, weapon and vehicle art, so nothing is made mid-fight.
     prewarm(this, this.level);
     const L = this.level;
@@ -498,7 +501,10 @@ export class LevelScene extends Phaser.Scene {
   endLevel({ result = 'win' } = {}) {
     if (this.ended) return;
     this.ended = true;
-    if (!this.firefight) session.complete(this.levelId);
+    if (!this.firefight) {
+      session.complete(this.levelId);
+      session.record(this.levelId, { time: Math.round((Date.now() - this.stats.start) / 1000), medals: this.stats.medals.reduce((n, m) => n + m.length, 0) });
+    }
     this.time.delayedCall(result === 'history' ? 2500 : 1200, () => {
       this.cameras.main.fadeOut(900);
       this.cameras.main.once('camerafadeoutcomplete', () => {

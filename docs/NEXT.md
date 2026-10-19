@@ -82,8 +82,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
      src/engine/vignette.js
    - [x] Prologue (before Part I) and grand animated epilogue after the last level;
      canon-only text, kid-friendly: src/content/saga.js + SagaScene (?saga=...)
-   - [ ] Extras: medals and best times on the level select; Skulls menu (fun
-     modifiers); more Firefight maps
+   - [x] Extras: best times and medals on the level select; Skulls menu (Grunt
+     Birthday Party, Low Gravity, Thunderstorm). Firefight already offers all 53 maps
 
 ## Published
 

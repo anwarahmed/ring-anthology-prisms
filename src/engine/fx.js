@@ -3,6 +3,7 @@
 
 import Phaser from 'phaser';
 import { audio } from './audio.js';
+import { skulls } from './skulls.js';
 import { hexNum } from './textures.js';
 
 export class Fx {
@@ -43,6 +44,16 @@ export class Fx {
     this.glow(x, y, c, big ? 2.5 : 1.2);
     this.ring(x, y, c, big ? 1.6 : 0.7);
     audio.sfx('puff');
+    // Grunt Birthday Party skull: confetti and a cheer.
+    if (skulls.has('birthday')) {
+      this.confetti ??= this.scene.add.particles(0, 0, 'px', {
+        emitting: false, lifespan: { min: 900, max: 1600 }, speed: { min: 60, max: 200 }, angle: { min: 200, max: 340 },
+        scaleX: { min: 2, max: 3 }, scaleY: { min: 1, max: 1.6 }, rotate: { min: 0, max: 360 }, alpha: { start: 1, end: 0.2 },
+        tint: [0xff5a8a, 0xffd23a, 0x5fd35f, 0x45b6ff, 0xc890ff, 0xffffff], gravityY: 260,
+      }).setDepth(40);
+      this.confetti.explode(big ? 60 : 26, x, y - 4);
+      audio.sfx('party');
+    }
   }
 
   sparks(x, y, color, n = 6) {

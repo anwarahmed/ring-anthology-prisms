@@ -222,6 +222,16 @@ menus, `src/scenes/GraphicsScene.js`), saved in localStorage:
 Positions in the engine are feet points: map rows, markers and spawns place a unit's
 feet on the ground, and the sprite is centered above them.
 
+## Skulls and records
+
+**Skulls** (`src/engine/skulls.js`, title menu SKULLS, saved in this browser) are fun
+modifiers: Grunt Birthday Party (confetti and a cheer on every defeat, in `fx.puff`),
+Low Gravity (world gravity × 0.55 in LevelScene) and Thunderstorm (enemies get 1.5×
+health and shields, in the Unit constructor).
+
+**Records:** finishing a level saves its best time and most medals
+(`session.record`); the level select shows them for finished levels.
+
 ## Vehicles
 
 `src/content/vehicles.js` (rigs and stats) and `src/engine/vehicles.js`. Press SWAP
