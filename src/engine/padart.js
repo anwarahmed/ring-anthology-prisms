@@ -6,7 +6,7 @@
 // Button numbers are the ones the browser reports on Linux (the same order as
 // RetroArch's udev autoconfig for the device).
 
-// The 8BitDo M30 in its Mega Drive Mini mode (it reports "6B controller", 0ca3:0024,
+// The 8BitDo M30 (the light grey one with colorful buttons) in its Mega Drive Mini mode (it reports "6B controller", 0ca3:0024,
 // like the SEGA Mega Drive Mini 6B controller): D-pad, small X Y Z over big A B C, START
 // at the top, three small buttons under it, and L and R on the top edge. L and R are
 // 6 and 7 (SDL's mapping for this device); the "-" button reports as 8. The other two
@@ -14,12 +14,14 @@
 const M30 = {
   match: /0ca3.*0024|6B controller/i,
   buttons: {
-    3: { label: 'X', x: 120, y: 40, r: 6 }, 0: { label: 'Y', x: 135, y: 33, r: 6 }, 4: { label: 'Z', x: 150, y: 31, r: 6 },
-    2: { label: 'A', x: 122, y: 63, r: 8 }, 1: { label: 'B', x: 139, y: 57, r: 8 }, 5: { label: 'C', x: 156, y: 51, r: 8 },
-    9: { label: 'START', x: 88, y: 30, w: 38 },
-    8: { label: '-', name: 'SELECT', x: 78, y: 70, r: 4 },
-    6: { label: 'L', x: 42, y: 13, w: 36, shoulder: true }, 7: { label: 'R', x: 138, y: 13, w: 36, shoulder: true },
+    3: { label: 'X', x: 120, y: 40, r: 6, fill: 0x9c9ca2 }, 0: { label: 'Y', x: 135, y: 33, r: 6, fill: 0x9c9ca2 }, 4: { label: 'Z', x: 150, y: 31, r: 6, fill: 0x9c9ca2 },
+    2: { label: 'A', x: 122, y: 63, r: 8, fill: 0x2fae4c }, 1: { label: 'B', x: 139, y: 57, r: 8, fill: 0xf0c218 }, 5: { label: 'C', x: 156, y: 51, r: 8, fill: 0x2a4ad8 },
+    9: { label: 'START', x: 88, y: 30, w: 38, fill: 0xd0254c },
+    8: { label: '-', name: 'SELECT', x: 78, y: 70, r: 4, fill: 0xdad7d0, ink: '#6a6a70' },
+    6: { label: 'L', x: 42, y: 13, w: 36, shoulder: true, fill: 0xc8234a }, 7: { label: 'R', x: 138, y: 13, w: 36, shoulder: true, fill: 0xc8234a },
   },
+  // The light grey M30 with colorful buttons.
+  look: { body: 0xeceae5, edge: 0xa8a59e, shadow: 0x8a877f, plate: 0xdedbd4, dpadBase: 0xd2cfc8, dpad: 0x4a4c53, small: 0xd8d5ce },
   decor: [{ x: 88, y: 70, r: 4 }, { x: 98, y: 70, r: 4 }],
   dpad: { x: 44, y: 56, axes: [0, 1] },
 };
@@ -50,55 +52,62 @@ export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
   const axis = (a) => pad?.axes[a]?.getValue() ?? 0;
   const SEL = 0x45e6ff;
   const HELD = 0x7fe07f;
+  const L = layout.look;
 
   // Shoulder buttons (behind the body's top edge), then the body: two round grips
   // joined by a wide middle, with a face plate behind the buttons.
   for (const [b, k] of Object.entries(layout.buttons)) {
     if (!k.shoulder) continue;
     const n = Number(b);
-    g.fillStyle(pressed(n) ? HELD : 0x4a4f5c, 1).fillRoundedRect(ox + k.x - k.w / 2, oy + k.y - 6, k.w, 14, 5);
+    g.fillStyle(pressed(n) ? HELD : k.fill, 1).fillRoundedRect(ox + k.x - k.w / 2, oy + k.y - 6, k.w, 14, 5);
     if (on(n)) g.lineStyle(2, SEL, 1).strokeRoundedRect(ox + k.x - k.w / 2 - 1, oy + k.y - 7, k.w + 2, 16, 6);
   }
-  g.fillStyle(0x1a1c22, 1).fillEllipse(ox + 44, oy + 58, 88, 90).fillEllipse(ox + 136, oy + 58, 88, 90)
-    .fillRoundedRect(ox + 44, oy + 16, 92, 86, 20);
-  g.fillStyle(0x34373f, 1).fillEllipse(ox + 44, oy + 57, 82, 84).fillEllipse(ox + 136, oy + 57, 82, 84)
-    .fillRoundedRect(ox + 44, oy + 17, 92, 80, 18);
-  g.fillStyle(0x3e424c, 1).fillEllipse(ox + 138, oy + 48, 62, 54);
-  g.lineStyle(1, 0x5a6070, 0.9).strokeEllipse(ox + 138, oy + 48, 62, 54);
-  g.fillStyle(0x2a2d34, 1).fillCircle(ox + 44, oy + 56, 24);
+  g.fillStyle(L.shadow, 1).fillEllipse(ox + 44, oy + 59, 88, 90).fillEllipse(ox + 136, oy + 59, 88, 90)
+    .fillRoundedRect(ox + 44, oy + 16, 92, 88, 20);
+  g.fillStyle(L.edge, 1).fillEllipse(ox + 44, oy + 57, 88, 88).fillEllipse(ox + 136, oy + 57, 88, 88)
+    .fillRoundedRect(ox + 44, oy + 14, 92, 86, 20);
+  g.fillStyle(L.body, 1).fillEllipse(ox + 44, oy + 56, 84, 84).fillEllipse(ox + 136, oy + 56, 84, 84)
+    .fillRoundedRect(ox + 44, oy + 16, 92, 80, 18);
+  g.fillStyle(L.plate, 1).fillEllipse(ox + 138, oy + 48, 62, 54);
+  g.lineStyle(1, L.edge, 0.8).strokeEllipse(ox + 138, oy + 48, 62, 54);
+  g.fillStyle(L.dpadBase, 1).fillCircle(ox + 44, oy + 56, 24);
+  g.lineStyle(1, L.edge, 0.8).strokeCircle(ox + 44, oy + 56, 24);
 
   // D-pad.
   const d = layout.dpad;
   const [ax, ay] = d.axes;
   const cx = ox + d.x;
   const cy = oy + d.y;
-  g.fillStyle(0x22242b, 1).fillCircle(cx, cy, 20);
+  g.fillStyle(0x34363c, 1).fillCircle(cx, cy, 19);
   const arm = (dx, dy, lit, sel) => {
     const x = cx + dx * 10 - 5;
     const y = cy + dy * 10 - 5;
-    g.fillStyle(lit ? HELD : 0x121318, 1).fillRect(x, y, 10, 10);
+    g.fillStyle(lit ? HELD : L.dpad, 1).fillRect(x, y, 10, 10);
     if (sel) g.lineStyle(2, SEL, 1).strokeRect(x - 1, y - 1, 12, 12);
   };
-  g.fillStyle(0x121318, 1).fillRect(cx - 5, cy - 5, 10, 10);
+  g.fillStyle(L.dpad, 1).fillRect(cx - 5, cy - 5, 10, 10);
   arm(0, -1, axis(ay) < -0.5, axisOn(ay, -1));
   arm(0, 1, axis(ay) > 0.5, axisOn(ay, 1));
   arm(-1, 0, axis(ax) < -0.5, axisOn(ax, -1));
   arm(1, 0, axis(ax) > 0.5, axisOn(ax, 1));
 
   // Buttons.
-  for (const d of layout.decor ?? []) g.fillStyle(0x121318, 1).fillCircle(ox + d.x, oy + d.y, d.r);
+  for (const d of layout.decor ?? []) g.fillStyle(L.small, 1).fillCircle(ox + d.x, oy + d.y, d.r).lineStyle(1, L.edge, 1).strokeCircle(ox + d.x, oy + d.y, d.r);
   for (const [b, k] of Object.entries(layout.buttons)) {
     if (k.shoulder) continue;
     const n = Number(b);
     const x = ox + k.x;
     const y = oy + k.y;
-    const fill = pressed(n) ? HELD : 0x16171c;
+    // Pressed buttons flash white with a green ring (A is already green).
+    const fill = pressed(n) ? 0xffffff : k.fill;
     if (k.w) {
       g.fillStyle(fill, 1).fillRoundedRect(x - k.w / 2, y - 6, k.w, 12, 6);
+      if (pressed(n)) g.lineStyle(2, HELD, 1).strokeRoundedRect(x - k.w / 2 - 1, y - 7, k.w + 2, 14, 7);
       if (on(n)) g.lineStyle(2, SEL, 1).strokeRoundedRect(x - k.w / 2 - 1, y - 7, k.w + 2, 14, 7);
     } else {
-      g.fillStyle(0x0c0d10, 1).fillCircle(x, y + 1, k.r + 0.5);
+      g.fillStyle(L.shadow, 1).fillCircle(x, y + 1, k.r + 0.5);
       g.fillStyle(fill, 1).fillCircle(x, y, k.r);
+      if (pressed(n)) g.lineStyle(2, HELD, 1).strokeCircle(x, y, k.r + 1);
       if (k.r > 5) g.fillStyle(0xffffff, pressed(n) ? 0 : 0.12).fillCircle(x - k.r / 4, y - k.r / 4, k.r / 2.5);
       if (on(n)) g.lineStyle(2, SEL, 1).strokeCircle(x, y, k.r + 2);
     }
@@ -107,5 +116,5 @@ export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
 
 // Button letters (Text objects) for drawPad, made once per layout.
 export function padLabels(scene, layout, ox, oy, txt) {
-  return Object.values(layout.buttons).map((k) => txt(scene, ox + k.x, oy + k.y + (k.shoulder ? -3 : 0.5), k.label, { size: 8, color: k.w ? '#9aa4c8' : '#d8dce8' }).setOrigin(0.5));
+  return Object.values(layout.buttons).map((k) => txt(scene, ox + k.x, oy + k.y + (k.shoulder ? -3 : 0.5), k.label, { size: 8, color: k.ink ?? '#ffffff' }).setOrigin(0.5));
 }
