@@ -6,7 +6,7 @@ export const VIEW = { w: 480, h: 270 };
 // zoomed HD×, so world units, maps and physics stay the same.
 export const HD = 2;
 // Art style: 'prerendered' (smooth 3D-shaded art), 'hybrid' (pre-rendered characters,
-// pixel-art world) or 'pixel' (outlined, dithered pixel art). Chosen on the GRAPHICS
+// pixel-art world) or 'pixel' (outlined, dithered pixel art). Chosen on the SETTINGS
 // screen (saved by src/engine/graphics.js); ?style= overrides it.
 function savedStyle() {
   try {

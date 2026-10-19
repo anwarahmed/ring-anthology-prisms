@@ -96,7 +96,7 @@ export class TitleScene extends Phaser.Scene {
     // Menu.
     panel(this, VIEW.w / 2 - 66, 158, 132, 56);
     this.bar = selectBar(this, 0x45e6ff);
-    this.labels = ['PLAY', 'FIREFIGHT', 'CONTROLS', 'GRAPHICS'];
+    this.labels = ['PLAY', 'FIREFIGHT', 'CONTROLS', 'SETTINGS'];
     this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 168 + i * 12, label, { size: 8 }).setOrigin(0.5));
     this.sel = 0;
     this.refreshMenu();
@@ -488,10 +488,10 @@ export class PauseScene extends Phaser.Scene {
     panel(this, 110, 22, 260, 200, color);
     header(this, 'PAUSED', 44, color);
     this.bar = selectBar(this, color);
-    this.options = ['RESUME', 'RESTART CHECKPOINT', 'CONTROLS', 'GRAPHICS', 'QUIT TO TIMELINE'];
+    this.options = ['RESUME', 'RESTART CHECKPOINT', 'CONTROLS', 'SETTINGS', 'QUIT TO TIMELINE'];
     this.sel = 0;
     this.items = this.options.map((o, i) => txt(this, VIEW.w / 2, 78 + i * 18, o, { size: 8 }).setOrigin(0.5));
-    const help = 'Change buttons under CONTROLS, and screen effects under GRAPHICS.';
+    const help = `Change buttons under CONTROLS, and screen effects${audio.home ? ' and music' : ''} under SETTINGS.`;
     txt(this, VIEW.w / 2, 172, help, { font: 'read', size: 14, color: '#9aa4c8', align: 'center', wrap: 230 }).setOrigin(0.5, 0);
     this.ready = this.time.now + 250;
     this.refresh();

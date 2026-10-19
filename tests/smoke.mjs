@@ -172,7 +172,7 @@ await run('graphics', '', async (page) => {
   await page.screenshot({ path: join(shots, 'graphics.png') });
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('ring-anthology-prisms.graphics') ?? '{}'));
   if (saved.preset !== 'arcade' || !(saved.scanlines > 0)) throw new Error(`preset not saved: ${JSON.stringify(saved)}`);
-  // The CRT pass draws the whole frame: the top third (the GRAPHICS title) must not be blank.
+  // The CRT pass draws the whole frame: the top third (the SETTINGS title) must not be blank.
   const top = await page.evaluate(() => new Promise((done) => window.__game.renderer.snapshotArea(0, 0, 960, 180, (img) => {
     const c = document.createElement('canvas');
     c.width = img.width;

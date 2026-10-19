@@ -1,4 +1,4 @@
-// Graphics: art style, CRT emulation, the FPS counter, and (with a home soundtrack
+// Settings: art style, CRT emulation, the FPS counter, and (with a home soundtrack
 // installed) music. Opened from the title menu or
 // the pause menu (data.returnTo). CRT changes show at once (the effect is drawn over
 // the whole screen, this menu included); a new art style reloads the page, because
@@ -59,7 +59,7 @@ export class GraphicsScene extends Phaser.Scene {
     const g = this.add.graphics();
     [0xffffff, 0xffd23a, 0x45e6ff, 0x5fd35f, 0xd04fd0, 0xe0453a, 0x3f6cf5].forEach((c, i) => g.fillStyle(c, 0.9).fillRect(16 + i * 18, VIEW.h - 30, 16, 20));
     for (let i = 0; i < 8; i++) g.fillStyle(0x111111 * (i * 2 + 1), 1).fillRect(VIEW.w - 160 + i * 18, VIEW.h - 30, 16, 20);
-    header(this, 'GRAPHICS', 14, 0x45e6ff);
+    header(this, 'SETTINGS', 14, 0x45e6ff);
     // MUSIC only shows when a home soundtrack is installed (public/home-soundtrack/).
     const rows = ROWS.filter((r) => !r.home || audio.home);
     this.gap = rows.length > 14 ? 12 : 13;

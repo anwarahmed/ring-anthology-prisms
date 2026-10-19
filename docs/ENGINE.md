@@ -179,9 +179,9 @@ Everything is drawn in code, in a 16-bit style:
 - **Preview:** `node scripts/preview-sprites.mjs [id ...]` renders every frame, plus
   arms at three angles, to `test-results/sprites.png`. Check new art there first.
 
-### Graphics settings
+### Settings (graphics and music)
 
-`src/engine/graphics.js` holds the player's GRAPHICS screen choices (title and pause
+`src/engine/graphics.js` holds the player's SETTINGS screen choices (title and pause
 menus, `src/scenes/GraphicsScene.js`), saved in localStorage:
 
 - **Art style** (`STYLE` in `config.js`: `prerendered`, `hybrid`, `pixel`). Read once at
