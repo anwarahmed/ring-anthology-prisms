@@ -1,6 +1,7 @@
 // Renders every character and unit (all frames, plus arm overlays composited at three
-// aim angles) into test-results/sprites.png at 4× scale, for reviewing art.
-//   node scripts/preview-sprites.mjs [id ...]
+// aim angles) into test-results/sprites.png, for reviewing art. --idle shows only the
+// standing frame and the three aim composites (a compact gallery of many units).
+//   node scripts/preview-sprites.mjs [--idle] [id ...]
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
@@ -10,8 +11,10 @@ import { WEAPONS } from '../src/content/weapons.js';
 import { bodyFrames, armFrames } from '../src/engine/sprites.js';
 import { BODIES } from '../src/content/bodies.js';
 
-const SCALE = 4;
-const only = process.argv.slice(2);
+const SCALE = 2;
+const args = process.argv.slice(2);
+const idleOnly = args.includes('--idle');
+const only = args.filter((a) => a !== '--idle');
 const defs = [...Object.entries(CHARACTERS), ...Object.entries(UNITS)].filter(([id]) => !only.length || only.includes(id));
 
 const rows = defs.map(([id, def]) => {
@@ -21,8 +24,11 @@ const rows = defs.map(([id, def]) => {
   return { id, frames, arms };
 });
 
-const cellW = 84, cellH = 84;
-const cols = 15 + 3;
+// Cells fit the largest frame (art is drawn at ART density, config.js).
+const cellW = Math.max(...rows.flatMap((r) => r.frames.map((f) => f.w))) + 12;
+const cellH = Math.max(...rows.flatMap((r) => r.frames.map((f) => f.h))) + 12;
+const nFrames = idleOnly ? 1 : 15;
+const cols = nFrames + 3;
 const W = cols * cellW, H = rows.length * cellH;
 const img = new Uint8ClampedArray(W * H * 4);
 for (let i = 0; i < W * H; i++) img.set([22, 26, 38, 255], i * 4);
@@ -40,12 +46,12 @@ function blit(src, sw, sh, dx, dy, flip = false) {
 }
 
 rows.forEach((r, ri) => {
-  r.frames.forEach((f, fi) => blit(f.rgba, f.w, f.h, fi * cellW + (cellW - f.w) / 2 | 0, ri * cellH + cellH - f.h - 4));
+  r.frames.slice(0, nFrames).forEach((f, fi) => blit(f.rgba, f.w, f.h, fi * cellW + (cellW - f.w) / 2 | 0, ri * cellH + cellH - f.h - 4));
   // Composite: idle frame with the arm at up / level / down.
   if (r.arms) {
     [2, 4, 6].forEach((ai, k) => {
       const f = r.frames[0];
-      const ox = (15 + k) * cellW + ((cellW - f.w) / 2 | 0), oy = ri * cellH + cellH - f.h - 4;
+      const ox = (nFrames + k) * cellW + ((cellW - f.w) / 2 | 0), oy = ri * cellH + cellH - f.h - 4;
       blit(f.rgba, f.w, f.h, ox, oy);
       const a = r.arms[ai];
       blit(a.rgba, a.w, a.h, Math.round(ox + f.shoulder[0] - a.w / 2), Math.round(oy + f.shoulder[1] - a.h / 2));

@@ -42,6 +42,12 @@ export function materialsFor(def, gun) {
   };
   m.armorFar = material(darker(p.armor), { contrast: 1 });
   m.darkFar = material(darker(p.dark), { contrast: 0.8 });
+  // Detail materials: panel seams, glass reflections, bare metal (buckles, vents,
+  // bolts), and far-side trim.
+  m.seam = material(darker(p.dark, 0.55), { contrast: 0.7 });
+  m.shine = material('#eef6ff', { emissive: true });
+  m.metal = material('#6c727c', { spec: true, contrast: 1.2, texture: 0.25 });
+  m.trimFar = material(darker(p.trim), { contrast: 1 });
   if (gun) {
     m.gunBody = material(gun.body, { spec: true, contrast: 1.1 });
     m.gunDark = material(gun.dark ?? darker(gun.body, 0.4), { contrast: 0.9 });
