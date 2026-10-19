@@ -18,12 +18,15 @@ export function makeBot(scene, player) {
     const s = { x: 1, y: 0, aimX: 0, aimY: 0, stick: false, jump: false, fire: false, ability: false, grenade: false, swap: false, melee: false, pause: false };
     if (!player.alive) return s;
     // Vehicles: climb into a nearby empty seat; once inside, drive right and shoot.
-    const v = scene.vehicles?.find((vh) => vh.alive && vh.seatFor() && !abandoned.has(vh) && Math.abs(vh.x - player.x) < 160);
+    // (It can't fly, so it leaves aircraft alone.)
+    const v = scene.vehicles?.find((vh) => vh.alive && vh.def.kind !== 'air' && vh.seatFor() && !abandoned.has(vh) && Math.abs(vh.x - player.x) < 160);
     if (!player.vehicle && v) {
       s.x = Math.sign(v.x - player.x);
       s.swap = Math.abs(v.x - player.x) < 30 && Math.random() < 0.5;
     }
-    const n = nearest(player, scene, 320);
+    // Unarmed characters (Chakas, Riser) run for it, meleeing only what's in the way.
+    const unarmed = !player.vehicle && !player.weapons?.length;
+    const n = nearest(player, scene, unarmed ? 30 : 320);
     if (n) {
       s.stick = true;
       s.aimX = n.t.x - player.x;
