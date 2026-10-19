@@ -68,8 +68,11 @@ Tick boxes and commit after each step. Everything ticked is committed.
 
 9. **Next round (user, 2026-10-19: "let's do those" + animations, prologue, epilogue).**
    The user will playtest later; the 30-minute quota check-in resumes from here.
-   - [ ] Halo Infinite OST (zip in the private repo's sources/): clips for the Zeta
+   - [x] Halo Infinite OST (zip in the private repo's sources/): clips for the Zeta
      Halo levels (7c–7g), music plan + manifest, commit+push PRIVATE repo only
+   - [x] Controller picture on the CONTROLS screen (user's 8BitDo M30, drawn in code;
+     src/engine/padart.js). L/R = buttons 6/7 per SDL's mapping: unverified on the
+     real pad (the live highlight shows it)
    - [ ] Two-player + difficulty pass: bot-finish levels with 2 players on Easy and
      Normal (no god mode); fix stuck spots, far checkpoints, P2 off screen
    - [ ] Leftovers: 3m glowing decoration; bot leaves a stuck vehicle sooner
