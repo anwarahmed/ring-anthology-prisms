@@ -11,7 +11,7 @@ import { bodyTexture, armTexture, hexNum, META } from './textures.js';
 import { aimFrame } from './sprites.js';
 import { fireWeapon, throwGrenade, melee } from './combat.js';
 import { makeKit } from './kits.js';
-import { BEHAVIORS, avoidHazards, keepApart } from './ai.js';
+import { BEHAVIORS, avoidHazards, keepApart, catchUp } from './ai.js';
 import { audio } from './audio.js';
 import { isSolid } from './tileset.js';
 import { HD } from './config.js';
@@ -174,7 +174,7 @@ export class Unit extends Actor {
   tick(dt) {
     if (!this.alive) return;
     this.syncPilot();
-    this.brain(this, dt, this.scene);
+    if (!(this.ally && catchUp(this, this.scene))) this.brain(this, dt, this.scene);
     keepApart(this, this.scene);
     avoidHazards(this, this.scene);
     this.setFlipX(this.facing < 0);

@@ -127,16 +127,19 @@ export class HudScene extends Phaser.Scene {
     this.timerEnd = this.time.now + seconds * 1000;
   }
 
-  // One announcement at a time: a new one (a medal chain) replaces the last.
+  // Two slots, big (CHECKPOINT) above small (medals, pickups); a new announcement
+  // replaces the one in its slot, so a medal chain never stacks.
   announce(text, color = '#ffffff', big = false) {
-    if (this.announced?.active) {
-      this.tweens.killTweensOf(this.announced);
-      this.announced.destroy();
+    this.announced ??= {};
+    const old = this.announced[big];
+    if (old?.active) {
+      this.tweens.killTweensOf(old);
+      old.destroy();
     }
-    const t = txt(this, VIEW.w / 2, VIEW.h * 0.42, text, { size: big ? 16 : 8, color }).setOrigin(0.5).setScale(2).setAlpha(0);
+    const t = txt(this, VIEW.w / 2, VIEW.h * (big ? 0.34 : 0.42), text, { size: big ? 16 : 8, color }).setOrigin(0.5).setScale(2).setAlpha(0);
     this.tweens.add({ targets: t, scale: 1, alpha: 1, duration: 180, ease: 'Back.Out' });
     this.tweens.add({ targets: t, alpha: 0, y: t.y - 14, delay: 1300, duration: 500, onComplete: () => t.destroy() });
-    this.announced = t;
+    this.announced[big] = t;
   }
 
   go() {

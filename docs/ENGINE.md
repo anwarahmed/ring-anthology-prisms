@@ -79,7 +79,7 @@ Blocking actions finish before the next action starts.
 | `{ checkpoint: true }` | no | Respawn point if everyone goes down |
 | `{ fx: 'shake' \| 'flash' \| 'slowmo' }` | no | Screen effect |
 | `{ spawn: [group, ...] }` | no | Spawns enemies |
-| `{ allies: [group, ...] }` | no | Spawns allies (a group with `neutral: true` spawns bystanders nobody targets) |
+| `{ allies: [group, ...] }` | no | Spawns allies (a group with `neutral: true` spawns bystanders nobody targets). Allies follow the players; one left far behind or shut out of a locked arena re-enters at the screen edge |
 | `{ wave: [group, ...] }` | yes | Spawns, then waits until all are defeated |
 | `{ hold: { seconds, every, label, groups: [[group...], ...] } }` | yes | Defense: spawns the groups in turn every `every` seconds (sooner, 1.5 s after the field is cleared) until time runs out, then waits for the rest to be defeated |
 | `{ boss: { unit, from, title, subtitle } }` | yes | Letterboxed title card, boss bar; waits until the boss is defeated |

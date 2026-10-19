@@ -57,6 +57,20 @@ function tryFire(unit, dt, inRange) {
   }
 }
 
+// Runs before an ally's behavior. An ally left far behind (stuck on a step too tall
+// to climb, or just slow) or shut out of a locked arena comes back in at the edge of
+// the screen (inside the arena), the way reinforcements arrive. True if it moved.
+export function catchUp(unit, scene) {
+  const p = scene.players.find((pl) => pl.alive);
+  if (!p || unit.bodyDef.flying) return false;
+  const shutOut = scene.arena && (unit.x < scene.arena.x0 || unit.x > scene.arena.x1);
+  if (Math.abs(p.x - unit.x) <= 600 && !shutOut) return false;
+  const pt = scene.spawnPoint(unit.x < p.x ? 'left' : 'right', 0, false);
+  const h = unit.bodyDef.h * (unit.def.scale ?? 1);
+  unit.body.reset(pt.x, scene.standingY(pt.x, pt.y, h) - h / 2 - 1);
+  return true;
+}
+
 // Allies with nothing to shoot follow the nearest player. Each ally keeps its own
 // spot in a loose line behind the player, so allies never stand stacked on each other.
 function followPlayer(unit, scene) {
