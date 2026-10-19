@@ -20,11 +20,13 @@ export default {
         title: 'A New Enemy', when: 'c. 107,500 BCE', where: 'Human space',
         text: 'While they fought humanity, the Forerunners met the Flood for themselves. It spread through their ships faster than anyone expected.',
         source: 'Halopedia: Forerunner-Flood war',
+        scene: 'bg space #1a2238; ship forerunner -0.2>0.4 0.24 big; ship flood 1.2>0.7 0.14; W=forerunner-warrior@0.16; G=flood-warrior@0.86< & I=flood-infection@0.76<; G>0.56 & I>0.46; W fire G',
       },
       {
         title: 'A Hard Choice',
         text: 'Hundreds of Forerunner fleets were taken by the Flood. The warrior-servants made a hard rule: anything the Flood touched had to be destroyed, even their own ships.',
         source: 'Halopedia: Forerunner-Flood war',
+        scene: 'bg space; ship flood -0.2>0.48 0.3 big; ship forerunner 1.2>0.8 0.14; wait 0.3; boom 0.48 0.3 big & flash',
       },
     ],
     after: [
@@ -32,11 +34,13 @@ export default {
         title: 'Silence',
         text: 'Then the Flood seemed to vanish. Many believed humanity had found a cure. But the retreat was part of the Flood\'s own plan.',
         source: 'Halopedia: Forerunner-Flood war',
+        scene: 'W=forerunner-warrior@0.14 & V=forerunner-warrior@0.24; G=flood-warrior@0.72< & I=flood-infection@0.84<; G hide & I hide; W talk',
       },
       {
         title: 'Nine Thousand Years',
         text: 'The Flood stayed hidden for more than nine thousand years. When it returned, the great Forerunner-Flood war began.',
         source: 'Halopedia: Forerunner-Flood war',
+        scene: 'dark; wait 1; G=flood-warrior@0.62< & H=flood-warrior@0.8< & I=flood-infection@0.7<; light & flood 0.7; W=forerunner-warrior@0.08; W>0.26; W fire G',
       },
     ],
   },

@@ -20,11 +20,13 @@ export default {
         title: "The San'Shyuum", when: 'Late in the Forerunner-Flood war', where: 'Janjur Qom',
         text: "The San'Shyuum had once fought beside humanity. Now Forerunner defenses watched over their home system.",
         source: 'Halopedia: Janjur Qom; Battle of Charum Hakkor',
+        scene: 'planet 0.18 0.2 0.06 #e0c070; S=sanshyuum@0.28; T=sentinel@0.7,0.34< & U=sentinel@0.86,0.52<; S face >',
       },
       {
         title: 'The Uprising', where: 'Janjur Qom',
         text: "The San'Shyuum rose up against the Forerunner defenses around their world.",
         source: 'Halopedia: Janjur Qom',
+        scene: 'S=sanshyuum@0.18 & R=sanshyuum@0.3; T=sentinel@0.76,0.36<; S fire T & R fire T; T down; boom 0.8 0.5',
       },
     ],
     after: [
@@ -32,11 +34,13 @@ export default {
         title: 'The Ring', where: 'Janjur Qom',
         text: 'The uprising failed. As punishment, the Master Builder used a Halo on Janjur Qom, and all life on the planet went quiet.',
         source: 'Halopedia: Janjur Qom; Halo Array',
+        scene: 'bg space; planet 0.34 0.5 0.15 #c89060; ring 0.76 0.3; ringfire; quiet',
       },
       {
         title: 'Saved',
         text: "The San'Shyuum lived on, because the Librarian had already saved some of them. After the war, they were returned to Janjur Qom.",
         source: 'Halopedia: Janjur Qom',
+        scene: 'planet 0.76 0.24 0.07 #c89060; beam 0.45 & S=sanshyuum@0.4 & R=sanshyuum@0.5; S talk',
       },
     ],
   },

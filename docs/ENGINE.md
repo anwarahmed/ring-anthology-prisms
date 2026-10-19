@@ -34,6 +34,14 @@ export default {
 Every card needs `title`, `text` and `source`. Cards that tell an archive scene from
 CAMPAIGN.md go in the `before` list of the level that follows that scene.
 
+**Scene scripts:** a card (or saga beat) can carry `scene: '...'`, a short script that
+acts out exactly what the card says: actors from src/content placed, moving, firing,
+kneeling, sealed in a Cryptum or turned to data; ships, fleets, portals, Halos firing,
+glassing, Flood, drop pods, explosions, a backdrop of its own. The full command list is
+at the top of `src/engine/stage.js`. Review with `node scripts/archive-sheet.mjs <ids>`
+(or `--saga`): it photographs every card once its scene has played. Cards without a
+script fall back to the automatic motifs below.
+
 Cards are animated with no extra data (`src/engine/vignette.js`): a window under the
 text shows the level's backdrop, its players running in (and off into the level, or
 away after it), and motifs picked from the card's words: fleets (styled by the side

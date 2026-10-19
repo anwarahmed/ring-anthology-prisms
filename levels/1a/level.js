@@ -19,16 +19,19 @@ export default {
         title: 'The Precursors', when: 'Millions of years ago',
         text: 'Long before humanity, the Forerunners rose against their creators, the Precursors, and drove them to extinction. The last Precursors turned themselves into a fine powder, meant to bring them back one day. Over millions of years the powder went bad. Living things it touched were changed. This was the beginning of the Flood.',
         source: 'Forerunner Saga; Halopedia: Precursors',
+        scene: 'bg space; planet 0.32 0.42 0.13 #8a6ab0; fleet forerunner 3; boom 0.32 0.42 big & flash; wait 0.3; flood 0.32',
       },
       {
         title: 'The Plague War', when: 'c. 107,500 BCE', where: 'Human space',
         text: 'The Flood appeared in human space. Ancient humanity and its San\'Shyuum allies fought it, and in time it seemed to vanish. Then humanity went to war with the Forerunners. The war lasted fifty years.',
         source: 'Halopedia: Forerunner-Flood war, Battle of Charum Hakkor',
+        scene: 'H=ancient-human-soldier@0.12 & S=sanshyuum@0.24; G=flood-warrior@0.86< & I=flood-infection@0.74<; H fire G & S fire I; G down & I down; wait 0.5; ship forerunner 1.2>0.62 0.18 big; H face > & S face >',
       },
       {
         title: 'Charum Hakkor', when: 'c. 107,475 BCE', where: 'Charum Hakkor',
         text: 'Charum Hakkor was the heart of the human empire. Forthencho, Lord of Admirals, commanded its last fleets. Outnumbered, with weaker ships, he held out against the Didact for three years.',
         source: 'Halo: Primordium; Halopedia: Forthencho',
+        scene: 'F=forthencho@0.2 & A=ancient-human-soldier@0.1; ship unsc -0.2>0.32 0.16 & fleet forerunner 6; boom 0.55 0.2 & boom 0.72 0.12; F talk',
       },
     ],
     after: [
@@ -36,11 +39,13 @@ export default {
         title: 'The Surrender', when: 'c. 107,472 BCE', where: 'Citadel Charum',
         text: 'The San\'Shyuum had secretly agreed to let the Forerunners through. The last humans made their stand in Citadel Charum, an ancient Precursor ruin. Humanity\'s leaders could have released the Flood on the Forerunners to buy time. They refused, because it was too dangerous for everyone. They surrendered.',
         source: 'Halopedia: Battle of Charum Hakkor',
+        scene: 'A=ancient-human-soldier@0.12 & F=forthencho@0.24 & B=ancient-human-soldier@0.36; ship forerunner 1.2>0.68 0.16 big; W=warrior-servant@0.82< & V=warrior-servant@0.94<; F talk; F kneel & A kneel & B kneel',
       },
       {
         title: 'Lord of Admirals', where: 'Citadel Charum',
         text: 'The captured humans hid their ranks, but the Didact found Forthencho among them. He met him not as a prisoner, but as a fellow warrior.',
         source: 'Halopedia: Forthencho',
+        scene: 'A=ancient-human-soldier@0.12 & B=ancient-human-soldier@0.22 & F=forthencho@0.32; D=didact@1.1<; D>0.56; D talk; F talk',
       },
     ],
   },

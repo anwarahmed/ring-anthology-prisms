@@ -13,6 +13,7 @@ import { BODIES } from '../content/bodies.js';
 import { bodyTexture, armTexture, META } from './textures.js';
 import { aimFrame } from './sprites.js';
 import { ringHalves } from './titleart.js';
+import { Stage } from './stage.js';
 import { THEMES } from '../content/themes.js';
 
 // Motifs in priority order; a card shows the first two that match.
@@ -165,11 +166,13 @@ export class Vignette {
 
   // Before the level: run off to the right, into it. After it: walk away.
   exit(which) {
+    if (this.stage) return this.stage.exitAll();
     this.heroes.forEach((h, i) => this.move(h, this.rect.x + this.rect.w + 30 + i * 20, which === 'before' ? 700 : 1600, 'run'));
   }
 
   update() {
     this.syncArms();
+    this.stage?.update();
   }
 
   // Swaps the motif for this card's.
@@ -179,6 +182,17 @@ export class Vignette {
     const old = this.parts;
     this.parts = [];
     for (const p of old) this.scene.tweens.add({ targets: p, alpha: 0, duration: 300, onComplete: () => p.destroy() });
+    this.stage?.stop();
+    this.stage = null;
+    // A card with a scene script acts it out (src/engine/stage.js); the walking heroes
+    // step aside. Other cards keep the motifs picked from their words.
+    if (card.scene) {
+      for (const h of this.heroes) { this.scene.tweens.killTweensOf(h.body); h.body.setVisible(false); h.arm?.setVisible(false); }
+      this.stage = new Stage(this);
+      this.stage.play(card.scene).catch((e) => console.error(e.stack));
+      return;
+    }
+    for (const h of this.heroes) { h.body.setVisible(true); h.arm?.setVisible(true); }
     for (const m of card.motifs ?? motifsFor(card, this.outdoor)) this[m](card);
   }
 
@@ -299,6 +313,7 @@ export class Vignette {
   }
 
   destroy() {
+    this.stage?.stop();
     for (const t of this.timers) t.remove();
   }
 }

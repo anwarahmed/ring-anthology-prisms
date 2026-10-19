@@ -101,9 +101,9 @@ Tick boxes and commit after each step. Everything ticked is committed.
       deaths never shown). Characters and units come from src/content.
     - Per part: write the scenes, run `node scripts/archive-sheet.mjs <ids>` (one frame
       per card at the end of its scene) and fix what reads wrong, commit, push, tick.
-   - [ ] Scene engine: script parser + actions in src/engine/vignette.js; one sample card
+   - [x] Scene engine: script parser + actions in src/engine/vignette.js; one sample card
      (5a "The Firing"); docs; archive-sheet script
-   - [ ] Part I scenes (1a-1f)
+   - [x] Part I scenes (1a-1f)
    - [ ] Part II scenes (2a-2f)
    - [ ] Part III scenes (3a-3m)
    - [ ] Part IV scenes (4a-4f)

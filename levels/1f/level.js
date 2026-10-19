@@ -16,11 +16,13 @@ export default {
         title: 'Erde-Tyrene', when: 'About 100,000 years ago', where: 'Earth',
         text: "After the war, humanity lived simply on Earth, under the Librarian's watch. Most of its old knowledge was gone.",
         source: 'Halo: Cryptum; Halopedia: Halo: Cryptum',
+        scene: 'bg sky #6a9ad8 #d8ecf0 #5a8a3a; C=chakas@0.3 & R=riser@0.42; fire 0.6; C kneel',
       },
       {
         title: 'Bornstellar', where: 'Earth',
         text: 'Bornstellar, a young Forerunner, refused to become a Builder. He came to Earth looking for treasures left by the Precursors. Two humans, Chakas and Riser, became his guides.',
         source: 'Halopedia: Halo: Cryptum',
+        scene: 'bg sky #6a9ad8 #d8ecf0 #5a8a3a; C=chakas@0.24 & R=riser@0.34; B=bornstellar@1.1<; B>0.58; B talk; C talk',
       },
     ],
     after: [
@@ -28,11 +30,13 @@ export default {
         title: 'The Didact Wakes', where: 'The Djamonkin Crater',
         text: 'In the crater stood a Cryptum, guarded by ancient war sphinxes. Without knowing it, Chakas and Riser carried the code that opened it. Inside, the Didact woke from his long sleep.',
         source: 'Halopedia: Halo: Cryptum',
+        scene: 'D=didact@0.62; D seal; C=chakas@0.24 & R=riser@0.34 & B=bornstellar@0.12; C>0.46; D wake; D talk',
       },
       {
         title: 'Escape', where: 'The Djamonkin Crater',
         text: 'A Forerunner fleet arrived. The Didact escaped in a ship grown from beneath the crater, taking Bornstellar, Chakas, Riser and his war sphinxes with him.',
         source: 'Halopedia: Halo: Cryptum',
+        scene: 'fleet forerunner 3; B=bornstellar@0.36 & C=chakas@0.24 & R=riser@0.3 & D=didact@0.5; beam 0.38 & B beamout & C beamout & R beamout & D beamout; ship forerunner 0.4>1.25 0.3 big',
       },
     ],
   },

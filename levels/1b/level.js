@@ -19,11 +19,13 @@ export default {
         title: 'The Assault', when: 'c. 107,475 BCE', where: 'Charum Hakkor',
         text: 'The Didact led the Forerunner attack on Charum Hakkor. His ships came through seven slipspace portals, wave after wave, giving themselves up to break the human defenses.',
         source: 'Halopedia: Battle of Charum Hakkor',
+        scene: 'bg space #2a2236; D=didact@0.16 & W=forerunner-warrior@0.06; portal 0.74 0.28; fleet forerunner 5; boom 0.38 0.2 big & boom 0.56 0.12; boom 0.28 0.3',
       },
       {
         title: 'A Secret Deal', where: 'Charum Hakkor',
         text: "The San'Shyuum, humanity's allies, had secretly agreed to let the Forerunners through. In return, they would be left alone in their home system.",
         source: 'Halopedia: Battle of Charum Hakkor',
+        scene: 'planet 0.2 0.22 0.07 #c89a60; S=sanshyuum@0.3 & W=warrior-servant@0.72<; S talk; W talk; ship forerunner 1.2>-0.2 0.16 slow',
       },
     ],
     after: [
@@ -31,16 +33,19 @@ export default {
         title: 'Fellow Warriors', when: 'c. 107,472 BCE', where: 'Citadel Charum',
         text: 'The captured humans hid their ranks, but the Didact found Forthencho, Lord of Admirals, among them. He met him as a fellow warrior.',
         source: 'Halopedia: Forthencho',
+        scene: 'D=didact@0.16; A=ancient-human-soldier@0.6< & F=forthencho@0.72< & B=ancient-human-soldier@0.84<; D>0.46; D talk; F talk',
       },
       {
         title: 'The Search for a Cure',
         text: 'The Forerunners believed humans had found a cure for the Flood. The Composers turned the captives into stored data so their minds could be searched. No cure was found.',
         source: 'Halopedia: Battle of Charum Hakkor',
+        scene: 'W=warrior-servant@0.14; A=ancient-human-soldier@0.42 & B=ancient-human-soldier@0.56 & C=ancient-human-soldier@0.7; beam 0.56 & A data & B data & C data; W talk',
       },
       {
         title: 'Exile', where: 'Erde-Tyrene (Earth)',
         text: 'Humanity was made primitive again and sent back to its homeworld, Earth. The Librarian was given Earth to watch over.',
         source: 'Halo: Cryptum; Halopedia: Halo: Cryptum',
+        scene: 'bg sky #5a8ad0 #cfe4f0 #4a7a3a; C=chakas@0.36 & R=riser@0.46; ship forerunner 0.5>1.25 0.18; beam 0.8 #e8f8ff',
       },
     ],
   },

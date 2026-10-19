@@ -19,11 +19,13 @@ export default {
         title: 'The Master Builder', when: 'c. 98,445 BCE', where: 'The Greater Ark',
         text: 'Master Builder Faber had a new weapon built against the Flood: twelve giant rings, each about 30,000 kilometers across. They were called the Halos.',
         source: 'Halopedia: Halo Array',
+        scene: 'bg space; ring 0.28 0.32 & ring 0.72 0.58; S=sentinel@0.08,0.5; S>0.5; ship forerunner -0.2>1.2 0.12 slow',
       },
       {
         title: 'Two Plans',
         text: 'The Didact and his Prometheans wanted Shield Worlds instead: fortresses to shelter life. They lost the argument and went into exile.',
         source: 'Halopedia: Halo Array; Forerunner-Flood war',
+        scene: 'D=didact@0.26 & P=promethean-knight@0.14; W=forerunner-warrior@0.72<; D talk; W talk; D face <; D>-0.2 & P>-0.2',
       },
     ],
     after: [
@@ -31,11 +33,13 @@ export default {
         title: "The Librarian's Plan",
         text: 'The Librarian convinced the Council that the rings should also keep life safe. Species would be saved, then returned once the Flood was gone. This was her Conservation Measure.',
         source: 'Halopedia: Halo Array',
+        scene: 'C=chakas@0.36 & S=sanshyuum@0.48 & G=unggoy@0.6; beam 0.48 & C beamout & S beamout & G beamout; ring 0.74 0.26',
       },
       {
         title: 'The Weapon',
         text: 'If they were ever fired, the Halos would make every living thing in the galaxy go quiet, leaving the Flood nothing to feed on.',
         source: 'Halopedia: Halo Array',
+        scene: 'bg space; planet 0.14 0.62 0.05 #4a8ac8 & planet 0.86 0.3 0.04 #c8a060; ring 0.5 0.34; ringfire; quiet',
       },
     ],
   },
