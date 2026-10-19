@@ -260,20 +260,7 @@ export class LevelScene extends Phaser.Scene {
     const tx = hi < lo ? (lo + hi) / 2 : Phaser.Math.Clamp(this.focus.x - vw / 2, lo, hi);
     // The players' feet sit low in the frame: the view shows play space, not much
     // solid ground below the floor.
-    // Keep in view the ground under the lowest player (or their feet plus a margin over
-    // a pit) and the highest player's head; heads win when both can't fit.
-    let want = this.focus.y - vh * 0.66;
-    const bodies = this.players.filter((p) => p.alive).map((p) => (p.vehicle ?? p).body);
-    if (bodies.length) {
-      const low = bodies.reduce((a, b) => (b.bottom > a.bottom ? b : a));
-      let floor = low.bottom + 40;
-      for (let r = Math.floor(low.bottom / TILE); r < Math.floor(low.bottom / TILE) + 5; r++) {
-        if (isSolid(this.layer.getTileAt(Math.floor(low.center.x / TILE), r)?.index ?? -1)) { floor = r * TILE + 22; break; }
-      }
-      const top = Math.min(...bodies.map((b) => b.top)) - 26;
-      want = Math.min(Math.max(want, floor - vh), top);
-    }
-    const ty = Phaser.Math.Clamp(want, 0, Math.max(0, this.worldH - vh));
+    const ty = Phaser.Math.Clamp(this.focus.y - vh * 0.66, 0, Math.max(0, this.worldH - vh));
     if (snap) {
       cam.setScroll(tx, ty);
       return;

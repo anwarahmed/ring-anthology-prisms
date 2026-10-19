@@ -85,26 +85,10 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Extras: best times and medals on the level select; Skulls menu (Grunt
      Birthday Party, Low Gravity, Thunderstorm). Firefight already offers all 53 maps
 
-10. **Epic art pass (user, 2026-10-19: "make the sprites larger and more detailed
-    throughout the game... improve the terrain and backgrounds... the halo rising
-    backgrounds [are] the standard"; "shave some of the below-the-floor imagery").**
-    Mock-ups: zoom matters most; resolution alone adds little without richer art.
-   - [x] Bigger: level camera zoom (WORLD_ZOOM, ~1.35) with the floor framed near the
-     bottom edge; arenas wider than the view scroll inside their walls; co-op leash,
-     spawns and HUD checked
-   - [x] Sharper: art generated at the zoomed resolution (ART = 3; loads 3-5 s, 60 fps) (load time and memory checked
-     with tests/perf.mjs)
-   - [x] Detailed characters (renderer rim light and sheen; Spartan, Marine, Elite, Brute,
-     Grunt, Jackal, Hunter, Forerunner details): armor plating, panel lines, visor reflections, rim light
-     for every body (humanoid, elite, brute, grunt, jackal, hunter, forerunner,
-     promethean, flood, sentinel); sprites sheet reviewed
-   - [ ] Detailed vehicles and weapons
-   - [x] Terrain: richer tiles (seamless packed rock, sod lip, dense grass tufts, rocks;
-     tiles designed on a 32-unit grid at ART resolution) (surface lip, strata, rocks, roots, wear) per theme
-   - [x] Backgrounds (industrial skylines, temple walls with alcoves and light beams,
-     HD mountains with gullies, hills with treelines): every theme brought up to the ring-rise standard (layered depth,
-     atmosphere, light); ringrise skies unchanged
-   - [ ] Full review: tests/sheets.mjs on all levels, perf scan, smoke checks
+10. **Epic art pass: tried and reverted (user, 2026-10-19).** A camera zoom (1.35x),
+    1.6x sprites, sprite/terrain detail and backdrop work were built, then reverted at
+    the user's request ("let's go back to before the larger sprites and zoom changes").
+    Don't zoom the camera or enlarge sprites without new mock-ups the user approves.
 
 ## Published
 

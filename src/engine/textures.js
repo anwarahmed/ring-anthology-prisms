@@ -5,10 +5,10 @@ import { BODIES } from '../content/bodies.js';
 import { bodyFrames, armFrames, gunFrame } from './sprites.js';
 import { tilesetPixels } from './tileset.js';
 import { tilesetPixelsHD } from './tiles3d.js';
-import { STYLE, TILE, ART } from './config.js';
+import { STYLE, TILE, HD } from './config.js';
 
-// Pixel size of one tile in the tileset texture (pre-rendered tiles are ART density).
-export const TILE_PX = STYLE === 'prerendered' ? TILE * ART : TILE;
+// Pixel size of one tile in the tileset texture (pre-rendered tiles are HD).
+export const TILE_PX = STYLE === 'prerendered' ? TILE * HD : TILE;
 
 function painter(ctx, ox, oy) {
   return {

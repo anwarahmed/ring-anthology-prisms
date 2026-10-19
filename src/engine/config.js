@@ -9,9 +9,6 @@ export const HD = 2;
 // big; the view shows VIEW / WORLD_ZOOM of the world. The backdrop (BackdropScene)
 // stays unzoomed.
 export const WORLD_ZOOM = 1.35;
-// Pixel density of world art (characters, weapons, vehicles, tiles, props), drawn for
-// the zoomed level camera (HD × WORLD_ZOOM ≈ 2.7) so it shows 1:1, not stretched.
-export const ART = 3;
 // Art style: 'prerendered' (smooth 3D-shaded art), 'hybrid' (pre-rendered characters,
 // pixel-art world) or 'pixel' (outlined, dithered pixel art). Chosen on the SETTINGS
 // screen (saved by src/engine/graphics.js); ?style= overrides it.

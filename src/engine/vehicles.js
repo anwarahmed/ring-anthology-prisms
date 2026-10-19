@@ -11,7 +11,7 @@ import { bodyTexture, hexNum, META } from './textures.js';
 import { fireWeapon, explode } from './combat.js';
 import { aimFrom } from './rules.js';
 import { audio } from './audio.js';
-import { ART } from './config.js';
+import { HD } from './config.js';
 import { dropShadow } from './fx.js';
 
 export class Vehicle extends Phaser.Physics.Arcade.Sprite {
@@ -39,9 +39,9 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     scene.actorGroup.add(this);
-    this.setScale(1 / ART);
+    this.setScale(1 / HD);
     const [hw, hh] = this.bodyDef.hit;
-    this.body.setSize(hw * ART, hh * ART).setOffset(((this.bodyDef.w - hw) / 2) * ART, (this.bodyDef.h - hh - 1) * ART);
+    this.body.setSize(hw * HD, hh * HD).setOffset(((this.bodyDef.w - hw) / 2) * HD, (this.bodyDef.h - hh - 1) * HD);
     if (def.kind === 'air') this.body.setAllowGravity(false);
     this.body.setDragX(def.kind === 'air' ? 300 : 200);
     this.setDepth(21);
@@ -117,7 +117,7 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
 
   muzzle() {
     const sh = this.meta.shoulders[this.frame.name] ?? this.meta.shoulders[0];
-    return { x: this.x + ((sh[0] - this.meta.w / 2) * this.facing) / ART, y: this.y + (sh[1] - this.meta.h / 2) / ART };
+    return { x: this.x + ((sh[0] - this.meta.w / 2) * this.facing) / HD, y: this.y + (sh[1] - this.meta.h / 2) / HD };
   }
 
   tick(dt) {

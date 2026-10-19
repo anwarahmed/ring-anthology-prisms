@@ -1,13 +1,11 @@
 // Pre-rendered tiles: the same tileset layout as tileset.js, but each tile is built
-// from bevelled 3D shapes and shaded smoothly by the sprite renderer at ART resolution.
+// from bevelled 3D shapes and shaded smoothly by the sprite renderer at HD resolution.
 
 import { render, material } from './raster.js';
 import { TILESET } from './tileset.js';
-import { TILE, ART } from './config.js';
+import { TILE, HD } from './config.js';
 
-// Tiles are designed on a 32-unit grid and rendered at the tile's pixel size (TILE × ART).
-const PX = TILE * ART;
-const S = 32;
+const S = TILE * HD;
 
 function rng(seed) {
   let s = seed >>> 0;
@@ -40,29 +38,6 @@ function mats(t) {
   };
 }
 
-// The shared rock pattern: stones placed around a 32 × 32 cell and drawn wrapped, so
-// the pattern tiles seamlessly in every direction.
-const ROCK = (() => {
-  const r = rng(4242);
-  const out = [];
-  const stones = [];
-  for (let i = 0; i < 13; i++) stones.push({ x: r() * 32, y: r() * 32, rad: i < 4 ? 6 + r() * 4 : 2.5 + r() * 3, rot: r() * 6, sides: 5 + Math.floor(r() * 3), m: i % 3 === 0 ? 'stone2' : 'stone' });
-  for (const st of stones) {
-    const pts = [];
-    for (let k = 0; k < st.sides; k++) {
-      const a = st.rot + (k / st.sides) * Math.PI * 2;
-      const rr = st.rad * (0.75 + ((k * 7 + Math.floor(st.rad * 3)) % 5) * 0.07);
-      pts.push([Math.cos(a) * rr, Math.sin(a) * rr * 0.8]);
-    }
-    for (const dx of [-32, 0, 32]) for (const dy of [-32, 0, 32]) {
-      const cx = st.x + dx, cy = st.y + dy;
-      if (cx < -12 || cx > 44 || cy < -12 || cy > 44) continue;
-      out.push({ t: 'poly', pts: pts.map(([x, y]) => [cx + x, cy + y]), m: st.m, z: 1 + st.rad * 0.01, bevel: 2.2, tilt: [(st.rot % 1) * 0.2 - 0.1, -0.15] });
-    }
-  }
-  return out;
-})();
-
 const quad = (x0, y0, x1, y1, m, z = 1, bevel = 3, tilt = [0, 0]) => ({ t: 'poly', pts: [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], m, z, bevel, tilt });
 
 function solidShapes(t, mask, v, r) {
@@ -76,17 +51,8 @@ function solidShapes(t, mask, v, r) {
     else out.push(quad(4, S / 2 - 1, S - 4, S / 2 + 1, 'mortar', 2, 0));
     for (const [x, y] of [[5, 5], [S - 5, 5], [5, S - 5], [S - 5, S - 5]]) out.push({ t: 'ell', c: [x, y], rx: 1.4, ry: 1.4, m: 'top', z: 3 });
   } else if (style === 'rock') {
-    // Packed, irregular stones from one seamless pattern (every tile shares it, wrapped
-    // across the edges), so rock reads as one mass instead of a grid of tiles. Variants
-    // add their own cracks and pebbles.
-    out.push(quad(0, 0, S, S, 'mortar', 0, 0));
-    out.push(...ROCK);
-    const rv = rng(91 + v * 17);
-    for (let i = 0; i < 2; i++) {
-      const x = 4 + rv() * (S - 8), y = 6 + rv() * (S - 12);
-      out.push({ t: 'cap', a: [x, y], b: [x + (rv() - 0.5) * 8, y + 3 + rv() * 5], r1: 0.5, r2: 0.25, m: 'mortar', z: 2.5, noSep: true });
-    }
-    for (let i = 0; i < 3; i++) out.push({ t: 'ell', c: [3 + rv() * (S - 6), 4 + rv() * (S - 8)], rx: 1 + rv() * 1.2, ry: 0.8 + rv() * 0.8, m: 'stone2', z: 2.6 });
+    out.push(quad(0, 0, S, S, inner ? 'deep' : 'stone', 0, 0));
+    for (let i = 0; i < 2; i++) out.push({ t: 'ell', c: [6 + r() * (S - 12), 10 + r() * (S - 16)], rx: 5 + r() * 4, ry: 3 + r() * 2, rot: r() - 0.5, m: 'stone2', z: 1 });
   } else {
     // Stone brickwork: two courses of bevelled blocks set in mortar.
     out.push(quad(0, 0, S, S, 'mortar', 0, 0));
@@ -102,20 +68,8 @@ function solidShapes(t, mask, v, r) {
   }
   if (mask & 1) {
     if (style === 'rock') {
-      // A sod lip: a thick layer with a ragged underside, blades on top and a few
-      // hanging over the edge, and pebbles caught in the soil.
-      const lip = [[0, 0], [S, 0]];
-      for (let x = S; x >= 0; x -= 4) lip.push([x, 8 + Math.sin(x * 0.7 + v) * 1.6 + (x % 8 === 0 ? 1.4 : 0)]);
-      out.push({ t: 'poly', pts: lip, m: 'top', z: 4, bevel: 2.5, tilt: [0, -0.35] });
-      for (let x = 0.5; x < S; x += 1.7) {
-        const h = 2.5 + r() * 3.5;
-        out.push({ t: 'cap', a: [x, 3], b: [x + (r() - 0.5) * 3, 3 - h], r1: 0.85, r2: 0.25, m: r() < 0.5 ? 'grass' : 'moss', z: 5, noSep: true });
-      }
-      for (let i = 0; i < 3; i++) {
-        const x = 2 + r() * (S - 4);
-        out.push({ t: 'cap', a: [x, 7], b: [x + (r() - 0.5) * 2, 10 + r() * 3], r1: 0.6, r2: 0.2, m: 'grass', z: 4.5, noSep: true });
-      }
-      for (let i = 0; i < 2; i++) out.push({ t: 'ell', c: [3 + r() * (S - 6), 5 + r() * 2], rx: 1.2, ry: 0.9, m: 'stone2', z: 4.4 });
+      out.push(quad(0, 0, S, 9, 'top', 4, 3, [0, -0.3]));
+      for (let x = 1; x < S; x += 3) out.push({ t: 'cap', a: [x, 4], b: [x + (r() - 0.5) * 3, -2 + r() * 3], r1: 1.1, r2: 0.4, m: 'grass', z: 5, noSep: true });
     } else {
       out.push(quad(0, 0, S, 8, 'top', 4, 3, [0, -0.35]));
       out.push(quad(0, 0, S, 1, 'edge', 5, 0));
@@ -161,11 +115,11 @@ function tileShapes(t, index, r) {
 export function tilesetPixelsHD(theme) {
   const t = theme.tiles;
   const m = mats(t);
-  const W = TILESET.count * PX;
-  const out = new Uint8ClampedArray(W * PX * 4);
+  const W = TILESET.count * S;
+  const out = new Uint8ClampedArray(W * S * 4);
   for (let i = 0; i < TILESET.count; i++) {
-    const rgba = render(tileShapes(t, i, rng(7 + i * 31)), PX, PX, m, { smooth: true, scale: PX / S, tile: true });
-    for (let y = 0; y < PX; y++) out.set(rgba.subarray(y * PX * 4, (y + 1) * PX * 4), (y * W + i * PX) * 4);
+    const rgba = render(tileShapes(t, i, rng(7 + i * 31)), S, S, m, { smooth: true });
+    for (let y = 0; y < S; y++) out.set(rgba.subarray(y * S * 4, (y + 1) * S * 4), (y * W + i * S) * 4);
   }
-  return { rgba: out, w: W, h: PX, size: PX };
+  return { rgba: out, w: W, h: S, size: S };
 }

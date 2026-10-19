@@ -151,11 +151,10 @@ function sampleRamp(r, s) {
 
 // Options: outline (cartoon outlines), light, scale (render at higher pixel density;
 // w and h are already scaled), smooth (continuous shading, no outlines or dithering:
-// the "realistic" look), tile (the image edges continue into neighbors: no rim light
-// or edge darkening there).
-export function render(shapes, w, h, mats, { outline = true, light = L, scale = 1, smooth = false, tile = false } = {}) {
+// the "realistic" look).
+export function render(shapes, w, h, mats, { outline = true, light = L, scale = 1, smooth = false } = {}) {
   if (scale !== 1) shapes = shapes.map((sh) => scaleShape(sh, scale));
-  if (smooth) return renderSmooth(shapes, w, h, mats, light, scale, tile);
+  if (smooth) return renderSmooth(shapes, w, h, mats, light, scale);
   const order = shapes.map((s, i) => ({ s, i })).sort((a, b) => (a.s.z ?? 0) - (b.s.z ?? 0) || a.i - b.i).map((o) => o.s);
   const id = new Int16Array(w * h).fill(-1);
   const nrm = new Float32Array(w * h * 3);
@@ -230,7 +229,7 @@ export function render(shapes, w, h, mats, { outline = true, light = L, scale = 
 
 // Realistic shading: continuous light, soft occlusion, broad specular highlights, fine
 // surface grain, and a soft darkened rim on the shadow side instead of an outline.
-function renderSmooth(shapes, w, h, mats, light, scale, tile = false) {
+function renderSmooth(shapes, w, h, mats, light, scale) {
   const order = shapes.map((s, i) => ({ s, i })).sort((a, b) => (a.s.z ?? 0) - (b.s.z ?? 0) || a.i - b.i).map((o) => o.s);
   const id = new Int16Array(w * h).fill(-1);
   const nrm = new Float32Array(w * h * 3);
@@ -247,18 +246,6 @@ function renderSmooth(shapes, w, h, mats, light, scale, tile = false) {
     }
   });
   const R = Math.max(2, Math.round(2.5 * scale));
-  // Distance (pixels, up to RIM) to the outside of the silhouette, for the rim light.
-  const RIM = Math.max(2, Math.round(1.6 * scale));
-  const outsideNear = (x, y) => {
-    for (let r = 1; r <= RIM; r++) {
-      for (const [dx, dy] of [[r, 0], [0, -r], [r, -r], [-r, 0], [0, r]]) {
-        const xx = x + dx, yy = y + dy;
-        if (xx < 0 || yy < 0 || xx >= w || yy >= h) { if (tile) continue; return { r, dx, dy }; }
-        if (id[yy * w + xx] < 0) return { r, dx, dy };
-      }
-    }
-    return null;
-  };
   const out = new Uint8ClampedArray(w * h * 4);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
@@ -283,20 +270,10 @@ function renderSmooth(shapes, w, h, mats, light, scale, tile = false) {
           if (q > k && (order[q].z ?? 0) > (sh.z ?? 0) && !order[q].noSep) near = Math.min(near, Math.hypot(dx, dy));
         }
         if (near < 99) { const a = (1 - near / (R + 1)) * 0.55; c = c.map((v, i) => v + (m.ramp[1][i] - v) * a); }
-        // Two specular lobes: a tight glint and a broad sheen (painted metal).
-        if (m.spec) { const g = Math.pow(Math.max(0, d), 18) * 0.85 + Math.pow(Math.max(0, d), 5) * 0.18; c = c.map((v, i) => v + (m.ramp[7][i] - v) * Math.min(1, g)); }
-        else { const g = Math.pow(Math.max(0, d), 8) * 0.12; c = c.map((v, i) => v + (m.ramp[6][i] - v) * g); }
-        // Rim light: a cool back light catching the silhouette on the side away from the
-        // key light (right and top-right edges).
-        const o = outsideNear(x, y);
-        if (o && (o.dx > 0 || o.dy < 0) && !(o.dx < 0)) {
-          const rim = (1 - (o.r - 1) / RIM) * (o.dx > 0 ? 0.42 : 0.22);
-          c = c.map((v, i) => v + ([200, 228, 255][i] - v) * rim);
-        }
-        // A crisp edge all round, darkest on the shadow side.
-        const edge = (xx, yy) => (xx < 0 || yy < 0 || xx >= w || yy >= h ? !tile : id[yy * w + xx] < 0);
-        if (edge(x + 1, y) || edge(x, y + 1)) c = c.map((v, i) => v + (m.ramp[1][i] - v) * 0.55);
-        else if (edge(x - 1, y) || edge(x, y - 1)) c = c.map((v, i) => v + (m.ramp[2][i] - v) * 0.3);
+        if (m.spec) { const g = Math.pow(Math.max(0, d), 18) * 0.85; c = c.map((v, i) => v + (m.ramp[7][i] - v) * g); }
+        // Darken the silhouette edge on the shadow side.
+        const edge = (xx, yy) => xx < 0 || yy < 0 || xx >= w || yy >= h || id[yy * w + xx] < 0;
+        if (edge(x + 1, y) || edge(x, y + 1)) c = c.map((v, i) => v + (m.ramp[1][i] - v) * 0.45);
       }
       out[p * 4] = c[0]; out[p * 4 + 1] = c[1]; out[p * 4 + 2] = c[2]; out[p * 4 + 3] = 255;
     }

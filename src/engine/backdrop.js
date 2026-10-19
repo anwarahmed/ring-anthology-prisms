@@ -306,63 +306,24 @@ export function buildBackdrop(scene, theme, worldW) {
             const n = Math.ceil(Math.hypot(x1 - x0, y1 - y0));
             for (let i = 0; i <= n; i++) rect(x0 + ((x1 - x0) * i) / n, y0 + ((y1 - y0) * i) / n, x0 + ((x1 - x0) * i) / n + t, y0 + ((y1 - y0) * i) / n + t, c);
           };
-          // Haze rises from the bottom: structures fade into the distance below.
-          const fogged = (y, c) => mix(c, rim, 0.4 * Math.pow(Math.max(0, y / H - 0.35) / 0.65, 1.6));
-          const solid = (x0, y0, x1, y1, c) => { for (let y = Math.max(0, y0 | 0); y < Math.min(H, y1); y++) for (let x = Math.max(0, x0 | 0); x < Math.min(W, x1); x++) put(x, y, fogged(y, c)); };
-          const tower = (x, tw, top) => {
-            // Lattice tower: two legs, cross-bracing, a platform on top.
-            solid(x, top, x + 3 * HD, H, base); solid(x + tw - 3 * HD, top, x + tw, H, base);
-            solid(x, top, x + HD, H, rim);
-            for (let y = top; y < H; y += 12 * HD) { line(x, y, x + tw, y + 12 * HD, fogged(y, base), HD); line(x + tw, y, x, y + 12 * HD, fogged(y, base), HD); solid(x, y, x + tw, y + HD, rim); }
-            solid(x - 4 * HD, top - 3 * HD, x + tw + 4 * HD, top, base); solid(x - 4 * HD, top - 3 * HD, x + tw + 4 * HD, top - 2 * HD, rim);
-            if (rnd.frac() < 0.8) lights.push({ x: (x + tw / 2) / HD, y: (top - 6 * HD) / HD });
-          };
-          const tank = (x, tw, top) => {
-            // A storage tank: a domed cylinder with bands and a ladder.
-            const r = tw / 2, cx = x + r;
-            for (let y = Math.max(0, top - r); y < H; y++) {
-              for (let xx = x; xx < x + tw; xx++) {
-                const dx = (xx - cx) / r;
-                if (y < top && Math.hypot(dx, (y - top) / (r * 0.5)) > 1) continue;
-                const shade = dx < -0.6 ? rim : dx > 0.45 ? deep : base;
-                put(xx, y, fogged(y, (y - top) % (14 * HD) < HD && y > top ? deep : shade));
-              }
-            }
-            for (let y = top; y < H; y += 3 * HD) solid(cx + r * 0.5, y, cx + r * 0.5 + HD, y + HD, rim);
-          };
-          const block = (x, tw, top) => {
-            // A blocky building with a few lit windows.
-            solid(x, top, x + tw, H, base); solid(x, top, x + HD, H, rim); solid(x, top, x + tw, top + HD, rim);
-            for (let wy = top + 6 * HD; wy < H - 10 * HD; wy += 9 * HD) for (let wx = x + 4 * HD; wx < x + tw - 5 * HD; wx += 7 * HD) {
-              if (rnd.frac() < 0.35) solid(wx, wy, wx + 3 * HD, wy + 4 * HD, mix(hexRgb(L.light ?? '#ffc23a'), base, 0.35));
-            }
-          };
-          const crane = (x, tw, top) => {
-            tower(x, Math.min(tw, 16 * HD), top);
-            const arm = rnd.between(40, 90) * HD, ay = top - 8 * HD;
-            solid(x - arm * 0.3, ay, x + arm, ay + 2 * HD, base); solid(x - arm * 0.3, ay, x + arm, ay + HD / 2, rim);
-            line(x + 8 * HD, top - 22 * HD, x + arm, ay, base, HD); line(x + 8 * HD, top - 22 * HD, x - arm * 0.3, ay, base, HD);
-            solid(x + 6 * HD, top - 22 * HD, x + 10 * HD, top, base);
-            line(x + arm * 0.8, ay, x + arm * 0.8, ay + rnd.between(20, 60) * HD, base, HD / 2);
-          };
-          let x = rnd.between(10, 60) * HD;
-          let prev = null;
+          // Pipe runs across the whole layer.
+          for (let k = 0; k < 3; k++) {
+            const py = H * (0.35 + rnd.realInRange(0, 0.4)), r = rnd.between(3, 7) * HD / 2;
+            for (let x = 0; x < W; x++) for (let dy = -r; dy <= r; dy++) put(x, py + dy, dy < -r * 0.4 ? rim : dy > r * 0.5 ? deep : base);
+          }
+          let x = rnd.between(10, 80) * HD;
           while (x < W) {
-            const kind = rnd.frac();
-            const tw = (kind < 0.5 ? rnd.between(18, 34) : rnd.between(26, 60)) * HD;
-            const top = H * (1 - L.height * rnd.realInRange(0.45, 1));
-            if (kind < 0.45) tower(x, tw, top);
-            else if (kind < 0.65) tank(x, tw, top + 20 * HD);
-            else if (kind < 0.88) block(x, tw, top + 10 * HD);
-            else crane(x, tw, top);
-            // A pipe or catwalk to the previous structure, at a shared height.
-            if (prev && rnd.frac() < 0.55) {
-              const py = Math.max(prev.top, top) + rnd.between(10, 40) * HD, r = rnd.between(2, 4) * HD / 2;
-              for (let xx = prev.end; xx < x; xx++) for (let dy = -r; dy <= r; dy++) put(xx, py + dy, fogged(py, dy < -r * 0.4 ? rim : dy > r * 0.5 ? deep : base));
-              for (let xx = prev.end; xx < x; xx += 24 * HD) solid(xx, py - r, xx + 2 * HD, py + r + HD, deep);
-            }
-            prev = { end: x + tw, top };
-            x += tw + rnd.between(14, 70) * HD;
+            const tw = rnd.between(18, 34) * HD, top = H * (1 - L.height * rnd.realInRange(0.55, 1));
+            // Lattice tower: two legs, cross-bracing, a platform on top.
+            rect(x, top, x + 3 * HD, H, base); rect(x + tw - 3 * HD, top, x + tw, H, base);
+            rect(x, top, x + HD, H, rim);
+            for (let y = top; y < H; y += 12 * HD) { line(x, y, x + tw, y + 12 * HD, base, HD); line(x + tw, y, x, y + 12 * HD, base, HD); rect(x, y, x + tw, y + HD, rim); }
+            rect(x - 4 * HD, top - 3 * HD, x + tw + 4 * HD, top, base); rect(x - 4 * HD, top - 3 * HD, x + tw + 4 * HD, top - 2 * HD, rim);
+            if (rnd.frac() < 0.8) lights.push({ x: (x + tw / 2) / HD, y: (top - 6 * HD) / HD });
+            // A catwalk to the next tower.
+            const gap = rnd.between(20, 90) * HD;
+            if (rnd.frac() < 0.6) { const cy = top + rnd.between(10, 40) * HD; rect(x + tw, cy, x + tw + gap, cy + 2 * HD, base); rect(x + tw, cy, x + tw + gap, cy + HD / 2, rim); for (let rx = x + tw; rx < x + tw + gap; rx += 6 * HD) rect(rx, cy - 6 * HD, rx + HD / 2, cy, base); }
+            x += tw + gap;
           }
         });
         scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(sf2, 0).setDepth(depth);
@@ -398,26 +359,10 @@ export function buildBackdrop(scene, theme, worldW) {
                 const edge = Math.abs(wx) > wr - 2 * HD || (y < wtop + wr + 2 * HD && Math.hypot(wx, y - (wtop + wr)) > wr - 2 * HD);
                 c = edge ? mix(dark, lit, 0.4) : mix(glyph, [255, 255, 255], 0.15 * (1 - (y - wtop) / (wbot - wtop)));
                 if (!edge && Math.abs(wx) < HD / 2) c = mix(c, dark, 0.7);
-              } else if (!L.windows && px >= pw && Math.abs(wx) < wr * 1.15 && y > H * 0.24 && y < H * 0.54) {
-                // Windowless walls: a carved alcove with a glowing panel inside.
-                const ax = Math.abs(wx) / (wr * 1.15);
-                const inner = ax < 0.62 && y > H * 0.28 && y < H * 0.5;
-                const frame = !inner && (ax > 0.86 || y < H * 0.26 || y > H * 0.52);
-                c = inner ? mix(glyph, dark, 0.35 + 0.4 * Math.abs((y / H - 0.39) / 0.11)) : frame ? mix(c, lit, 0.4) : mix(c, dark, 0.55);
-                if (inner && fore && Math.abs(wx) < HD * 0.7) c = mix(c, [255, 255, 255], 0.5);
               } else if (L.marble && px >= pw) {
                 const vein = Math.abs(noise2(x / (30 * HD) + y / (90 * HD), y / (40 * HD), 51) - 0.5);
                 if (vein < 0.012) c = mix(c, lit, 0.18);
               }
-              // Carved trim bands: a frieze under the windows and a plinth at the bottom.
-              const fy = y / H;
-              if (px >= pw && Math.abs(fy - 0.56) < 0.012) c = mix(c, lit, 0.35 + pool * 0.3);
-              else if (px >= pw && Math.abs(fy - 0.59) < 0.006) c = mix(c, dark, 0.5);
-              if (fy > 0.86) c = mix(c, dark, 0.35 + (fy - 0.86) * 2);
-              // Capitals: a lit block where each pilaster meets the ceiling band.
-              if (px < pw + 2 * HD && fy > 0.08 && fy < 0.12) c = mix(c, lit, 0.45);
-              // Shadow under the ceiling and a soft falloff toward the floor.
-              c = mix(c, dark, Math.max(0, 0.45 - fy * 2.2) + Math.max(0, fy - 0.7) * 0.6);
               const g = (hash(x, y, 2) - 0.5) * 0.08;
               d.set([...c.map((v) => Math.max(0, Math.min(255, v * (1 + g)))), 255], (y * W + x) * 4);
             }
@@ -429,19 +374,7 @@ export function buildBackdrop(scene, theme, worldW) {
           const g = scene.add.image(sx, VIEW.h * 0.42, 'glow').setTint(fore ? hexNum(L.glow ?? '#45e6ff') : hexNum(L.sconce ?? '#ffb04a'))
             .setBlendMode('ADD').setScale(2.2).setAlpha(0.5).setScrollFactor(sf2, 0).setDepth(depth + 0.5);
           scene.tweens.add({ targets: g, alpha: 0.32, duration: 600 + rnd.between(0, 600), yoyo: true, repeat: -1 });
-          // A slanted beam from each window (or a soft wash under each light).
-          if (L.windows || fore) {
-            const beam = scene.add.image(sx + 6, VIEW.h * 0.24, 'shaft').setOrigin(0.5, 0).setTint(fore ? hexNum(L.glow ?? '#45e6ff') : 0xfff0c8)
-              .setBlendMode('ADD').setAlpha(0.14).setScale(1.6, VIEW.h / 150).setRotation(-0.32).setScrollFactor(sf2, 0).setDepth(depth + 0.4);
-            scene.tweens.add({ targets: beam, alpha: 0.07, duration: rnd.between(2500, 5000), yoyo: true, repeat: -1, ease: 'Sine.InOut' });
-          }
         }
-        // Dust motes drifting through the light.
-        scene.add.particles(0, 0, 'px', {
-          x: { min: 0, max: VIEW.w }, y: { min: VIEW.h * 0.2, max: VIEW.h * 0.8 }, lifespan: 6000, frequency: 260,
-          speedX: { min: -4, max: 6 }, speedY: { min: -3, max: 3 }, scale: { min: 0.4, max: 0.9 },
-          alpha: { start: 0, end: 0, ease: (t) => Math.sin(t * Math.PI) * 0.6 }, tint: fore ? hexNum(L.glow ?? '#45e6ff') : 0xffe8b8, blendMode: 'ADD',
-        }).setScrollFactor(0).setDepth(depth + 0.45);
         break;
       }
       case 'floor': {
@@ -614,32 +547,26 @@ export function buildBackdrop(scene, theme, worldW) {
           for (let o = 0; o < 4; o++) { v += (1 - Math.abs(noise1(x * f, seed + o) * 2 - 1)) * amp; amp *= 0.5; f *= 2.1; }
           return v / 1.875;
         };
-        // Painted at HD resolution (coordinates below are in screen pixels: x / HD).
-        const lw = Math.min(width, Math.floor(4096 / HD));
-        const key = canvasTex(scene, lw * HD, H * HD, (d, w) => {
+        const key = canvasTex(scene, width, H, (d, w) => {
           const tops = [];
-          for (let X = 0; X <= w; X++) tops.push(H - H * L.height * (0.35 + 0.65 * ridge(X / HD)));
-          for (let X = 0; X < w; X++) {
-            const x = X / HD;
-            // Slope over a few pixels, so faces shade in broad planes (no streaks).
-            const slope = (tops[Math.min(w, X + 3 * HD)] - tops[Math.max(0, X - 3 * HD)]) / 3;
-            for (let Y = Math.max(0, Math.floor(tops[X] * HD)); Y < H * HD; Y++) {
-              const y = Y / HD;
-              const depthIn = y - tops[X];
+          for (let x = 0; x <= w; x++) tops.push(Math.round(H - H * L.height * (0.35 + 0.65 * ridge(x))));
+          for (let x = 0; x < w; x++) {
+            // Slope over a few columns, so faces shade in broad planes (no streaks).
+            const slope = Math.round((tops[Math.min(w, x + 3)] - tops[Math.max(0, x - 3)]) / 3);
+            for (let y = Math.max(0, tops[x]); y < H; y++) {
+              const depthIn = y - tops[x];
               const strata = noise2(x / 30, y / 4, seed) - 0.5;
-              const t = Math.max(-1, Math.min(1, slope * 0.7));
-              let c = t > 0 ? mix(base, lit, t) : mix(base, dark, -t);
-              c = mix(c, strata > 0 ? lit : dark, Math.abs(strata) * 0.45);
-              // Gullies: fine dark streaks running down the faces.
-              if (noise2(x / 3, y / 26, seed + 7) > 0.78) c = mix(c, dark, 0.35);
-              if (cap && depthIn < 3 + noise1(x / 6, seed) * 4) c = mix(cap, lit, depthIn < 0.8 ? 0.3 : 0);
+              let c = slope > 0 ? lit : slope < 0 ? dark : base;
+              if (Math.abs(slope) <= 1 && depthIn > 3) c = mix(base, slope > 0 ? lit : dark, 0.5);
+              c = mix(c, strata > 0 ? lit : dark, Math.abs(strata) * 0.5);
+              if (cap && depthIn < 3 + noise1(x / 6, seed) * 4) c = cap;
               const fade = Math.min(1, depthIn / (H * 0.6));
-              if (atm) c = mix(c, hexRgb(atm.color), Math.max(0, fade - 0.35) * 0.35);
-              d.set([...c, 255], (Y * w + X) * 4);
+              if (atm && fade > BAYER[(y & 3) * 4 + (x & 3)] * 0.5 + 0.5) c = mix(c, hexRgb(atm.color), (fade - 0.5) * 0.3);
+              d.set([...c, 255], (y * w + x) * 4);
             }
           }
         });
-        scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(sf2, 0).setDepth(depth);
+        scene.add.image(0, 0, key).setOrigin(0).setScrollFactor(sf2, 0).setDepth(depth);
         break;
       }
       case 'clouds': {
@@ -726,29 +653,17 @@ export function buildBackdrop(scene, theme, worldW) {
         // Rolling hills with a lit rim, from layered sine noise.
         const H = VIEW.h, base = air(hexRgb(L.color), L.scroll), rim = air(hexRgb(L.rim), L.scroll);
         const seed = rnd.frac() * 100;
-        // Painted at HD resolution: a lit rim, clumps of trees or bushes along the crest,
-        // shaded hollows, and a gentle darkening toward the bottom.
-        const lw = Math.min(width, Math.floor(4096 / HD));
-        const dark = mix(base, [0, 0, 0], 0.28);
-        const key = canvasTex(scene, lw * HD, H * HD, (d, w) => {
-          for (let X = 0; X < w; X++) {
-            const x = X / HD;
+        const key = canvasTex(scene, width, H, (d, w) => {
+          for (let x = 0; x < w; x++) {
             const hgt = H * L.height * (0.55 + 0.25 * Math.sin(x / 47 + seed) + 0.15 * Math.sin(x / 19 + seed * 2) + 0.05 * Math.sin(x / 7));
-            const clump = Math.max(0, noise1(x / 5, seed * 13) - 0.45) * 9 * (L.trees === false ? 0 : 1);
-            const top = H - hgt - clump;
-            const slope = Math.cos(x / 47 + seed) * 0.25 / 47 * H * L.height + Math.cos(x / 19 + seed * 2) * 0.15 / 19 * H * L.height;
-            for (let Y = Math.max(0, Math.floor(top * HD)); Y < H * HD; Y++) {
-              const y = Y / HD;
-              const depthIn = y - top;
-              let c = depthIn < 1.2 ? rim : mix(base, slope > 0 ? dark : rim, Math.min(0.35, Math.abs(slope) * 0.6));
-              if (depthIn >= 1.2 && depthIn < clump + 2) c = mix(c, noise2(x / 1.5, y / 1.5, seed) > 0.5 ? rim : dark, 0.35);
-              c = mix(c, dark, Math.min(0.4, Math.max(0, depthIn - 6) / (H * 0.5)));
-              if (noise2(x / 9, y / 5, seed + 3) > 0.74) c = mix(c, dark, 0.2);
-              d.set([...c, 255], (Y * w + X) * 4);
+            const top = Math.round(H - hgt);
+            for (let y = Math.max(0, top); y < H; y++) {
+              const c = y - top < 2 ? rim : y - top < 4 && BAYER[(y & 3) * 4 + (x & 3)] < 0.5 ? rim : base;
+              d.set([...c, 255], (y * w + x) * 4);
             }
           }
         });
-        scene.add.image(0, 0, key).setOrigin(0).setScale(1 / HD).setScrollFactor(L.scroll, 0).setDepth(depth);
+        scene.add.image(0, 0, key).setOrigin(0).setScrollFactor(L.scroll, 0).setDepth(depth);
         break;
       }
       case 'haze': {

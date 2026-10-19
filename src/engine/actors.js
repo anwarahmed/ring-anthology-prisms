@@ -15,7 +15,7 @@ import { BEHAVIORS, avoidHazards, keepApart, catchUp } from './ai.js';
 import { audio } from './audio.js';
 import { skulls } from './skulls.js';
 import { isSolid } from './tileset.js';
-import { ART } from './config.js';
+import { HD } from './config.js';
 import { dropShadow } from './fx.js';
 
 const GRENADE_COOLDOWN = 0.8;
@@ -37,10 +37,10 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
     scene.actorGroup.add(this);
     this.id = id;
     this.meta = META.get(key);
-    this.setScale((def.scale ?? 1) / ART);
+    this.setScale((def.scale ?? 1) / HD);
     const [hw, hh] = this.bodyDef.hit;
     const B = this.bodyDef;
-    this.body.setSize(hw * ART, hh * ART).setOffset(((B.w - hw) / 2) * ART, (B.flying ? (B.h - hh) / 2 : B.h - hh - 1) * ART);
+    this.body.setSize(hw * HD, hh * HD).setOffset(((B.w - hw) / 2) * HD, (B.flying ? (B.h - hh) / 2 : B.h - hh - 1) * HD);
     if (this.bodyDef.flying) this.body.setAllowGravity(false);
     this.setDepth(team === 'players' ? 20 : 18);
     this.play(`${key}-idle`);
@@ -161,7 +161,7 @@ export class Unit extends Actor {
     if (seat) {
       const pd = UNITS[def.pilot];
       this.pilotSeat = seat;
-      this.pilot = scene.add.sprite(x, y, bodyTexture(scene, def.pilot, pd), 14).setScale((pd.scale ?? 1) / ART).setDepth(this.depth - 0.5);
+      this.pilot = scene.add.sprite(x, y, bodyTexture(scene, def.pilot, pd), 14).setScale((pd.scale ?? 1) / HD).setDepth(this.depth - 0.5);
     }
   }
 
