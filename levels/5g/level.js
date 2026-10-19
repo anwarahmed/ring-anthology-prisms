@@ -22,16 +22,19 @@ export default {
         title: 'The War Ends', when: '2553',
         text: 'With the Covenant broken, the war with humanity ended in 2553. Master Chief and Cortana drifted through space in the back half of the Forward Unto Dawn.',
         source: 'Halopedia: Human-Covenant war; Forward Unto Dawn',
+        scene: 'bg space; A=ship:unsc-big@0.3,0.5; A>0.6,0.45',
       },
       {
         title: 'Awake', when: '2559', where: 'The Ark',
         text: 'Far away, the Spirit of Fire had drifted for 28 years with its crew asleep. In 2559 they woke up, and found they had drifted to the Ark.',
         source: 'Halo Wars 2; Halopedia: Spirit of Fire',
+        scene: 'bg space; planet 0.8 0.55 0.16 #8ab0c0; S=ship:unsc-big@0.08,0.4; S>0.46,0.42',
       },
       {
         title: 'The Banished',
         text: 'The Ark was held by Atriox and his Banished. Red Team, the ship\'s Spartans, went down to the surface.',
         source: 'Halo Wars 2; Halopedia: Red Team',
+        scene: 'A=atriox@0.86<; B=banished-brute@0.72<; ship unsc -0.2>0.3 0.2; R=red-team-spartan@0.25 & S=red-team-spartan@0.35; R face >',
       },
     ],
     after: [
@@ -39,11 +42,13 @@ export default {
         title: 'Decimus', when: '2559', where: 'The Ark',
         text: 'Red Team defeated Decimus, one of the strongest Banished chieftains.',
         source: 'Halo Wars 2; Halopedia: Decimus',
+        scene: 'R=red-team-spartan@0.25 & S=red-team-spartan@0.35; D=decimus@0.76<; D fire R; R fire D & S fire D; D down',
       },
       {
         title: 'A Long Fight',
         text: 'The Spirit of Fire\'s crew would keep fighting the Banished on the Ark.',
         source: 'Halo Wars 2',
+        scene: 'M=marine@0.12 & R=red-team-spartan@0.2 & S=red-team-spartan@0.3; B=banished-brute@0.82< & G=banished-grunt@0.7<; R fire B & S fire G & M fire G',
       },
     ],
   },

@@ -23,11 +23,13 @@ export default {
         title: 'Installation 08', when: 'December 11, 2552', where: 'Installation 08',
         text: 'The new ring at the Ark was not finished. Firing it now would destroy the ring itself, and the Flood with it.',
         source: 'Halopedia: Installation 08',
+        scene: 'M=master-chief@0.3 & T=arbiter@0.4; M face >; shake',
       },
       {
         title: 'A Guide',
         text: '343 Guilty Spark, the Monitor, came along to help them light the ring. Sergeant Johnson came too.',
         source: 'Halo 3',
+        scene: 'S=guilty-spark@0.6,0.4<; J=johnson@0.4 & M=master-chief@0.25 & T=arbiter@0.15; S talk',
       },
     ],
     after: [
@@ -35,16 +37,19 @@ export default {
         title: 'Spark Turns', when: 'December 11, 2552',
         text: 'When 343 Guilty Spark learned the ring would be destroyed, he turned on them. Sergeant Johnson was hurt, and he did not survive.',
         source: 'Halo 3; Halopedia: Avery Johnson',
+        scene: 'S=guilty-spark@0.7,0.35<; J=johnson@0.5; M=master-chief@0.3 & T=arbiter@0.2; S glow #ff6a6a; S fire J; J kneel; M fire S & T fire S; S down',
       },
       {
         title: 'The Run',
         text: 'Master Chief fired the ring. He and the Arbiter raced across the falling-apart ring in a Warthog to reach their ship, the Forward Unto Dawn.',
         source: 'Halo 3; Halopedia: Forward Unto Dawn',
+        scene: 'W=veh:warthog@0.04; boom 0.3 0.85 & boom 0.5 0.8 & W>0.74; A=ship:unsc-big@0.9,0.4; W>0.86',
       },
       {
         title: 'The Price',
         text: 'Johnson gave his life for his friends.',
         source: 'Halopedia: Avery Johnson',
+        scene: 'J=johnson@0.5; J unarm; beam 0.5 #fff0c0; J glow #ffd27a',
       },
     ],
   },

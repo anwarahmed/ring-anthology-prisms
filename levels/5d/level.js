@@ -22,11 +22,13 @@ export default {
         title: 'The Citadel', when: 'December 2552', where: 'The Ark',
         text: 'The Prophet of Truth was in the Citadel, ready to fire every ring. Two Scarabs guarded the way.',
         source: 'Halo 3; Halopedia: Citadel',
+        scene: 'K=scarab@0.55< & L=scarab@0.88<; M=master-chief@0.08 & T=arbiter@0.16; M face > & T face >',
       },
       {
         title: 'The Flood',
         text: 'The Flood had followed them to the Ark. Now Master Chief and the Arbiter had two enemies.',
         source: 'Halo 3',
+        scene: 'M=master-chief@0.2 & T=arbiter@0.3; B=jiralhanae-minor@0.82<; F=flood-elite@0.62< & I=flood-infection@0.56<; flood 0.6; M fire F & T fire B; I down',
       },
     ],
     after: [
@@ -34,11 +36,13 @@ export default {
         title: 'Truth', when: 'December 2552', where: 'The Ark',
         text: 'In the Citadel, the Arbiter ended the Prophet of Truth. The rings were not fired.',
         source: 'Halo 3; Halopedia: Truth',
+        scene: 'P=sanshyuum@0.72<; P unarm; T=arbiter@0.3; T>0.56; flash #9ff4ff; P down',
       },
       {
         title: 'High Charity',
         text: 'The Flood had taken High Charity, the holy city, and crashed it onto the Ark. Cortana was still inside.',
         source: 'Halo 3; Halopedia: High Charity',
+        scene: 'bg space; planet 0.5 1.05 0.4 #8ab0c0; C=ship:keyship-big@0.28,0.12; C>0.55,0.62; boom 0.55 0.72 big & shake; flood 0.55; spark 0.55 0.6',
       },
     ],
   },

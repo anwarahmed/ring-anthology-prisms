@@ -21,11 +21,13 @@ export default {
         title: 'The Fallen City', when: 'December 2552', where: 'High Charity',
         text: 'High Charity, overrun by the Flood, had crashed onto the Ark.',
         source: 'Halopedia: High Charity',
+        scene: 'flood 0.3 & flood 0.7; I=flood-infection@0.6< & F=flood-marine@0.8<; dark',
       },
       {
         title: 'Cortana',
         text: 'Cortana had been left in High Charity ever since Delta Halo, held by the Flood\'s leader, the Gravemind. Master Chief went in to find her.',
         source: 'Halo 3; Halopedia: Cortana',
+        scene: 'M=master-chief@0.18; G=proto-gravemind@0.84<; beam 0.62 #7ad8ff; M>0.4',
       },
     ],
     after: [
@@ -33,11 +35,13 @@ export default {
         title: 'Found', when: 'December 2552', where: 'High Charity',
         text: 'Master Chief found Cortana and carried her out of the city.',
         source: 'Halo 3',
+        scene: 'M=master-chief@0.5; beam 0.5 #7ad8ff; M glow #7ad8ff; M>>0.86',
       },
       {
         title: 'The Plan',
         text: 'Cortana knew how to stop the Flood: fire the new ring being built at the Ark, Installation 08, before it was finished.',
         source: 'Halo 3; Halopedia: Installation 08',
+        scene: 'bg space; ring 0.64 0.36; M=master-chief@0.24; M glow #7ad8ff; M talk',
       },
     ],
   },

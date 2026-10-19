@@ -23,11 +23,13 @@ export default {
         title: 'Salvage', when: 'June 2559', where: 'The Ark',
         text: 'Atriox sent two Jiralhanae brothers, Pavium and Voridus, to salvage what was left of High Charity on the Ark.',
         source: 'Halopedia: Awakening the Nightmare; Voridus',
+        scene: 'C=ship:keyship-big@0.72,0.62; P=pavium@0.2 & V=voridus@0.3; P>0.46 & V>0.54',
       },
       {
         title: 'The Quarantine', when: 'June 2559',
         text: 'Voridus ignored the warnings. He switched off the Ark\'s Sentinel defenses and broke open the quarantine shield, and the Flood broke loose.',
         source: 'Halopedia: Voridus',
+        scene: 'P=pavium@0.28 & V=voridus@0.4; T=sentinel@0.7,0.4<; V fire T; T down; flash #9ff4ff; flood 0.76; F=flood-elite@0.82<',
       },
     ],
     after: [
@@ -35,6 +37,7 @@ export default {
         title: 'The Proto-Gravemind', when: 'June 2559', where: 'The Ark',
         text: 'The brothers destroyed the Proto-Gravemind that had grown outside High Charity, just before Atriox arrived.',
         source: 'Halopedia: Awakening the Nightmare',
+        scene: 'P=pavium@0.2 & V=voridus@0.3; G=proto-gravemind@0.76<; P fire G & V fire G; boom 0.76 0.6 big; G down; A=atriox@1.1<; A>0.86',
       },
     ],
   },

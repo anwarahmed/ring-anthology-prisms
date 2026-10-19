@@ -111,7 +111,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Part II scenes (2a-2f)
    - [x] Part III scenes (3a-3m)
    - [x] Part IV scenes (4a-4f)
-   - [ ] Part V scenes (5a-5h)
+   - [x] Part V scenes (5a-5h)
    - [ ] Part VI scenes (6a-6g)
    - [ ] Part VII scenes (7a-7g)
    - [ ] Prologue and epilogue beats (src/content/saga.js)

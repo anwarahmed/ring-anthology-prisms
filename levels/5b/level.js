@@ -23,11 +23,13 @@ export default {
         title: 'Back to Earth', when: 'November 17, 2552', where: 'Kenya',
         text: 'Master Chief came back to Earth. He landed in the jungle of East Africa, in Kenya.',
         source: 'Halo 3; Halopedia: Sierra 117',
+        scene: 'boom 0.5 0.9 big & flash; M=master-chief@0.5; M kneel; wait 0.5; M stand',
       },
       {
         title: 'Allies',
         text: 'The Sangheili and the humans were allies now. The Arbiter fought beside Master Chief.',
         source: 'Halo 3',
+        scene: 'M=master-chief@0.3 & T=arbiter@0.42; T face >; M face >',
       },
     ],
     after: [
@@ -35,11 +37,13 @@ export default {
         title: 'Johnson', when: 'November 17, 2552', where: 'Kenya',
         text: 'Master Chief and the Arbiter rescued Sergeant Johnson from the Brutes.',
         source: 'Halo 3; Halopedia: Sierra 117',
+        scene: 'J=johnson@0.68; B=jiralhanae-minor@0.8< & C=jiralhanae-captain@0.9<; M=master-chief@0.2 & T=arbiter@0.1; M fire B & T fire C; B down & C down; J face <',
       },
       {
         title: 'The Portal',
         text: 'Nearby, near the city of Voi, the Prophet of Truth was digging up a huge Forerunner portal.',
         source: 'Halopedia: Battle of Voi',
+        scene: 'P=sanshyuum@0.3; P unarm; portal 0.7 0.4; ship covenant 1.2>0.62 0.18 big',
       },
     ],
   },

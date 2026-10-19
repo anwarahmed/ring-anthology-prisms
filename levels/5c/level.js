@@ -22,11 +22,13 @@ export default {
         title: 'Through the Portal', when: 'December 2552',
         text: 'The portal near Voi opened a way to the Ark, far outside the galaxy. The Prophet of Truth went through it.',
         source: 'Halopedia: Battle of Voi; Ark',
+        scene: 'portal 0.52 0.4; C=ship:covenant-big@0.08,0.34; C>0.52,0.4; C hide; A=ship:unsc-big@-0.2,0.5; A>0.46,0.45',
       },
       {
         title: 'The Ark',
         text: 'From the Ark, every Halo could be fired at once. Truth meant to do it. Master Chief and the Arbiter followed him.',
         source: 'Halo 3; Halopedia: Ark',
+        scene: 'bg space; planet 0.5 0.62 0.2 #8ab0c0; ring 0.16 0.24 & ring 0.84 0.3; ship covenant -0.2>0.44 0.3 & ship unsc -0.4>0.34 0.42',
       },
     ],
     after: [
@@ -34,11 +36,13 @@ export default {
         title: 'The Scarab', when: 'December 2552', where: 'The Ark',
         text: 'The Scarab guarding the way was stopped.',
         source: 'Halo 3',
+        scene: 'M=master-chief@0.2 & T=arbiter@0.3; K=scarab@0.76<; M fire K & T fire K; boom 0.76 0.55 big; K down',
       },
       {
         title: 'The Citadel',
         text: 'Truth had reached the Citadel, the place where the rings could be fired.',
         source: 'Halopedia: Citadel',
+        scene: 'P=sanshyuum@0.62; P unarm; beam 0.62 #9ff4ff; P glow #c890ff',
       },
     ],
   },
