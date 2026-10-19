@@ -55,6 +55,12 @@ Tick boxes and commit after each step. Everything ticked is committed.
    tools/build.mjs from its music plan (tools/soundtrack.txt); verified playing in the
    browser, including intensity switches.
    `music-sources/` (sheet references) is no longer needed.
+8. **Polish (user, 2026-10-19: "continue with the rest of the tasks"):**
+   - [ ] Performance scan: every level on the real GPU path, log frame hitches (> 50 ms)
+     and fix the causes (prewarm gaps, heavy effects)
+   - [ ] Sound: MUSIC and EFFECTS volume sliders on the SETTINGS screen (saved)
+   - [ ] Visual polish: a screenshot of every level's arenas; fix empty arenas, HUD
+     overlaps, floating props, players off screen
 
 ## Published
 
@@ -77,8 +83,9 @@ Tick boxes and commit after each step. Everything ticked is committed.
   `hdCamera`); three art styles (pre-rendered default, hybrid, pixel); HD shaded
   sprites, props and tiles; painted backgrounds; scenery props, ground-standing
   pillars, light pools, vignette, ground shadows.
-- **GRAPHICS screen** (title and pause menus): art style (saved; reloads), CRT presets
-  and individual effects (`src/engine/crt.js`), Show FPS. Comparison shots:
+- **SETTINGS screen** (title and pause menus): art style (saved; reloads), CRT presets
+  and individual effects (`src/engine/crt.js`), Show FPS, and MUSIC (home soundtrack
+  or built-in; only with a home soundtrack). Comparison shots:
   `node scripts/compare-graphics.mjs`.
 - **Playtest fixes (2026-10-18):** left half of the screen not drawn; CRT overlay
   drawn black; units falling through the floor; stacked allies; floating arms after
@@ -87,7 +94,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
 - **Playtest fixes (2026-10-19):** softer explosions; level select after a level; held
   directions repeat in menus; breakable Jackal shields; arenas keep enemies inside;
   Halo rings drawn as 3D ribbons (off-ring) and a new arching ring-rise sky (on-ring,
-  with pristine / damaged / unfinished states); new Warthog with visible riders.
+  with pristine / damaged / unfinished states); new Warthog with visible riders;
+  riders in every vehicle drawn down to the hull (no floating helmets).
 
 ## User decisions to respect
 
