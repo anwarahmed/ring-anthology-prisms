@@ -43,6 +43,13 @@ export const session = {
     return this.progress.best?.[id] ?? null;
   },
 
+  // NEW GAME: forget every finished level, record and seen prologue. Controls, settings
+  // and skulls are kept (they are saved separately).
+  reset() {
+    this.progress = { done: {} };
+    this.save();
+  },
+
   // Something shown once, like the prologue.
   markSeen(key) {
     this.progress.seen = { ...this.progress.seen, [key]: true };

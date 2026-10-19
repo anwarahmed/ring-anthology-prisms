@@ -97,13 +97,14 @@ export class TitleScene extends Phaser.Scene {
     });
 
     // Menu.
-    panel(this, VIEW.w / 2 - 66, 156, 132, 64);
+    panel(this, VIEW.w / 2 - 66, 156, 132, 68);
     this.bar = selectBar(this, 0x45e6ff);
-    this.labels = ['PLAY', 'FIREFIGHT', 'CONTROLS', 'SETTINGS', 'SKULLS'];
-    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 166 + i * 11, label, { size: 8 }).setOrigin(0.5));
+    this.labels = ['PLAY', 'FIREFIGHT', 'CONTROLS', 'SETTINGS', 'SKULLS', 'NEW GAME'];
+    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 165 + i * 10, label, { size: 8 }).setOrigin(0.5));
     this.sel = 0;
+    this.confirmNew = false;
     this.refreshMenu();
-    txt(this, VIEW.w / 2, 228, 'An unofficial Halo fan game', { font: 'read', size: 14, color: '#c8d8ff' }).setOrigin(0.5);
+    txt(this, VIEW.w / 2, 232, 'An unofficial Halo fan game', { font: 'read', size: 14, color: '#c8d8ff' }).setOrigin(0.5);
     this.add.rectangle(0, VIEW.h - 22, VIEW.w, 22, 0x05031a, 0.75).setOrigin(0);
     txt(this, VIEW.w / 2, VIEW.h - 2, LEGAL_NOTICE, { font: 'read', size: 11, color: '#8890b8', align: 'center', wrap: VIEW.w - 20, stroke: false }).setOrigin(0.5, 1);
     this.input.once('pointerdown', () => audio.unlock());
@@ -111,7 +112,8 @@ export class TitleScene extends Phaser.Scene {
   }
   refreshMenu() {
     this.items.forEach((t, i) => t.setColor(i === this.sel ? '#ffffff' : '#9fb0d8'));
-    this.bar.place(VIEW.w / 2 - 60, 166 + this.sel * 11 - 6, 120, 12);
+    this.bar.place(VIEW.w / 2 - 60, 165 + this.sel * 10 - 6, 120, 12);
+    this.items[5].setText(this.confirmNew ? 'SURE? AGAIN=YES' : 'NEW GAME').setColor(this.confirmNew ? '#ff8a6a' : this.sel === 5 ? '#ffffff' : '#9fb0d8');
   }
   drawBeams(t) {
     const g = this.beams;
@@ -137,6 +139,7 @@ export class TitleScene extends Phaser.Scene {
     if (hit.nav) {
       if (hit.s.pressed.up || hit.s.pressed.down) {
         this.sel = (this.sel + (hit.s.pressed.down ? 1 : this.labels.length - 1)) % this.labels.length;
+        this.confirmNew = false;
         audio.sfx('uiMove');
         this.refreshMenu();
       }
@@ -146,6 +149,13 @@ export class TitleScene extends Phaser.Scene {
     if (this.sel === 2) return go(this, 'Controls', { returnTo: 'Title' });
     if (this.sel === 3) return go(this, 'Graphics', { returnTo: 'Title' });
     if (this.sel === 4) return go(this, 'Skulls');
+    // NEW GAME asks once more before erasing progress, then starts from the first level.
+    if (this.sel === 5) {
+      if (!this.confirmNew) { this.confirmNew = true; return this.refreshMenu(); }
+      session.reset();
+      this.registry.set('partIndex', 0);
+      this.registry.set('levelIndex', 0);
+    }
     audio.playMusic('title', 0);
     go(this, 'Players', { first: hit.device, next: this.sel === 1 ? 'Firefight' : 'Timeline' });
   }
