@@ -115,7 +115,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Part VI scenes (6a-6g)
    - [x] Part VII scenes (7a-7g)
    - [x] Prologue and epilogue beats (src/content/saga.js)
-   - [ ] Final review: every card's sheet checked; npm test + smoke checks
+   - [x] Final review: every card's sheet checked (227/227 cards scripted); npm test + smoke checks
 
 ## Published
 
