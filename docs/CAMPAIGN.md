@@ -371,14 +371,14 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Master Chief · P2 the Arbiter
 - **Story:** The Chief returns to Earth. Elites and humans are now allies.
 - **Enemies:** Brutes. **Boss:** none (the level ends with rescuing Sgt. Johnson).
-- **Status:** planned
+- **Status:** done
 
 ### 5c · The Ark
 - **Era:** Covenant War · **When/where:** 2552, the Ark · **Source:** *Halo 3*
 - **Players:** P1 Master Chief · P2 the Arbiter
 - **Echo:** 5a
 - **Enemies:** Brutes. **Vehicles:** Warthog, Mongoose. **Boss:** a Scarab.
-- **Status:** planned
+- **Status:** done
 
 ### 5d · The Covenant
 - **Era:** Covenant War · **When/where:** the Ark · **Source:** *Halo 3*
@@ -392,7 +392,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Master Chief · P2 the Arbiter
 - **Story:** The Chief rescues Cortana from the Gravemind.
 - **Enemies:** Flood. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 5f · Halo
 - **Era:** Covenant War · **When/where:** December 2552, Installation 08 (the unfinished replacement for Installation 04, built at the Ark) · **Source:** *Halo 3*; Halopedia: Installation 08
@@ -400,7 +400,7 @@ High Charity is built (851–791 BCE).
 - **Story:** The Chief fires the unfinished ring to destroy the Flood. 343 Guilty Spark turns on them, and Johnson falls (told gently). The Warthog run follows.
 - **Sacrifice:** Johnson.
 - **Enemies:** Flood, Sentinels. **Vehicles:** Warthog. **Boss:** 343 Guilty Spark.
-- **Status:** planned
+- **Status:** done
 
 **Archive scene:** The war ends (2553). The Chief and Cortana drift in the stern of the
 *Forward Unto Dawn*.
@@ -411,7 +411,7 @@ High Charity is built (851–791 BCE).
 - **Echo:** 3j
 - **Story:** The *Spirit of Fire* wakes after 28 years. It finds the Ark held by Atriox's Banished.
 - **Enemies:** Banished. **Boss:** Decimus.
-- **Status:** planned
+- **Status:** done
 
 ### 5h · Awakening the Nightmare
 - **Era:** Banished · **When/where:** June 2559, the Ark · **Source:** *Halo Wars 2: Awakening the Nightmare*; Halopedia: Awakening the Nightmare, Voridus
@@ -419,7 +419,7 @@ High Charity is built (851–791 BCE).
 - **Echo:** 5g, 3k
 - **Story:** Atriox sends the brothers Pavium and Voridus to salvage the remains of High Charity on the Ark. Voridus ignores the quarantine: he shuts down the Sentinel defenses and breaches the quarantine shield, and the Flood break loose across the Ark. The brothers fight the outbreak and destroy the Proto-Gravemind that grew outside High Charity, just before Atriox arrives.
 - **Enemies:** Flood, UNSC. **Vehicles:** Chopper. **Boss:** the Proto-Gravemind.
-- **Status:** planned
+- **Status:** done
 
 ## Part VI · Requiem & the Created
 
@@ -430,7 +430,7 @@ High Charity is built (851–791 BCE).
 - **Story:** The Didact fights the Flood. He uses the Composer on humans to make Promethean Knights ("turning people into hard-light data"). The Librarian stops him and imprisons him in a Cryptum on Requiem.
 - **Sacrifice:** The Didact gives up his conscience to win.
 - **Enemies:** Flood. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 6b · Requiem
 - **Era:** Created · **When/where:** 2557, Requiem · **Source:** *Halo 4*
@@ -439,14 +439,14 @@ High Charity is built (851–791 BCE).
 - **Story:** The Chief wakes after four years adrift, and unknowingly frees the Didact.
 - **Play:** Introduces the Created era kit.
 - **Enemies:** Covenant remnant, Prometheans. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 6c · Composer
 - **Era:** Created · **When/where:** 2557, Ivanoff Station · **Source:** *Halo 4*
 - **Players:** P1 Master Chief · P2 a Spartan-IV
 - **Story:** The Didact uses the Composer on the station's people.
 - **Enemies:** Prometheans. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 6d · Midnight
 - **Era:** Created · **When/where:** 2557, the Didact's ship, the *Mantle's Approach* · **Source:** *Halo 4*
@@ -454,7 +454,7 @@ High Charity is built (851–791 BCE).
 - **Story:** The Chief stops the Didact. Cortana sacrifices herself (told gently).
 - **Sacrifice:** Cortana.
 - **Vehicles:** Broadsword. **Boss:** the Didact.
-- **Status:** planned
+- **Status:** done
 
 ### 6e · Osiris
 - **Era:** Created · **When/where:** 2558, Sanghelios · **Source:** *Halo 5: Guardians*
@@ -462,14 +462,14 @@ High Charity is built (851–791 BCE).
 - **Echo:** 3b
 - **Story:** Fireteam Osiris helps the Arbiter's Swords of Sanghelios against the Covenant remnant. The title of Arbiter, once a mark of shame, is now one of honor.
 - **Enemies:** Covenant remnant, Prometheans. **Boss:** the Warden Eternal.
-- **Status:** planned
+- **Status:** done
 
 ### 6f · Blue Team
 - **Era:** Created · **When/where:** October 2558, Meridian · **Source:** *Halo 5: Guardians*; Halopedia: Blue Team, Meridian
 - **Players:** P1 Master Chief · P2 Fred-104
 - **Story:** After the Argent Moon mission, Cortana's message points the Chief to the colony Meridian. Blue Team goes AWOL to follow it, fights through the Prometheans on Meridian and boards a Guardian, which carries them to Genesis.
 - **Enemies:** Prometheans. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 6g · Guardians
 - **Era:** Created · **When/where:** 2558, Genesis · **Source:** *Halo 5: Guardians*
@@ -477,7 +477,7 @@ High Charity is built (851–791 BCE).
 - **Story:** Cortana and the Created take control of the Guardians. She traps Blue Team in a Cryptum.
 - **Sacrifice:** The Created give up the galaxy's freedom for peace.
 - **Enemies:** Prometheans. **Boss:** the Warden Eternal.
-- **Status:** planned
+- **Status:** done
 
 ## Part VII · Zeta Halo
 
@@ -488,7 +488,7 @@ High Charity is built (851–791 BCE).
 - **Story:** The AI Mendicant Bias test-fires Installation 07 (the ring later known as Zeta Halo) in the Charum Hakkor system, and the shot releases the Primordial, an ancient Gravemind left by the Precursors. Set to question it, Bias is turned against the Forerunners. About 43 years later Bias attacks the Forerunner Capital; the IsoDidact stuns it with a control code, and it is shut down with a failsafe code (Archive cards).
 - **Enemies:** the Forerunner machines Bias turns against them (staging: Sentinels). **Boss:** none.
 - **Sources:** Halopedia: Installation 07, Mendicant Bias, Primordial
-- **Status:** planned
+- **Status:** done
 
 ### 7b · The Primordial
 - **Era:** Forerunner · **When/where:** Installation 07 (Zeta Halo) · **Source:** *Halo: Primordium*; Halopedia: Halo: Primordium, Primordial
@@ -506,21 +506,21 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Master Chief · P2 a Spartan-IV
 - **Story:** The Pilot finds the Chief, who storms the Banished warship.
 - **Enemies:** Banished. **Boss:** none (a fight through the ship).
-- **Status:** planned
+- **Status:** done
 
 ### 7d · The Conservatory
 - **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite* (mission 7)
 - **Players:** P1 Master Chief · P2 a Spartan-IV
 - **Story:** The Chief reaches the Conservatory, a Forerunner installation on Zeta Halo; the Harbinger is close behind.
 - **Enemies:** Banished. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 7e · Spire
 - **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite* (mission 8)
 - **Players:** P1 Master Chief · P2 a Spartan-IV
 - **Story:** The Chief takes a Banished-held spire. (The Spartan Killers Hyperius and Tovarus are fought in the next mission, Pelican Down: an Archive card.)
 - **Enemies:** Banished. **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 ### 7f · House of Reckoning
 - **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite*
@@ -528,14 +528,14 @@ High Charity is built (851–791 BCE).
 - **Story:** Escharum's last fight (told with dignity). The Chief first fights the Blademaster Jega 'Rdomnai.
 - **Sacrifice:** Escharum gives his life for the Banished's legend.
 - **Enemies:** Banished. **Boss:** Escharum.
-- **Status:** planned
+- **Status:** done
 
 ### 7g · The Silent Auditorium
 - **Era:** Banished · **When/where:** 2560, Zeta Halo · **Source:** *Halo Infinite*
 - **Players:** P1 Master Chief · P2 a Spartan-IV
 - **Story:** The Harbinger tries to free the Endless. The Chief stops her. This is where *Halo Infinite*'s story ends.
 - **Enemies:** Banished, Skimmers. **Boss:** the Harbinger.
-- **Status:** planned
+- **Status:** done
 
 **Closing archive:** the full timeline, complete.
 

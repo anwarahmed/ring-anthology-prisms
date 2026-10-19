@@ -43,8 +43,8 @@ Tick boxes and commit after each step. Everything ticked is committed.
    levels: `python3 scripts/genmap.py SEED [--hazard] [--indoor] [--ceiling]`.
 6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
-   - [ ] Part IV (4a–4f) (written; bot done: 4a 4c 4d 4e 4f; pending: 4b)  - [ ] Part V (5a–5h) (written; bot done: 5a; pending: 5b–5h)  - [ ] Part VI (6a–6g) (written + committed; bot pending)
-   - [ ] Part VII (7a–7g) (written + committed; bot pending)  - [x] Firefight  - [x] publish
+   - [ ] Part IV (4a–4f) (bot done except 4b)  - [ ] Part V (5a–5h) (bot done except 5d)  - [x] Part VI (6a–6g)
+   - [ ] Part VII (7a–7g) (bot done except 7b)  - [x] Firefight  - [x] publish
 7. **Halo 3 chiptune arrangements:** blocked until the user supplies MIDI files
    (docs/LEGAL.md: Halo 3 music only, into the gitignored home-soundtrack folder).
    Ask when everything else is done.
