@@ -44,10 +44,19 @@ Tick boxes and commit after each step. Everything ticked is committed.
 6. **Parts IV–VII, Firefight, publish** (GitHub repo + Pages via the bare-clone layout
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
    - [ ] Part IV (4a–4f) (written + committed; bot pending)  - [ ] Part V (5a–5h) (written + committed; bot pending)  - [ ] Part VI (6a–6g) (written + committed; bot pending)
-   - [ ] Part VII (7a–7g) (written + committed; bot pending)  - [x] Firefight  - [ ] publish
+   - [ ] Part VII (7a–7g) (written + committed; bot pending)  - [x] Firefight  - [x] publish
 7. **Halo 3 chiptune arrangements:** blocked until the user supplies MIDI files
    (docs/LEGAL.md: Halo 3 music only, into the gitignored home-soundtrack folder).
    Ask when everything else is done.
+
+## Published
+
+- Repo: https://github.com/anwarahmed/ring-anthology-prisms (public). Play:
+  https://anwarahmed.github.io/ring-anthology-prisms/ . Every push to main runs
+  `npm test`, builds and deploys (`.github/workflows/pages.yml`).
+- Working copy: ~/Work/ring-anthology-prisms (remote origin). Bare clone with a `main`
+  worktree: ~/Developer/GitHub/anwarahmed/ring-anthology-prisms (the user's layout).
+- **Push after committing** (`git push`) so the site updates.
 
 ## Done
 
