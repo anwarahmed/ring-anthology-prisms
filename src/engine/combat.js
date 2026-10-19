@@ -13,11 +13,27 @@ export function setupCombat(scene) {
   scene.physics.add.collider(scene.projectiles, scene.layer, (p) => impact(scene, p), notPlatform);
   scene.physics.add.overlap(scene.projectiles, scene.actorGroup, (p, a) => {
     if (!p.active || !a.alive || p.team === a.team || a.team === 'neutral') return;
-    // Jackal and Hunter shields block shots from the front: flank them or use grenades.
-    if ((a.bodyDef?.frontShield && !a.def?.noShield) && p.body.velocity.x * a.facing < 0) {
+    // Front shields block shots from the front. A Hunter's is armor (flank it or use
+    // grenades); a Jackal's energy shield (shieldBreak) soaks up shots, plasma most of
+    // all, then breaks for a few seconds so it can be shot.
+    const now = scene.time.now;
+    const shielded = a.bodyDef?.frontShield && !a.def?.noShield && !(a.guardDownUntil > now);
+    if (shielded && p.body.velocity.x * a.facing < 0) {
       scene.fx.sparks(p.x, p.y, 0x9fd8ff, 6);
       audio.sfx('shieldHit');
       p.disableBody(true, true);
+      const max = a.bodyDef.shieldBreak;
+      if (max) {
+        a.guardHp = (a.guardHp ?? max) - p.damage * (p.tech === 'plasma' ? 2 : 1);
+        a.setTintFill?.(0x9fd8ff);
+        scene.time.delayedCall(60, () => a.active && a.clearTint());
+        if (a.guardHp <= 0) {
+          a.guardHp = max;
+          a.guardDownUntil = now + 5000;
+          scene.fx.ring(a.x, a.y, 0x9fd8ff, 1.4, 350);
+          audio.sfx('shieldBreak');
+        }
+      }
       return;
     }
     a.hurt(p.damage * ((a.bodyDef?.frontShield && !a.def?.noShield) ? 1.5 : 1), p.tech, p.owner);

@@ -9,6 +9,10 @@
 
 import Phaser from 'phaser';
 
+// Menu key repeat for held directions (ms).
+const REPEAT_DELAY = 380;
+const REPEAT_EVERY = 110;
+
 export const ACTIONS = ['up', 'down', 'left', 'right', 'jump', 'fire', 'ability', 'grenade', 'swap', 'melee', 'pause'];
 const BUTTONS = ['jump', 'fire', 'ability', 'grenade', 'swap', 'melee', 'pause'];
 const KC = Phaser.Input.Keyboard.KeyCodes;
@@ -157,10 +161,19 @@ export class Controls {
     const prev = this.prev[device] ?? {};
     s.pressed = {};
     for (const a of BUTTONS) s.pressed[a] = s[a] && !prev[a];
-    s.pressed.up = s.y < -0.5 && !(prev.y < -0.5);
-    s.pressed.down = s.y > 0.5 && !(prev.y > 0.5);
-    s.pressed.left = s.x < -0.5 && !(prev.x < -0.5);
-    s.pressed.right = s.x > 0.5 && !(prev.x > 0.5);
+    // Directions repeat while held (menus): once on press, then again every REPEAT ms
+    // after a short DELAY. Gameplay reads held directions, not these presses.
+    const held = { up: s.y < -0.5, down: s.y > 0.5, left: s.x < -0.5, right: s.x > 0.5 };
+    const was = { up: prev.y < -0.5, down: prev.y > 0.5, left: prev.x < -0.5, right: prev.x > 0.5 };
+    const now = performance.now();
+    this.repeat ??= {};
+    const r = (this.repeat[device] ??= {});
+    for (const d of ['up', 'down', 'left', 'right']) {
+      if (!held[d]) { delete r[d]; s.pressed[d] = false; continue; }
+      if (!was[d] || r[d] === undefined) { r[d] = now + REPEAT_DELAY; s.pressed[d] = true; continue; }
+      s.pressed[d] = now >= r[d];
+      if (s.pressed[d]) r[d] = now + REPEAT_EVERY;
+    }
     this.prev[device] = s;
     return s;
   }

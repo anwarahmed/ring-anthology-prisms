@@ -238,7 +238,12 @@ export class TimelineScene extends Phaser.Scene {
     this.levelIndex = this.registry.get('levelIndex') ?? 0;
     // Back from a finished level: point at the next playable level.
     if (this.after) this.selectNextAfter(this.after);
+    // Phaser reuses this scene object on every visit: drop everything drawn last time
+    // (it was destroyed with the old screen), or the next part change fails.
     this.frame = null;
+    this.title = null;
+    this.bar = null;
+    this.partShown = null;
     this.rows = [];
     this.hint = txt(this, VIEW.w / 2, VIEW.h - 4, 'Up/down: level · Left/right: part · Start: play · Ability: back', { font: 'read', size: 14, color: '#9aa4c8' }).setOrigin(0.5, 1);
     this.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER, false);

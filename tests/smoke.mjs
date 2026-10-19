@@ -3,6 +3,7 @@
 //
 //   node tests/smoke.mjs                       general checks + every built level, 20 s each
 //   node tests/smoke.mjs --checks              general checks only (menus, controls, ...)
+//   node tests/smoke.mjs --checks --only menus just one general check
 //   node tests/smoke.mjs --level 1a --finish   just level 1a: the bot plays it to the end
 //   options: --seconds N  --shots DIR  --difficulty easy  --solo
 //
@@ -37,8 +38,10 @@ const executablePath = process.env.CHROMIUM_PATH ?? (existsSync('/usr/bin/chromi
 const browser = await chromium.launch({ executablePath, args: ['--autoplay-policy=no-user-gesture-required', '--use-gl=angle', '--use-angle=swiftshader'] });
 let failed = false;
 
+const onlyCheck = opt('only', null);
 async function run(name, url, check) {
   if (onlyLevel && !name.startsWith('level-')) return;
+  if (onlyCheck && name !== onlyCheck) return;
   const page = await browser.newPage({ viewport: { width: 1440, height: 810 } });
   // Hide real controllers plugged into this machine; tests use their own fake ones.
   await page.addInitScript(() => {
@@ -462,6 +465,17 @@ await run('timeline-next', '?all=1', async (page) => {
   await page.waitForFunction(() => window.__game.scene.isActive('Timeline'), null, { timeout: 5000 });
   const sel = await page.evaluate(() => window.__game.scene.getScene('Timeline').selectedId);
   if (sel !== '2a') throw new Error(`expected 2a selected after 1f, got ${sel}`);
+  // Coming back to the level select a second time, LEFT/RIGHT still change the part.
+  await page.evaluate(() => window.__game.scene.getScene('Timeline').scene.start('Title'));
+  await waitScene(page, 'Title');
+  await page.evaluate(() => window.__game.scene.getScene('Title').scene.start('Timeline', { after: '2a' }));
+  await waitScene(page, 'Timeline');
+  await gameWait(page, 400);
+  const before = await page.evaluate(() => window.__game.scene.getScene('Timeline').partIndex);
+  await tap(page, 'ArrowRight');
+  await gameWait(page, 300);
+  const after = await page.evaluate(() => window.__game.scene.getScene('Timeline').partIndex);
+  if (after === before) throw new Error(`RIGHT did not change the part on a second visit (${before} -> ${after})`);
 });
 
 // In a locked arena, 'left' and 'right' spawns land inside its walls (outside them
@@ -507,6 +521,25 @@ await run('firefight', '?all=1&god=1', async (page) => {
   await page.waitForFunction(() => window.__game.scene.getScene('Level').units.some((u) => u.alive && u.team === 'enemies'), null, { timeout: 30000 });
   const r = await page.evaluate(() => { const L = window.__game.scene.getScene('Level'); return { ff: L.firefight, arena: !!L.arena, id: L.levelId }; });
   if (!r.ff || !r.arena) throw new Error(`not a firefight: ${JSON.stringify(r)}`);
+});
+
+// Holding a direction in a menu keeps moving the selection after a short pause.
+await run('menu-repeat', '?all=1', async (page) => {
+  await waitScene(page, 'Title');
+  await page.evaluate(() => window.__game.scene.getScene('Title').scene.start('Timeline'));
+  await waitScene(page, 'Timeline');
+  await gameWait(page, 400);
+  await page.evaluate(() => {
+    const T = window.__game.scene.getScene('Timeline');
+    const draw = T.draw.bind(T);
+    window.__moves = 0;
+    T.draw = () => { window.__moves++; draw(); };
+  });
+  await page.keyboard.down('s');
+  await gameWait(page, 1200);
+  await page.keyboard.up('s');
+  const moved = await page.evaluate(() => window.__moves);
+  if (moved < 3) throw new Error(`holding DOWN moved the selection only ${moved} time(s)`);
 });
 
 for (const id of levels) {

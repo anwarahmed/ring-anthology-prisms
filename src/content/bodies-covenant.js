@@ -262,7 +262,7 @@ function target(f) {
 export const COVENANT_BODIES = {
   elite: { w: 46, h: 60, frames: 15, anims: FRAMES, hit: [16, 46], build: elite, reach: 10, arm: [3.2, 2.8] },
   grunt: { w: 32, h: 34, frames: 15, anims: FRAMES, hit: [14, 24], build: grunt, reach: 6, arm: [2.4, 2.2] },
-  jackal: { w: 40, h: 52, frames: 15, anims: FRAMES, hit: [12, 40], build: jackal, reach: 8, arm: [2.2, 2], frontShield: true },
+  jackal: { w: 40, h: 52, frames: 15, anims: FRAMES, hit: [12, 40], build: jackal, reach: 8, arm: [2.2, 2], frontShield: true, shieldBreak: 60 },
   hunter: { w: 66, h: 68, frames: 15, anims: FRAMES, hit: [32, 56], build: hunter, frontShield: true },
   brute: { w: 54, h: 66, frames: 15, anims: FRAMES, hit: [20, 52], build: brute, reach: 11, arm: [4, 3.4] },
   target: { w: 28, h: 42, frames: 4, anims: HOVER, hit: [20, 40], build: target },

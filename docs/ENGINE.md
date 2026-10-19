@@ -207,7 +207,9 @@ gunner), `ghost`, `banshee`, `chopper`, `scorpion`. Enemy vehicles are ordinary
 units in `units.js` using a vehicle body (`ghost-enemy`, `banshee-enemy`).
 
 **Front shields:** bodies with `frontShield` (Jackals, Hunters) block shots that hit
-them from the front and take 1.5× damage from behind. A unit with `noShield: true`
+them from the front and take 1.5× damage from behind. A body with `shieldBreak: N`
+(Jackals) has an energy shield instead: shots from the front wear it down (plasma
+counts double) and at N it breaks for 5 s. A unit with `noShield: true`
 (Skirmishers, bare Lekgolo) has none. Grenades and melee get through.
 
 ## Weapon drops
