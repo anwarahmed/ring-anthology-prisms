@@ -30,8 +30,8 @@ export class Fx {
     this.scene.tweens.add({ targets: g, alpha: 0, scale: scale * 1.8, duration: ms, onComplete: () => g.destroy() });
   }
 
-  ring(x, y, color, size = 1, ms = 350) {
-    const r = this.scene.add.image(x, y, 'ring').setTint(color).setBlendMode('ADD').setDepth(41).setScale(0.1);
+  ring(x, y, color, size = 1, ms = 350, alpha = 1) {
+    const r = this.scene.add.image(x, y, 'ring').setTint(color).setBlendMode('ADD').setDepth(41).setScale(0.1).setAlpha(alpha);
     this.scene.tweens.add({ targets: r, scale: size, alpha: 0, duration: ms, ease: 'Cubic.Out', onComplete: () => r.destroy() });
   }
 
@@ -49,13 +49,30 @@ export class Fx {
     this.emitter(color, 'spark').explode(n, x, y);
   }
 
+  // Explosions (grenades, rockets, every explosive weapon): a soft warm bloom with a
+  // few sparks and a little smoke, a gentle nudge of the screen at most every 0.35 s
+  // (several blasts at once used to rattle it), and a rounded whump.
   explosion(x, y, radius, color = 0xffa040) {
-    this.emitter(color).explode(30, x, y);
-    this.emitter(0xfff0c0).explode(14, x, y);
-    this.glow(x, y, color, radius / 10, 400);
-    this.ring(x, y, 0xffffff, radius / 28, 300);
-    this.shake(0.012, 220);
+    this.emitter(color).explode(12, x, y);
+    this.emitter(0xfff0c0).explode(5, x, y);
+    this.smoke(x, y, 6);
+    this.glow(x, y, color, radius / 12, 520);
+    this.ring(x, y, 0xffe0b0, radius / 30, 450, 0.45);
+    const now = this.scene.time.now;
+    if (now - (this.lastBoom ?? -1e9) > 350) this.shake(0.003, 110);
+    this.lastBoom = now;
     audio.sfx('explode');
+  }
+
+  // Soft grey smoke that drifts up and fades.
+  smoke(x, y, n = 6) {
+    if (!this.smokeEmitter) {
+      this.smokeEmitter = this.scene.add.particles(0, 0, 'glow', {
+        emitting: false, lifespan: { min: 600, max: 1100 }, speed: { min: 10, max: 40 }, angle: { min: 230, max: 310 },
+        scale: { start: 0.25, end: 0.6 }, alpha: { start: 0.35, end: 0 }, tint: 0x8a8580, gravityY: -20,
+      }).setDepth(39);
+    }
+    this.smokeEmitter.explode(n, x, y);
   }
 
   shake(power = 0.008, ms = 150) {

@@ -100,7 +100,7 @@ class Audio {
     const r = 1 + (Math.random() - 0.5) * 0.08;
     switch (name) {
       case 'rifle': this.noise({ dur: 0.07, vol: 0.25, freq: 2400 * r, q: 0.8 }); this.tone({ wave: 'square', freq: 220 * r, to: 80, dur: 0.06, vol: 0.05 }); break;
-      case 'cannon': this.noise({ dur: 0.35, vol: 0.4, freq: 600, type: 'lowpass', sweep: 120 }); this.tone({ wave: 'sawtooth', freq: 140, to: 40, dur: 0.3, vol: 0.12 }); break;
+      case 'cannon': this.noise({ dur: 0.25, vol: 0.18, freq: 450, type: 'lowpass', sweep: 120 }); this.tone({ wave: 'triangle', freq: 160 * r, to: 60, dur: 0.22, vol: 0.07 }); break;
       case 'plasma': this.tone({ wave: 'sawtooth', freq: 900 * r, to: 300, dur: 0.12, vol: 0.06 }); break;
       case 'hardlight': this.tone({ wave: 'sine', freq: 1500 * r, to: 600, dur: 0.18, vol: 0.08 }); this.tone({ wave: 'triangle', freq: 750 * r, to: 300, dur: 0.2, vol: 0.05 }); break;
       case 'beam': this.tone({ wave: 'square', freq: 1200 * r, to: 900, dur: 0.08, vol: 0.03 }); break;
@@ -115,7 +115,13 @@ class Audio {
       case 'grapple': this.tone({ wave: 'square', freq: 2000, to: 400, dur: 0.12, vol: 0.05 }); break;
       case 'teleport': this.tone({ wave: 'sine', freq: 200, to: 2400, dur: 0.35, vol: 0.06 }); this.tone({ wave: 'sine', freq: 300, to: 3600, dur: 0.35, vol: 0.03, at: 0.05 }); break;
       case 'puff': this.tone({ wave: 'triangle', freq: 1200 * r, to: 2400, dur: 0.15, vol: 0.05 }); this.noise({ dur: 0.2, vol: 0.1, freq: 6000 }); break;
-      case 'explode': this.noise({ dur: 0.6, vol: 0.6, freq: 900, type: 'lowpass', sweep: 50 }); this.tone({ wave: 'sine', freq: 90, to: 30, dur: 0.5, vol: 0.25 }); break;
+      case 'explode':
+        // A rounded, low whump; blasts close together play as one instead of piling up.
+        if (this.ctx.currentTime - (this.lastExplode ?? -1) < 0.12) break;
+        this.lastExplode = this.ctx.currentTime;
+        this.noise({ dur: 0.45, vol: 0.2, freq: 380, type: 'lowpass', sweep: 60 });
+        this.tone({ wave: 'sine', freq: 72 * r, to: 34, dur: 0.42, vol: 0.18 });
+        break;
       case 'grenadeThrow': this.tone({ wave: 'triangle', freq: 500, to: 300, dur: 0.1, vol: 0.04 }); break;
       case 'reload': this.tone({ wave: 'square', freq: 400, dur: 0.04, vol: 0.04 }); this.tone({ wave: 'square', freq: 600, dur: 0.04, vol: 0.04, at: 0.12 }); break;
       case 'ui': this.tone({ wave: 'square', freq: 660, dur: 0.06, vol: 0.05 }); this.tone({ wave: 'square', freq: 990, dur: 0.08, vol: 0.05, at: 0.06 }); break;
