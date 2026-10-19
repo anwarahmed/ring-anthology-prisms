@@ -60,8 +60,11 @@ Tick boxes and commit after each step. Everything ticked is committed.
      and fix the causes. `node tests/perf.mjs`: all 53 levels 60 fps, no slow frames
      (2026-10-19), nothing to fix
    - [x] Sound: MUSIC and EFFECTS volume sliders on the SETTINGS screen (saved)
-   - [ ] Visual polish: a screenshot of every level's arenas; fix empty arenas, HUD
-     overlaps, floating props, players off screen
+   - [x] Visual polish: a screenshot of every level's arenas (`node tests/sheets.mjs`);
+     fixed: stacked medal/pickup/checkpoint text, empty defenses (next group comes
+     early when the field is cleared), HUD cut by the letterbox, Sangheili names
+     starting with an apostrophe, allies left behind or shut out of arenas (the 4f
+     Scarab never followed)
 
 ## Published
 
