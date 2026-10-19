@@ -45,14 +45,16 @@ Tick boxes and commit after each step. Everything ticked is committed.
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
    - [x] Part IV (4a–4f)  - [x] Part V (5a–5h)  - [x] Part VI (6a–6g)
    - [x] Part VII (7a–7g)  - [x] Firefight  - [x] publish
-7. **Halo 3 chiptune arrangements:** the user wants ALL tracks. No freely licensed
-   MIDI/score exists online; the user will get sheets (Alfred official, or Rampancy.net
-   fan transcriptions) and drop them in `music-sources/` (gitignored; README has the
-   track checklist). Write our own chiptune arrangements from them (never copy the
-   files), credit O'Donnell & Salvatori in CREDITS.md. Blocked until files arrive. Was:
-   blocked until the user supplies MIDI files
-   (docs/LEGAL.md: Halo 3 music only, into the gitignored home-soundtrack folder).
-   Ask when everything else is done.
+7. **Halo music (home only):** the user chose a PRIVATE route instead of public
+   chiptune arrangements. The private repo anwarahmed/ring-anthology-prisms-soundtrack
+   (created, PRIVATE) holds game-ready clips + manifest.json; `npm run soundtrack`
+   clones it into public/home-soundtrack/private/ (gitignored, stripped from builds,
+   blocked by the Pages workflow). The game plays manifest entries per level/era/track,
+   with calm/combat/boss files following intensity (src/engine/audio.js). NEXT: the
+   user supplies the soundtrack audio files (into private/sources/, gitignored); make
+   clips with tools/analyze.sh + tools/prepare.sh, fill manifest.json (Halo 3 suites
+   for Part V levels, the rest by mood), commit and push in the PRIVATE repo only.
+   `music-sources/` (sheet references) is no longer needed.
 
 ## Published
 

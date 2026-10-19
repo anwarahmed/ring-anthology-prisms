@@ -28,6 +28,12 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      # Never publish home music (docs/LEGAL.md): only the README may be in that folder.
+      - name: No home soundtrack in the build
+        run: |
+          if [ -d dist/home-soundtrack ] && find dist/home-soundtrack -type f ! -name README.md | grep -q .; then
+            echo "Home soundtrack files found in the build. Refusing to publish."; exit 1
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

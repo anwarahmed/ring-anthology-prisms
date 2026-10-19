@@ -22,6 +22,12 @@ This is guidance, not legal advice.
         Halo Wars games.
       - An optional "home soundtrack" folder, which git ignores, may hold music the
         user owns. It is played only on that machine and never committed or deployed.
+      - The home soundtrack lives in a **private** repository,
+        `anwarahmed/ring-anthology-prisms-soundtrack`, which `npm run soundtrack`
+        clones into `public/home-soundtrack/private/`. It must stay private. Builds
+        strip the folder (vite.config.js), and the Pages workflow refuses to deploy a
+        build containing any home music. The public game only ever plays the original
+        chiptune tracks.
 - [ ] **No official logos or fonts.** That includes the Halo logo, the UNSC, Covenant,
       and Banished insignia, and the 343 or Halo Studios logos.
 - [ ] **"Halo" stays out of the title.** The game is named "Ring Anthology: Prisms". "Halo" can

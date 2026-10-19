@@ -1,18 +1,22 @@
 # Home soundtrack
 
-Put music files you own here to hear them while playing on this computer. Git ignores
-everything in this folder except this README. It is never committed or deployed; see
-docs/LEGAL.md.
+Music you own, for playing on this computer only. Git ignores everything in this folder
+except this README; it is never committed or deployed (docs/LEGAL.md).
 
-Create `manifest.json` here to map eras or levels to files:
+**The usual way:** run `npm run soundtrack`. It downloads the private soundtrack
+repository (anwarahmed/ring-anthology-prisms-soundtrack) into `private/` here.
+
+**By hand:** put files here with a `manifest.json` (same format):
 
 ```json
 {
-  "eras": { "forerunner": "forerunner.mp3", "covenant": "covenant.mp3" },
-  "levels": { "2f-the-maw": "the-maw.mp3" },
-  "boss": "boss.mp3"
+  "tracks": { "title": "title.m4a" },
+  "eras": { "forerunner": "forerunner.m4a" },
+  "levels": { "5b": { "calm": "sierra-calm.m4a", "combat": "sierra-combat.m4a", "boss": "sierra-boss.m4a" } }
 }
 ```
 
-When a file is listed for the current level or era, the game plays it in place of the
-built-in chiptune music.
+Levels win over eras, eras over built-in tracks (`tracks` replaces a built-in track by
+id, which covers the menus). A value is one file, or calm/combat/boss files that follow
+the fight's intensity like the built-in music. Anything not listed keeps the built-in
+chiptune music.

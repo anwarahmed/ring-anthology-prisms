@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "validate": "node scripts/validate.mjs",
     "test": "node --test 'tests/unit/*.test.mjs' && node scripts/validate.mjs",
-    "smoke": "node tests/smoke.mjs"
+    "smoke": "node tests/smoke.mjs",
+    "soundtrack": "node scripts/soundtrack.mjs"
   },
   "dependencies": {
     "@fontsource/press-start-2p": "5.3.0",

@@ -1,7 +1,10 @@
 // Chiptune synth, sound effects and music sequencer on the Web Audio API.
 // Music swells by intensity: 0 calm, 1 combat, 2 boss (see src/content/music.js).
-// If public/home-soundtrack/manifest.json maps the current level or era to a file the
-// user owns, that file plays instead (home play only; docs/LEGAL.md).
+// Home soundtrack (home play only, never published; docs/LEGAL.md): if a manifest maps
+// the current level, era or built-in track to music the user owns, that plays instead.
+// The manifest comes from the private soundtrack repo cloned into
+// public/home-soundtrack/private/ (`npm run soundtrack`), or a hand-made
+// public/home-soundtrack/manifest.json.
 
 import { TRACKS } from '../content/music.js';
 
@@ -50,6 +53,8 @@ class Audio {
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     }
     if (this.ctx.state === 'suspended') this.ctx.resume();
+    // A home track blocked by the browser's autoplay rule starts on the first input.
+    if (this.homeEl?.paused) this.homeEl.play().catch(() => {});
   }
 
   tone({ wave = 'square', freq = 440, to = null, dur = 0.1, vol = 0.1, at = 0, bus = null, vibrato = 0 }) {
@@ -137,22 +142,35 @@ class Audio {
 
   async loadHome() {
     if (this.home !== undefined) return this.home;
-    try {
-      const res = await fetch('home-soundtrack/manifest.json', { cache: 'no-store' });
-      this.home = res.ok ? await res.json() : null;
-    } catch {
-      this.home = null;
+    this.home = null;
+    for (const base of ['home-soundtrack/private/', 'home-soundtrack/']) {
+      try {
+        const res = await fetch(`${base}manifest.json`, { cache: 'no-store' });
+        if (res.ok && (res.headers.get('content-type') ?? '').includes('json')) {
+          this.home = { ...(await res.json()), base };
+          break;
+        }
+      } catch {
+        // No home soundtrack: the built-in music plays.
+      }
     }
     return this.home;
   }
 
-  // ctx: { level, era, boss } used to pick a home file.
+  // ctx: { level, era } used to pick a home file. A manifest entry is a file name, or
+  // { calm, combat, boss } files that follow the music's intensity like the built-in
+  // tracks do. Looked up by level, then era, then the built-in track's id.
   async playMusic(trackId, intensity = 0, ctx = {}) {
     this.unlock();
     if (!this.ctx) return;
     const home = await this.loadHome();
-    const file = home && ((ctx.boss && home.boss) || home.levels?.[ctx.level] || home.eras?.[ctx.era]);
-    if (file) return this.playHome(file);
+    const entry = home && (home.levels?.[ctx.level] ?? home.eras?.[ctx.era] ?? home.tracks?.[trackId]);
+    if (entry) {
+      this.homeEntry = entry;
+      this.intensity = intensity;
+      return this.playHome(this.homeFile(entry, intensity));
+    }
+    this.homeEntry = null;
     this.stopHome();
     if (this.track?.id === trackId) return this.setIntensity(intensity);
     this.stopMusic();
@@ -199,6 +217,7 @@ class Audio {
 
   setIntensity(level) {
     this.intensity = level;
+    if (this.homeEntry) return this.playHome(this.homeFile(this.homeEntry, level));
     if (!this.track) return;
     const t = this.ctx.currentTime;
     for (const l of this.track.layers) {
@@ -213,23 +232,38 @@ class Audio {
     this.track = null;
   }
 
+  homeFile(entry, intensity) {
+    if (typeof entry === 'string') return entry;
+    const order = [entry.calm, entry.combat, entry.boss];
+    for (let i = Math.min(2, intensity); i >= 0; i--) if (order[i]) return order[i];
+    return entry.combat ?? entry.boss;
+  }
+
+  // Plays a home file on loop, fading out whatever played before.
   playHome(file) {
-    if (this.homeEl?.dataset.file === file) return;
+    if (!file || this.homeEl?.dataset.file === file) return;
     this.stopMusic();
     this.stopHome();
-    const el = new window.Audio(`home-soundtrack/${file}`);
+    const el = new window.Audio(`${this.home.base}${file}`);
     el.dataset.file = file;
     el.loop = true;
-    el.volume = 0.6;
+    el.volume = 0;
     el.play().catch(() => {});
     this.homeEl = el;
+    const fade = setInterval(() => {
+      el.volume = Math.min(0.6, el.volume + 0.05);
+      if (el.volume >= 0.6 || this.homeEl !== el) clearInterval(fade);
+    }, 50);
   }
 
   stopHome() {
-    if (this.homeEl) {
-      this.homeEl.pause();
-      this.homeEl = null;
-    }
+    const el = this.homeEl;
+    if (!el) return;
+    this.homeEl = null;
+    const fade = setInterval(() => {
+      el.volume = Math.max(0, el.volume - 0.05);
+      if (el.volume <= 0) { clearInterval(fade); el.pause(); }
+    }, 40);
   }
 }
 
