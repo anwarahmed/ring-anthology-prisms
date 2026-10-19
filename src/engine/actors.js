@@ -168,7 +168,7 @@ export class Unit extends Actor {
     const [sx, sy] = this.pilotSeat;
     this.pilot.setPosition(this.x + (sx - this.bodyDef.w / 2) * this.facing, this.y + (sy - this.bodyDef.h / 2));
     this.pilot.setFlipX(this.facing < 0).setVisible(this.visible).setAlpha(this.alpha);
-    this.pilot.setCrop(0, 0, this.pilot.frame.width, this.pilot.frame.height * (this.pilotSeat[2] ?? 0.5));
+    this.pilot.setCrop(0, 0, this.pilot.frame.width, this.pilot.frame.height * (this.pilotSeat[2] ?? 0.9));
   }
 
   tick(dt) {

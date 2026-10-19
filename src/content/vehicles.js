@@ -10,7 +10,7 @@
 //   seats: ['driver'] or ['driver', 'gunner'] (the gunner aims freely)
 //   speed, accel, jump (ground hop), health, weapon, splatter (run-over damage)
 //   seatAt: { driver: [x, y, crop], gunner: [x, y, crop] } where each rider shows (the rider's
-//   center in rig pixels; crop: how much of the rider shows from the top, default 0.5).
+//   center in rig pixels; crop: how much of the rider shows from the top, default 0.9; less for thin hulls).
 //   sit, except a gunner on a vehicle with gunnerStands (the Warthog's turret)
 
 import { add, HOVER } from './rig.js';
@@ -208,7 +208,7 @@ export const VEHICLES = {
     name: 'Banshee', body: 'banshee', kind: 'air', seats: ['driver'],
     pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7ad8ff' },
     speed: 220, accel: 500, jump: 0, health: 280, weapon: 'banshee-plasma', splatter: 0,
-    seatAt: { driver: [36, 2] },
+    seatAt: { driver: [36, 2, 0.7] },
   },
   chopper: {
     name: 'Chopper', body: 'chopper', kind: 'ground', seats: ['driver'],
@@ -238,6 +238,6 @@ export const VEHICLES = {
     name: 'Broadsword', body: 'broadsword', kind: 'air', seats: ['driver'],
     pal: { armor: '#7a828a', trim: '#c8d0d8', dark: '#2a2e34', glow: '#9ad8ff' },
     speed: 280, accel: 640, jump: 0, health: 360, weapon: 'warthog-chaingun', splatter: 0,
-    seatAt: { driver: [54, 7] },
+    seatAt: { driver: [54, 7, 0.6] },
   },
 };
