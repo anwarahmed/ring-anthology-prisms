@@ -68,7 +68,7 @@ export const CHARACTERS = {
     weapons: ['assault-rifle', 'shotgun'], grenade: 'frag',
   },
   zamamee: {
-    name: "Zuka 'Zamamee", short: "'Zamamee", title: 'Special Operations Officer', faction: 'covenant',
+    name: "Zuka 'Zamamee", title: 'Special Operations Officer', faction: 'covenant',
     body: 'elite',
     pal: { armor: '#2e2e3a', trim: '#6a6a8a', dark: '#1a1a24', skin: '#5a5048', glow: '#ff8a3a' },
     shields: 120, health: 100, speed: 128, jump: 410,
@@ -90,7 +90,7 @@ export const CHARACTERS = {
     weapons: ['plasma-rifle', 'energy-sword'], grenade: 'plasma', kit: 'covenant',
   },
   'jeht-lcmutee': {
-    name: "Jeht 'Lcmutee", short: "'Lcmutee", title: 'Arbiter', faction: 'covenant',
+    name: "Jeht 'Lcmutee", title: 'Arbiter', faction: 'covenant',
     body: 'elite',
     pal: { armor: '#b8b0a0', trim: '#e8c46a', dark: '#2a2a30', skin: '#5a5048', glow: '#ffb84a' },
     shields: 130, health: 100, speed: 124, jump: 405,
