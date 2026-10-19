@@ -89,7 +89,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
     throughout the game... improve the terrain and backgrounds... the halo rising
     backgrounds [are] the standard"; "shave some of the below-the-floor imagery").**
     Mock-ups: zoom matters most; resolution alone adds little without richer art.
-   - [ ] Bigger: level camera zoom (WORLD_ZOOM, ~1.35) with the floor framed near the
+   - [x] Bigger: level camera zoom (WORLD_ZOOM, ~1.35) with the floor framed near the
      bottom edge; arenas wider than the view scroll inside their walls; co-op leash,
      spawns and HUD checked
    - [ ] Sharper: art generated at the zoomed resolution (load time and memory checked

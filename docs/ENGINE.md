@@ -107,7 +107,12 @@ letter. Units use their own entrance (teleport, drop, fly, walk).
 
 The level camera is custom (`updateCamera` in LevelScene): it always eases toward the
 middle of the living players, with a speed cap, inside the level or the locked arena.
-Nothing in a level should move the camera instantly. Menu screens fade in and out
+Nothing in a level should move the camera instantly. The level camera is zoomed in by
+`WORLD_ZOOM` (config.js) on top of HD, so the world reads big: the view is
+`scene.viewW × scene.viewH` world pixels (about 355 × 200), with the players' feet low in
+the frame. The backdrop is drawn by `BackdropScene` under the level with an unzoomed
+camera that follows the level camera's center, so skies stay sharp and framed as
+painted. Arenas wider than the view scroll inside their walls. Menu screens fade in and out
 through `go()` in `src/engine/ui.js`; use it instead of `scene.start` for any new
 screen.
 
