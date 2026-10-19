@@ -196,7 +196,7 @@ export const VEHICLES = {
     name: 'Warthog', body: 'warthog', kind: 'ground', seats: ['driver', 'gunner'],
     pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
     speed: 250, accel: 520, jump: 300, health: 450, weapon: 'warthog-chaingun', splatter: 90,
-    seatAt: { driver: [41, 6, 0.6], gunner: [15, 12, 0.62] }, gunnerStands: true,
+    seatAt: { driver: [41, 6, 0.85], gunner: [15, 12, 0.62] }, gunnerStands: true,
   },
   ghost: {
     name: 'Ghost', body: 'ghost', kind: 'hover', seats: ['driver'],
