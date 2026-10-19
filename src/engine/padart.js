@@ -15,18 +15,20 @@
 const M30 = {
   match: /0ca3.*0024|6B controller/i,
   buttons: {
-    3: { label: 'X', x: 114, y: 43, r: 6.5, fill: 0x8e8e94 }, 0: { label: 'Y', x: 129, y: 36, r: 6.5, fill: 0x8e8e94 }, 4: { label: 'Z', x: 144, y: 31, r: 6.5, fill: 0x8e8e94 },
-    2: { label: 'A', x: 121, y: 62, r: 8.5, fill: 0x2fae4c }, 1: { label: 'B', x: 137, y: 54, r: 8.5, fill: 0xf0c218 }, 5: { label: 'C', x: 153, y: 47, r: 8.5, fill: 0x2a4ad8 },
-    9: { label: 'start', name: 'START', x: 90, y: 46, w: 18, fill: 0xd0254c, ly: 8, ink: '#7a7a82', small: true },
-    8: { label: '-', name: 'SELECT', x: 77, y: 66, r: 5, fill: 0xe2dfd9, ink: '#6a6a70' },
-    // Shoulders: red strips along the top edge, toward the middle.
-    6: { label: 'L', x: 58, y: 1, strip: 38, fill: 0xc8234a }, 7: { label: 'R', x: 122, y: 1, strip: 38, fill: 0xc8234a },
+    3: { label: 'X', x: 114.6, y: 44.9, r: 6.2, fill: 0x6e6e74 }, 0: { label: 'Y', x: 130.3, y: 37.4, r: 6.2, fill: 0x6e6e74 }, 4: { label: 'Z', x: 147, y: 33, r: 6.2, fill: 0x6e6e74 },
+    2: { label: 'A', x: 121.1, y: 64.4, r: 8.1, fill: 0x2fae4c }, 1: { label: 'B', x: 138.4, y: 54.6, r: 8.1, fill: 0xf0c218 }, 5: { label: 'C', x: 156.8, y: 49.2, r: 8.1, fill: 0x2a4ad8 },
+    9: { label: 'start', name: 'START', x: 88.6, y: 47.6, w: 14, h: 4, fill: 0xd0254c, ly: 7, ink: '#7a7a82', small: true },
+    8: { label: '-', name: 'SELECT', x: 75.1, y: 66.5, r: 4.8, fill: 0xe6e3dd, ink: '#7a7a82' },
+    // Shoulders: red bands along the top edge over each grip (x range).
+    6: { label: 'L', x: 43, y: 1, band: [23, 63], fill: 0xc8234a }, 7: { label: 'R', x: 137, y: 1, band: [117, 157], fill: 0xc8234a },
   },
-  // The light grey M30 with colorful buttons.
-  look: { body: 0xeceae5, edge: 0xa8a59e, shadow: 0x8a877f, ring: 0xdedbd5, square: 0x56585e, dpad: 0x2f3136, small: 0xe2dfd9 },
-  decor: [{ x: 90, y: 66, r: 5 }, { x: 103, y: 66, r: 5 }],
-  face: { x: 134, y: 47, r: 30 },
-  dpad: { x: 43, y: 52, axes: [0, 1] },
+  // The light grey M30 with colorful buttons. Outline and positions measured from a
+  // photo of the controller (in the 180 x 104 box).
+  outline: [[-1.1, 59.0], [2.2, 42.2], [9.7, 25.5], [17.3, 17.4], [24.9, 11.4], [32.4, 8.7], [40.0, 7.1], [47.6, 7.1], [55.1, 8.2], [62.7, 9.2], [70.3, 13.0], [77.8, 13.6], [85.4, 13.6], [93.0, 13.6], [100.5, 13.6], [108.1, 13.0], [115.7, 9.8], [123.2, 8.2], [130.8, 7.1], [138.4, 7.1], [145.9, 8.2], [153.5, 10.9], [161.1, 16.8], [168.6, 24.4], [176.2, 40.1], [178.9, 50.9], [180.0, 57.9], [178.9, 75.7], [176.2, 84.9], [168.6, 93.6], [161.1, 96.8], [153.5, 98.4], [145.9, 97.9], [138.4, 96.8], [130.8, 94.1], [123.2, 90.3], [115.7, 87.1], [108.1, 84.9], [100.5, 83.3], [93.0, 82.8], [85.4, 82.8], [77.8, 83.3], [70.3, 84.9], [62.7, 87.6], [55.1, 90.9], [47.6, 94.1], [40.0, 96.8], [32.4, 98.4], [24.9, 98.4], [17.3, 96.8], [9.7, 93.0], [2.2, 83.3]],
+  look: { body: 0xebe9e4, edge: 0xa8a59e, shadow: 0x8a877f, ring: 0xe0ddd7, square: 0x4c4e54, dpad: 0x2a2c31, small: 0xe6e3dd },
+  decor: [{ x: 89.2, y: 66.5, r: 4.8 }, { x: 103.2, y: 66.5, r: 4.8 }],
+  face: { x: 136, y: 50, r: 34 },
+  dpad: { x: 43.8, y: 47.6, axes: [0, 1] },
 };
 
 const LAYOUTS = [M30];
@@ -46,34 +48,6 @@ export function padBindingLabel(layout, binding) {
   return binding.a === layout.dpad.axes[0] || binding.a === layout.dpad.axes[1] ? `DPAD ${dir}` : null;
 }
 
-// The M30's outline: two round grips, a top edge that dips a little between them and a
-// scooped notch along the bottom. inset shrinks it (for the rim and the face).
-function bodyOutline(ox, oy, inset = 0) {
-  const r = 44 - inset;
-  const cy = oy + 56;
-  const lx = ox + 44;
-  const rx = ox + 136;
-  const pts = [];
-  const arc = (cx, a0, a1) => {
-    for (let k = 0; k <= 24; k++) {
-      const a = ((a0 + ((a1 - a0) * k) / 24) * Math.PI) / 180;
-      pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
-    }
-  };
-  const curve = (p0, c, p1) => {
-    for (let k = 1; k < 16; k++) {
-      const t = k / 16;
-      pts.push({ x: (1 - t) ** 2 * p0.x + 2 * (1 - t) * t * c.x + t * t * p1.x, y: (1 - t) ** 2 * p0.y + 2 * (1 - t) * t * c.y + t * t * p1.y });
-    }
-  };
-  const at = (cx, deg) => ({ x: cx + r * Math.cos((deg * Math.PI) / 180), y: cy + r * Math.sin((deg * Math.PI) / 180) });
-  arc(lx, 60, 300);
-  curve(at(lx, 300), { x: ox + 90, y: cy - r - 2 }, at(rx, 240));
-  arc(rx, 240, 480);
-  curve(at(rx, 120), { x: ox + 90, y: cy + r * 0.62 }, at(lx, 60));
-  return pts;
-}
-
 // Draws the pad at (ox, oy). selected: bindings of the selected action (outlined);
 // pad: the live Phaser Gamepad (pressed buttons and directions light up).
 export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
@@ -86,42 +60,41 @@ export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
   const L = layout.look;
   const rad = (d) => (d * Math.PI) / 180;
 
-  // Shoulders: red strips peeking above the top edge, behind the body.
+  // Body, then the shoulder bands following its top edge over each grip.
+  const pts = (dy = 0) => layout.outline.map(([x, y]) => ({ x: ox + x, y: oy + y + dy }));
+  g.fillStyle(L.shadow, 1).fillPoints(pts(2), true);
+  g.fillStyle(L.body, 1).fillPoints(pts(), true);
+  g.lineStyle(1, L.edge, 1).strokePoints(pts(), true);
   for (const [b, k] of Object.entries(layout.buttons)) {
-    if (!k.strip) continue;
+    if (!k.band) continue;
     const n = Number(b);
-    const x = ox + k.x - k.strip / 2;
-    if (on(n)) g.lineStyle(2, SEL, 1).strokeRoundedRect(x - 2, oy + 6, k.strip + 4, 11, 4);
-    g.fillStyle(pressed(n) ? HELD : k.fill, 1).fillRoundedRect(x, oy + 8, k.strip, 8, 3);
+    const top = layout.outline.filter(([x, y]) => x >= k.band[0] && x <= k.band[1] && y < 30).sort((p, q) => p[0] - q[0]);
+    const strip = [...top.map(([x, y]) => ({ x: ox + x, y: oy + y })), ...top.reverse().map(([x, y]) => ({ x: ox + x, y: oy + y + 5 }))];
+    g.fillStyle(pressed(n) ? HELD : k.fill, 1).fillPoints(strip, true);
+    if (on(n)) g.lineStyle(2, SEL, 1).strokePoints(strip.map((p) => ({ x: p.x, y: p.y + (p.y > oy + 20 ? 1 : -1) })), true);
   }
-
-  // Body.
-  g.fillStyle(L.shadow, 1).fillPoints(bodyOutline(ox, oy + 3), true);
-  g.fillStyle(L.edge, 1).fillPoints(bodyOutline(ox, oy), true);
-  g.fillStyle(L.body, 1).fillPoints(bodyOutline(ox, oy - 0.5, 2), true);
 
   // D-pad: a big dark disc with a rounded cross and a center dimple.
   const d = layout.dpad;
   const [ax, ay] = d.axes;
   const cx = ox + d.x;
   const cy = oy + d.y;
-  g.fillStyle(L.ring, 1).fillCircle(cx, cy, 28);
-  g.lineStyle(1, L.edge, 0.7).strokeCircle(cx, cy, 28);
-  g.fillStyle(L.shadow, 1).fillRoundedRect(cx - 21, cy - 20, 42, 42, 10);
-  g.fillStyle(L.square, 1).fillRoundedRect(cx - 21, cy - 21, 42, 42, 10);
-  g.fillStyle(0x000000, 0.25).fillRoundedRect(cx - 18, cy - 5, 36, 12, 3).fillRoundedRect(cx - 6, cy - 17, 12, 36, 3);
-  g.fillStyle(L.dpad, 1).fillRoundedRect(cx - 18, cy - 6, 36, 12, 3).fillRoundedRect(cx - 6, cy - 18, 12, 36, 3);
+  g.fillStyle(L.ring, 1).fillCircle(cx, cy, 26);
+  g.lineStyle(1, L.edge, 0.6).strokeCircle(cx, cy, 26);
+  g.fillStyle(L.shadow, 1).fillRoundedRect(cx - 18, cy - 18, 36, 38, 9);
+  g.fillStyle(L.square, 1).fillRoundedRect(cx - 18, cy - 19, 36, 38, 9);
+  g.fillStyle(L.dpad, 1).fillRoundedRect(cx - 15, cy - 5, 30, 10, 2).fillRoundedRect(cx - 5, cy - 15, 10, 30, 2);
   const arm = (dx, dy, lit, sel) => {
-    const x = cx + dx * 12 - 6;
-    const y = cy + dy * 12 - 6;
-    if (lit) g.fillStyle(HELD, 1).fillRoundedRect(x, y, 12, 12, 3);
-    if (sel) g.lineStyle(2, SEL, 1).strokeRoundedRect(x - 1, y - 1, 14, 14, 3);
+    const x = cx + dx * 10 - 5;
+    const y = cy + dy * 10 - 5;
+    if (lit) g.fillStyle(HELD, 1).fillRoundedRect(x, y, 10, 10, 2);
+    if (sel) g.lineStyle(2, SEL, 1).strokeRoundedRect(x - 1, y - 1, 12, 12, 2);
   };
   arm(0, -1, axis(ay) < -0.5, axisOn(ay, -1));
   arm(0, 1, axis(ay) > 0.5, axisOn(ay, 1));
   arm(-1, 0, axis(ax) < -0.5, axisOn(ax, -1));
   arm(1, 0, axis(ax) > 0.5, axisOn(ax, 1));
-  g.fillStyle(0x3d3f45, 1).fillCircle(cx, cy, 3.5);
+  g.fillStyle(0x3d3f45, 1).fillCircle(cx, cy, 3);
 
   // A faint raised ring around the face buttons.
   if (layout.face) g.lineStyle(1, L.edge, 0.45).strokeCircle(ox + layout.face.x, oy + layout.face.y, layout.face.r);
@@ -129,16 +102,17 @@ export function drawPad(g, layout, ox, oy, selected = [], pad = null) {
   // Buttons. Pressed ones flash white with a green ring (A is already green).
   for (const s of layout.decor ?? []) g.fillStyle(L.small, 1).fillCircle(ox + s.x, oy + s.y, s.r).lineStyle(1, L.edge, 1).strokeCircle(ox + s.x, oy + s.y, s.r);
   for (const [b, k] of Object.entries(layout.buttons)) {
-    if (k.strip) continue;
+    if (k.band) continue;
     const n = Number(b);
     const x = ox + k.x;
     const y = oy + k.y;
     const fill = pressed(n) ? 0xffffff : k.fill;
     if (k.w) {
-      g.fillStyle(L.shadow, 1).fillRoundedRect(x - k.w / 2, y - 3.5, k.w, 9, 4);
-      g.fillStyle(fill, 1).fillRoundedRect(x - k.w / 2, y - 4.5, k.w, 9, 4);
-      if (pressed(n)) g.lineStyle(2, HELD, 1).strokeRoundedRect(x - k.w / 2 - 1, y - 5.5, k.w + 2, 11, 5);
-      if (on(n)) g.lineStyle(2, SEL, 1).strokeRoundedRect(x - k.w / 2 - 2, y - 6.5, k.w + 4, 13, 6);
+      const h = k.h ?? 9;
+      g.fillStyle(L.shadow, 1).fillRoundedRect(x - k.w / 2, y - h / 2 + 1, k.w, h, h / 2);
+      g.fillStyle(fill, 1).fillRoundedRect(x - k.w / 2, y - h / 2, k.w, h, h / 2);
+      if (pressed(n)) g.lineStyle(2, HELD, 1).strokeRoundedRect(x - k.w / 2 - 1, y - h / 2 - 1, k.w + 2, h + 2, h / 2 + 1);
+      if (on(n)) g.lineStyle(2, SEL, 1).strokeRoundedRect(x - k.w / 2 - 2.5, y - h / 2 - 2.5, k.w + 5, h + 5, h / 2 + 2);
     } else {
       g.fillStyle(L.shadow, 1).fillCircle(x, y + 1.2, k.r);
       g.fillStyle(fill, 1).fillCircle(x, y, k.r);
