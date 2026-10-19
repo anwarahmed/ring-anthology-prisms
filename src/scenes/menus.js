@@ -12,6 +12,7 @@ import { spaceSky, ringHalves, planetHorizon, prismTexture, logoText, ERA_COLORS
 import { buildBackdrop } from '../engine/backdrop.js';
 import { gradeCamera } from '../engine/fx.js';
 import { prewarmJobs } from '../engine/prewarm.js';
+import { Vignette } from '../engine/vignette.js';
 import { menuBackdrop, ornatePanel, header, emblem, selectBar } from '../engine/menuart.js';
 import { LEVELS, CAMPAIGN, ORDER } from '../../levels/index.js';
 import { THEMES } from '../content/themes.js';
@@ -355,7 +356,8 @@ export class TimelineScene extends Phaser.Scene {
   }
 }
 
-// The Archive: neutral, sourced story cards shown before and after each level.
+// The Archive: neutral, sourced story cards shown before and after each level, with an
+// animated scene window under the text (src/engine/vignette.js).
 export class ArchiveScene extends Phaser.Scene {
   constructor() { super('Archive'); }
   init(data) {
@@ -376,9 +378,24 @@ export class ArchiveScene extends Phaser.Scene {
     buildBackdrop(this, THEMES[this.level.theme], VIEW.w);
     gradeCamera(this.cameras.main, this);
     const era = ERAS[this.level.era];
-    panel(this, 10, 8, VIEW.w - 20, VIEW.h - 16, era.color).setAlpha(0.95);
+    // The scene window sits between the text (sized for this level's longest card) and
+    // the source line; with very long text there's no room and the card is all text.
+    const measure = txt(this, 0, 0, '', { font: 'read', size: 16, wrap: VIEW.w - 40 });
+    const textH = Math.max(...this.cards.map((c) => measure.setText(c.text).height));
+    measure.destroy();
+    const top = Math.round(Math.max(100, 58 + textH + 8));
+    const bottom = VIEW.h - 36;
+    this.vignette = null;
+    if (bottom - top >= 44) {
+      panel(this, 10, 8, VIEW.w - 20, top - 10, era.color).setAlpha(0.95);
+      panel(this, 10, bottom + 2, VIEW.w - 20, VIEW.h - 10 - bottom, era.color).setAlpha(0.95);
+      this.vignette = new Vignette(this, { x: 20, y: top, w: VIEW.w - 40, h: bottom - top }, this.level);
+      this.vignette.enter(this.which);
+    } else {
+      panel(this, 10, 8, VIEW.w - 20, VIEW.h - 16, era.color).setAlpha(0.95);
+    }
     const lines = this.add.graphics();
-    for (const y of [46, VIEW.h - 34]) {
+    for (const y of this.vignette ? [46] : [46, VIEW.h - 34]) {
       const c = era.color;
       lines.fillGradientStyle(c, c, c, c, 0, 1, 0, 1).fillRect(20, y, (VIEW.w - 40) / 2, 1);
       lines.fillGradientStyle(c, c, c, c, 1, 0, 1, 0).fillRect(VIEW.w / 2, y, (VIEW.w - 40) / 2, 1);
@@ -404,6 +421,7 @@ export class ArchiveScene extends Phaser.Scene {
     this.typed = 0;
     this.full = c.text;
     this.source.setText(c.source ? `Source: ${c.source}` : '');
+    this.vignette?.setCard(c);
     for (const t of [this.when, this.title.img, this.title.g, this.body, this.source]) {
       t.setAlpha(0);
       this.tweens.add({ targets: t, alpha: 1, duration: 220 });
@@ -411,7 +429,8 @@ export class ArchiveScene extends Phaser.Scene {
     this.more.setText(this.i < this.cards.length - 1 ? 'NEXT >' : this.which === 'before' ? 'BEGIN >' : 'CONTINUE >');
   }
   update(_t, dms) {
-    if (!this.controls) return;
+    if (!this.controls || this.leaving) return;
+    this.vignette?.update();
     // Make the coming level's art while the cards are read (one piece per frame).
     if (this.which === 'before') {
       this.jobs ??= prewarmJobs(this.level);
@@ -430,6 +449,14 @@ export class ArchiveScene extends Phaser.Scene {
     else this.next();
   }
   next() {
+    if (this.vignette && !this.leaving) {
+      // The heroes run off (into the level, or away from it) before the screen changes.
+      this.leaving = true;
+      this.vignette.exit(this.which);
+      this.time.addEvent({ delay: 16, loop: true, callback: () => this.vignette.update() });
+      this.time.delayedCall(this.which === 'before' ? 750 : 1100, () => { this.leaving = false; this.vignette.destroy(); this.vignette = null; this.next(); });
+      return;
+    }
     if (this.which === 'before') go(this, 'Level', { levelId: this.levelId });
     else go(this, 'Timeline', { after: this.levelId });
   }
