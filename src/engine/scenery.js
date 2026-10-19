@@ -21,13 +21,29 @@ function hash(x, y, s = 0) {
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 }
 
+function shadeHex(hex, k) {
+  const n = parseInt(hex.slice(1), 16);
+  const f = (v) => Math.max(0, Math.min(255, Math.round(v * (1 + k))));
+  return `#${((f(n >> 16) << 16) | (f((n >> 8) & 255) << 8) | f(n & 255)).toString(16).padStart(6, '0')}`;
+}
+
 // Prop art, drawn with the sprite renderer so it matches the characters.
 // Each returns { w, h, shapes, mats, glow? } with the base of the prop at the bottom.
 const PROPS = {
+  // A dense tuft: fine blades of two tones, each bending over at the tip.
   grass: (c, v) => ({
-    w: 18, h: 10,
-    shapes: Array.from({ length: 6 }, (_, i) => ({ t: 'cap', a: [2 + i * 2.8, 10], b: [1 + i * 2.8 + (i % 2 ? 2 : -1), 2 + ((i + v) % 3) * 1.5], r1: 1, r2: 0.4, m: 'a', z: i % 2 })),
-    mats: { a: material(c.color ?? '#5ab048', { texture: 0.4 }) },
+    w: 20, h: 11,
+    shapes: Array.from({ length: 14 }, (_, i) => {
+      const x = 1.5 + i * 1.3 + ((i * 7 + v) % 3) * 0.3;
+      const h = 4 + ((i * 5 + v * 3) % 7) * 0.9;
+      const lean = ((i * 3 + v) % 5) - 2;
+      const mid = [x + lean * 0.4, 11 - h * 0.6];
+      return [
+        { t: 'cap', a: [x, 11], b: mid, r1: 0.65, r2: 0.45, m: i % 3 ? 'a' : 'b', z: i % 2 },
+        { t: 'cap', a: mid, b: [x + lean * 1.1, 11 - h], r1: 0.45, r2: 0.15, m: i % 3 ? 'a' : 'b', z: i % 2 },
+      ];
+    }).flat(),
+    mats: { a: material(c.color ?? '#5ab048', { texture: 0.4 }), b: material(shadeHex(c.color ?? '#5ab048', -0.25), { texture: 0.4 }) },
   }),
   plant: (c, v) => ({
     w: 26, h: 20,
@@ -36,8 +52,12 @@ const PROPS = {
   }),
   rocks: (c, v) => ({
     w: 22, h: 10,
-    shapes: [{ t: 'ell', c: [8, 7], rx: 6 + v, ry: 4, m: 'a' }, { t: 'ell', c: [15, 8], rx: 4, ry: 3, m: 'a', z: 1 }],
-    mats: { a: material(c.color ?? '#8a7a6a', { texture: 0.7 }) },
+    shapes: [
+      { t: 'poly', pts: [[2, 10], [3, 5], [7, 2.5 - v * 0.5], [12, 4], [13, 10]], m: 'a', bevel: 1.6, tilt: [0.1, -0.2] },
+      { t: 'poly', pts: [[11, 10], [13, 6], [17, 5], [20, 7], [21, 10]], m: 'a', z: 1, bevel: 1.4, tilt: [-0.1, -0.2] },
+      { t: 'cap', a: [6, 5], b: [8, 8], r1: 0.25, r2: 0.25, m: 'b', z: 0.5, noSep: true },
+    ],
+    mats: { a: material(c.color ?? '#8a7a6a', { texture: 0.7 }), b: material(shadeHex(c.color ?? '#8a7a6a', -0.45)) },
   }),
   rubble: (c, v) => ({
     w: 24, h: 10,

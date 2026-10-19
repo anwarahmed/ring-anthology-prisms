@@ -151,10 +151,11 @@ function sampleRamp(r, s) {
 
 // Options: outline (cartoon outlines), light, scale (render at higher pixel density;
 // w and h are already scaled), smooth (continuous shading, no outlines or dithering:
-// the "realistic" look).
-export function render(shapes, w, h, mats, { outline = true, light = L, scale = 1, smooth = false } = {}) {
+// the "realistic" look), tile (the image edges continue into neighbors: no rim light
+// or edge darkening there).
+export function render(shapes, w, h, mats, { outline = true, light = L, scale = 1, smooth = false, tile = false } = {}) {
   if (scale !== 1) shapes = shapes.map((sh) => scaleShape(sh, scale));
-  if (smooth) return renderSmooth(shapes, w, h, mats, light, scale);
+  if (smooth) return renderSmooth(shapes, w, h, mats, light, scale, tile);
   const order = shapes.map((s, i) => ({ s, i })).sort((a, b) => (a.s.z ?? 0) - (b.s.z ?? 0) || a.i - b.i).map((o) => o.s);
   const id = new Int16Array(w * h).fill(-1);
   const nrm = new Float32Array(w * h * 3);
@@ -229,7 +230,7 @@ export function render(shapes, w, h, mats, { outline = true, light = L, scale = 
 
 // Realistic shading: continuous light, soft occlusion, broad specular highlights, fine
 // surface grain, and a soft darkened rim on the shadow side instead of an outline.
-function renderSmooth(shapes, w, h, mats, light, scale) {
+function renderSmooth(shapes, w, h, mats, light, scale, tile = false) {
   const order = shapes.map((s, i) => ({ s, i })).sort((a, b) => (a.s.z ?? 0) - (b.s.z ?? 0) || a.i - b.i).map((o) => o.s);
   const id = new Int16Array(w * h).fill(-1);
   const nrm = new Float32Array(w * h * 3);
@@ -252,7 +253,8 @@ function renderSmooth(shapes, w, h, mats, light, scale) {
     for (let r = 1; r <= RIM; r++) {
       for (const [dx, dy] of [[r, 0], [0, -r], [r, -r], [-r, 0], [0, r]]) {
         const xx = x + dx, yy = y + dy;
-        if (xx < 0 || yy < 0 || xx >= w || yy >= h || id[yy * w + xx] < 0) return { r, dx, dy };
+        if (xx < 0 || yy < 0 || xx >= w || yy >= h) { if (tile) continue; return { r, dx, dy }; }
+        if (id[yy * w + xx] < 0) return { r, dx, dy };
       }
     }
     return null;
@@ -292,7 +294,7 @@ function renderSmooth(shapes, w, h, mats, light, scale) {
           c = c.map((v, i) => v + ([200, 228, 255][i] - v) * rim);
         }
         // A crisp edge all round, darkest on the shadow side.
-        const edge = (xx, yy) => xx < 0 || yy < 0 || xx >= w || yy >= h || id[yy * w + xx] < 0;
+        const edge = (xx, yy) => (xx < 0 || yy < 0 || xx >= w || yy >= h ? !tile : id[yy * w + xx] < 0);
         if (edge(x + 1, y) || edge(x, y + 1)) c = c.map((v, i) => v + (m.ramp[1][i] - v) * 0.55);
         else if (edge(x - 1, y) || edge(x, y - 1)) c = c.map((v, i) => v + (m.ramp[2][i] - v) * 0.3);
       }

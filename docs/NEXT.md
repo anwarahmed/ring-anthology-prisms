@@ -94,11 +94,13 @@ Tick boxes and commit after each step. Everything ticked is committed.
      spawns and HUD checked
    - [x] Sharper: art generated at the zoomed resolution (ART = 3; loads 3-5 s, 60 fps) (load time and memory checked
      with tests/perf.mjs)
-   - [ ] Detailed characters: armor plating, panel lines, visor reflections, rim light
+   - [x] Detailed characters (renderer rim light and sheen; Spartan, Marine, Elite, Brute,
+     Grunt, Jackal, Hunter, Forerunner details): armor plating, panel lines, visor reflections, rim light
      for every body (humanoid, elite, brute, grunt, jackal, hunter, forerunner,
      promethean, flood, sentinel); sprites sheet reviewed
    - [ ] Detailed vehicles and weapons
-   - [ ] Terrain: richer tiles (surface lip, strata, rocks, roots, wear) per theme
+   - [x] Terrain: richer tiles (seamless packed rock, sod lip, dense grass tufts, rocks;
+     tiles designed on a 32-unit grid at ART resolution) (surface lip, strata, rocks, roots, wear) per theme
    - [ ] Backgrounds: every theme brought up to the ring-rise standard (layered depth,
      atmosphere, light); ringrise skies unchanged
    - [ ] Full review: tests/sheets.mjs on all levels, perf scan, smoke checks
