@@ -13,6 +13,7 @@ import { parseMap, groundBelow, TILES } from '../engine/mapparse.js';
 import { TILESET, COLLIDES, isSolid, isPlatform, isHazard } from '../engine/tileset.js';
 import { tilesTexture, baseTextures, hexNum, TILE_PX } from '../engine/textures.js';
 import { buildBackdrop } from '../engine/backdrop.js';
+import { firefightLevel } from '../engine/firefight.js';
 import { buildScenery } from '../engine/scenery.js';
 import { Fx, gradeCamera } from '../engine/fx.js';
 import { Controls } from '../engine/input.js';
@@ -36,7 +37,9 @@ export class LevelScene extends Phaser.Scene {
   init(data) {
     this.levelId = data.levelId;
     this.cp = data.checkpoint ?? null;
-    this.level = LEVELS[this.levelId];
+    // Firefight: the level's map and players with a generated wave script.
+    this.firefight = !!data.firefight;
+    this.level = this.firefight ? firefightLevel(LEVELS[this.levelId], Object.values(LEVELS)) : LEVELS[this.levelId];
     this.era = ERAS[this.level.era];
     this.diff = DIFFICULTY[session.difficulty];
     this.ended = false;
@@ -471,7 +474,7 @@ export class LevelScene extends Phaser.Scene {
 
   restart() {
     this.scene.stop('Hud');
-    this.scene.restart({ levelId: this.levelId, checkpoint: this.cp, stats: this.stats });
+    this.scene.restart({ levelId: this.levelId, checkpoint: this.cp, stats: this.stats, firefight: this.firefight });
   }
 
   pause() {
@@ -482,12 +485,12 @@ export class LevelScene extends Phaser.Scene {
   endLevel({ result = 'win' } = {}) {
     if (this.ended) return;
     this.ended = true;
-    session.complete(this.levelId);
+    if (!this.firefight) session.complete(this.levelId);
     this.time.delayedCall(result === 'history' ? 2500 : 1200, () => {
       this.cameras.main.fadeOut(900);
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.scene.stop('Hud');
-        this.scene.start('Results', { levelId: this.levelId, result, stats: this.stats });
+        this.scene.start('Results', { levelId: this.levelId, result, stats: this.stats, firefight: this.firefight });
       });
     });
   }

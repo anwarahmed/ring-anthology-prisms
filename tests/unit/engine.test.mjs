@@ -85,3 +85,19 @@ test('every body builds all frames and aim angles', async () => {
   assert.deepEqual(aimFrame(-1, 0), { i: 4, flip: true });
   assert.equal(aimFrame(0.02, -1).i, 0);
 });
+
+test('firefight: 3 rounds of 5 waves, tougher each wave, a boss last', async () => {
+  const { firefightLevel, eraRoster, waveGroups, ROUNDS, WAVES } = await import('../../src/engine/firefight.js');
+  const { LEVELS } = await import('./levels-node.mjs');
+  const all = Object.values(LEVELS);
+  const roster = eraRoster(all, 'covenant');
+  assert.ok(roster.enemies.length > 3 && roster.bosses.length > 0);
+  const size = (n) => waveGroups(roster, n).reduce((s, g) => s + g.n, 0);
+  assert.ok(size(ROUNDS * WAVES - 2) > size(0));
+  const L = firefightLevel(LEVELS['2a'], all);
+  const acts = L.script[0].do;
+  assert.equal(acts.filter((a) => a.wave).length, ROUNDS * WAVES - 1);
+  assert.equal(acts.filter((a) => a.boss).length, 1);
+  assert.ok(acts.at(-1).end);
+  assert.ok(L.firefight && !Object.keys(L.archive).length);
+});

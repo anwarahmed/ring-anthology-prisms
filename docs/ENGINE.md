@@ -118,6 +118,17 @@ screen.
 
 Use hooks for set pieces only. Anything two levels need belongs in the engine.
 
+## Firefight
+
+`src/engine/firefight.js` (pure, unit-tested) builds a Firefight from any level: its
+map, theme and players, a lock on its first arena (markers B and C), and a generated
+script of 3 rounds × 5 waves from the era's roster (every enemy and boss used by that
+era's levels, weakest first). Waves grow in size and toughness; wave 5 of round 3 is
+one of the era's bosses. No checkpoints: if everyone goes down, the set restarts.
+Started from the title's FIREFIGHT item (`FirefightScene` in menus.js), with
+`scene.start('Level', { levelId, firefight: true })`. A map unlocks when its level is
+completed. Firefights never record campaign progress.
+
 ## Content catalogs (`src/content/`)
 
 Add new entries through the `new-content` skill.

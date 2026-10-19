@@ -93,13 +93,13 @@ export class TitleScene extends Phaser.Scene {
     });
 
     // Menu.
-    panel(this, VIEW.w / 2 - 66, 162, 132, 46);
+    panel(this, VIEW.w / 2 - 66, 158, 132, 56);
     this.bar = selectBar(this, 0x45e6ff);
-    this.labels = ['PLAY', 'CONTROLS', 'GRAPHICS'];
-    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 173 + i * 12, label, { size: 8 }).setOrigin(0.5));
+    this.labels = ['PLAY', 'FIREFIGHT', 'CONTROLS', 'GRAPHICS'];
+    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 168 + i * 12, label, { size: 8 }).setOrigin(0.5));
     this.sel = 0;
     this.refreshMenu();
-    txt(this, VIEW.w / 2, 216, 'An unofficial Halo fan game', { font: 'read', size: 14, color: '#c8d8ff' }).setOrigin(0.5);
+    txt(this, VIEW.w / 2, 224, 'An unofficial Halo fan game', { font: 'read', size: 14, color: '#c8d8ff' }).setOrigin(0.5);
     this.add.rectangle(0, VIEW.h - 22, VIEW.w, 22, 0x05031a, 0.75).setOrigin(0);
     txt(this, VIEW.w / 2, VIEW.h - 2, LEGAL_NOTICE, { font: 'read', size: 11, color: '#8890b8', align: 'center', wrap: VIEW.w - 20, stroke: false }).setOrigin(0.5, 1);
     this.input.once('pointerdown', () => audio.unlock());
@@ -107,7 +107,7 @@ export class TitleScene extends Phaser.Scene {
   }
   refreshMenu() {
     this.items.forEach((t, i) => t.setColor(i === this.sel ? '#ffffff' : '#9fb0d8'));
-    this.bar.place(VIEW.w / 2 - 60, 173 + this.sel * 12 - 6, 120, 12);
+    this.bar.place(VIEW.w / 2 - 60, 168 + this.sel * 12 - 6, 120, 12);
   }
   drawBeams(t) {
     const g = this.beams;
@@ -139,16 +139,19 @@ export class TitleScene extends Phaser.Scene {
       return;
     }
     audio.sfx('ui');
-    if (this.sel === 1) return go(this, 'Controls', { returnTo: 'Title' });
-    if (this.sel === 2) return go(this, 'Graphics', { returnTo: 'Title' });
+    if (this.sel === 2) return go(this, 'Controls', { returnTo: 'Title' });
+    if (this.sel === 3) return go(this, 'Graphics', { returnTo: 'Title' });
     audio.playMusic('title', 0);
-    go(this, 'Players', { first: hit.device });
+    go(this, 'Players', { first: hit.device, next: this.sel === 1 ? 'Firefight' : 'Timeline' });
   }
 }
 
 export class PlayersScene extends Phaser.Scene {
   constructor() { super('Players'); }
-  init(data) { this.first = data.first; }
+  init(data) {
+    this.first = data.first;
+    this.next = data.next ?? 'Timeline';
+  }
   create() {
     hdCamera(this);
     this.leaving = false;
@@ -216,7 +219,7 @@ export class PlayersScene extends Phaser.Scene {
       session.players = this.devices.map((device) => ({ device }));
       session.difficulty = this.diffs[this.diffIndex];
       audio.sfx('ui');
-      go(this, 'Timeline');
+      go(this, this.next);
     }
   }
 }
@@ -433,7 +436,7 @@ export class ResultsScene extends Phaser.Scene {
     this.controls = new Controls(this);
     starfield(this, era.color);
     panel(this, 40, 18, VIEW.w - 80, 214, era.color);
-    header(this, result === 'history' ? 'AS HISTORY RECORDS' : 'MISSION COMPLETE', 34, era.color);
+    header(this, this.data_.firefight ? 'FIREFIGHT COMPLETE' : result === 'history' ? 'AS HISTORY RECORDS' : 'MISSION COMPLETE', 34, era.color);
     emblem(this, level.era, VIEW.w / 2 - 4 - level.title.length * 4 - 8, 56, 4);
     txt(this, VIEW.w / 2 - 4, 56, level.title.toUpperCase(), { size: 8 }).setOrigin(0.5);
     const secs = Math.round((Date.now() - stats.start) / 1000);
@@ -456,7 +459,8 @@ export class ResultsScene extends Phaser.Scene {
     const hit = anyDevice(this.controls);
     if (hit && !hit.nav && this.time.now > this.ready) {
       audio.sfx('ui');
-      go(this, 'Archive', { levelId: this.data_.levelId, which: 'after' });
+      if (this.data_.firefight) go(this, 'Firefight');
+      else go(this, 'Archive', { levelId: this.data_.levelId, which: 'after' });
     }
   }
 }
@@ -508,7 +512,74 @@ export class PauseScene extends Phaser.Scene {
       if (this.sel === 1) return this.level.restart();
       this.scene.stop('Hud');
       this.scene.stop('Level');
-      this.scene.start('Timeline');
+      this.scene.start(this.level.firefight ? 'Firefight' : 'Timeline');
     }
+  }
+}
+
+// Firefight: pick a map. A map unlocks when its campaign level is completed.
+export class FirefightScene extends Phaser.Scene {
+  constructor() { super('Firefight'); }
+  create() {
+    hdCamera(this);
+    this.leaving = false;
+    this.cameras.main.fadeIn(260);
+    this.controls = new Controls(this);
+    this.glows = starfield(this, 0xe0453a);
+    header(this, 'FIREFIGHT', 18, 0xe0453a);
+    txt(this, VIEW.w / 2, 34, '3 rounds of 5 waves. A boss waits at the end.', { font: 'read', size: 14, color: '#c8b8b8' }).setOrigin(0.5, 0);
+    panel(this, 22, 52, VIEW.w - 44, 200, 0xe0453a).setDepth(1);
+    this.bar = selectBar(this, 0xe0453a, 2);
+    this.maps = ORDER.filter((l) => LEVELS[l.id]);
+    this.sel = Math.min(this.registry.get('ffIndex') ?? 0, this.maps.length - 1);
+    this.rows = [];
+    this.g = this.add.graphics().setDepth(3);
+    txt(this, VIEW.w / 2, VIEW.h - 4, 'Up/down: map · Start: fight · Ability: back', { font: 'read', size: 14, color: '#9aa4c8' }).setOrigin(0.5, 1);
+    this.enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER, false);
+    audio.playMusic('last-stand', 0);
+    this.draw();
+  }
+  open(id) {
+    return session.debug.all || session.isDone(id);
+  }
+  draw() {
+    this.rows.forEach((r) => r.destroy());
+    this.rows = [];
+    this.g.clear();
+    const first = Math.max(0, Math.min(this.sel - 5, this.maps.length - 11));
+    this.maps.slice(first, first + 11).forEach((l, k) => {
+      const i = first + k;
+      const open = this.open(l.id);
+      const y = 60 + k * 17;
+      if (i === this.sel) this.bar.place(30, y - 2, VIEW.w - 60, 14);
+      this.rows.push(emblem(this, l.era, 44, y + 5, 4).setAlpha(open ? 1 : 0.4).setDepth(3));
+      this.rows.push(txt(this, 56, y + 1, `${l.id.toUpperCase()}  ${LEVELS[l.id].title.toUpperCase()}`, { size: 8, color: i === this.sel ? '#ffffff' : open ? '#c8d0e8' : '#5a5f78' }).setDepth(3));
+      this.rows.push(txt(this, VIEW.w - 36, y + 1, open ? 'FIGHT' : 'FINISH THE LEVEL', { size: 8, color: open ? '#ff8a6a' : '#5a5f78' }).setOrigin(1, 0).setDepth(3));
+    });
+    if (first > 0) this.g.fillStyle(0xe0453a, 0.9).fillTriangle(VIEW.w / 2 - 5, 58, VIEW.w / 2 + 5, 58, VIEW.w / 2, 54);
+    if (first + 11 < this.maps.length) this.g.fillStyle(0xe0453a, 0.9).fillTriangle(VIEW.w / 2 - 5, 247, VIEW.w / 2 + 5, 247, VIEW.w / 2, 251);
+  }
+  update() {
+    let s = null;
+    for (const d of this.controls.devices()) {
+      const r = this.controls.read(d);
+      if (Object.values(r.pressed).some(Boolean)) s = r;
+    }
+    const enter = Phaser.Input.Keyboard.JustDown(this.enter);
+    if (!s && !enter) return;
+    s = s ?? { pressed: {} };
+    if (s.pressed.up || s.pressed.down) {
+      this.sel = (this.sel + (s.pressed.down ? 1 : this.maps.length - 1)) % this.maps.length;
+      this.registry.set('ffIndex', this.sel);
+      audio.sfx('uiMove');
+      return this.draw();
+    }
+    if (s.pressed.pause || enter) {
+      const l = this.maps[this.sel];
+      if (!this.open(l.id)) return;
+      audio.sfx('ui');
+      return go(this, 'Level', { levelId: l.id, firefight: true });
+    }
+    if (s.pressed.ability) return go(this, 'Title');
   }
 }

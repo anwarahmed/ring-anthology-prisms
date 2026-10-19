@@ -139,6 +139,7 @@ await run('controls', '', async (page) => {
   await waitScene(page, 'Title');
   await gameWait(page, 300);
   await tap(page, 's');
+  await tap(page, 's');
   await pressUntil(page, () => tap(page, 'f'), 'Controls');
   await gameWait(page, 400);
   for (let i = 0; i < 5; i++) await tap(page, 'ArrowDown'); // device row → UP, DOWN, LEFT, RIGHT, JUMP
@@ -156,6 +157,7 @@ await run('controls', '', async (page) => {
 await run('graphics', '', async (page) => {
   await waitScene(page, 'Title');
   await gameWait(page, 300);
+  await tap(page, 's');
   await tap(page, 's');
   await tap(page, 's');
   await pressUntil(page, () => tap(page, 'f'), 'Graphics');
@@ -270,7 +272,10 @@ await run('ally-fire', '?level=1a&god=1', async (page) => {
     window.__ally = L.spawnUnit('ancient-human-defender', 82 * 16, 13 * 16, { ally: true, entrance: 'none' });
   });
   // Wait in game terms (slow test machines run the game slower than real time).
-  await page.waitForFunction(() => window.__ally.x / 16 >= 91 || !window.__ally.alive, null, { timeout: 30000 }).catch(() => {});
+  for (let t = 0; t < 30; t++) {
+    if (await page.evaluate(() => window.__ally.x / 16 >= 91 || !window.__ally.alive)) break;
+    await gameWait(page, 1000);
+  }
   const r = await page.evaluate(() => ({ x: Math.round(window.__ally.x / 16), alive: window.__ally.alive, hp: window.__ally.health, shields: Math.round(window.__ally.shields) }));
   if (!r.alive || r.x < 91) throw new Error(`ally did not get past the fire unhurt: ${JSON.stringify(r)}`);
   if (r.hp < 80) throw new Error(`ally was burned: ${JSON.stringify(r)}`);
@@ -485,6 +490,23 @@ await run('arena-spawns', '?level=1a&god=1', async (page) => {
     return { x1: L.arena.x1, xs: L.units.filter((u) => u.alive && u.team === 'enemies').map((u) => Math.round(u.x)) };
   });
   if (later.xs.some((x) => x > later.x1)) throw new Error(`units walked out of the arena: ${JSON.stringify(later)}`);
+});
+
+// Firefight: title → FIREFIGHT → join → map select → a Firefight on 1a's map with
+// waves, and no campaign progress recorded for it.
+await run('firefight', '?all=1&god=1', async (page) => {
+  await waitScene(page, 'Title');
+  await gameWait(page, 300);
+  await tap(page, 's');
+  await pressUntil(page, () => tap(page, 'f'), 'Players');
+  await gameWait(page, 400);
+  await pressUntil(page, () => tap(page, 'g'), 'Firefight');
+  await gameWait(page, 300);
+  await pressUntil(page, () => tap(page, 'Escape'), 'Level');
+  await levelReady(page);
+  await page.waitForFunction(() => window.__game.scene.getScene('Level').units.some((u) => u.alive && u.team === 'enemies'), null, { timeout: 30000 });
+  const r = await page.evaluate(() => { const L = window.__game.scene.getScene('Level'); return { ff: L.firefight, arena: !!L.arena, id: L.levelId }; });
+  if (!r.ff || !r.arena) throw new Error(`not a firefight: ${JSON.stringify(r)}`);
 });
 
 for (const id of levels) {
