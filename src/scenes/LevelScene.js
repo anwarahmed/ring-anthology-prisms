@@ -387,9 +387,12 @@ export class LevelScene extends Phaser.Scene {
     return boss;
   }
 
+  // A boss's summons: two at a time, and never more than four of them alive.
   summonFor(boss) {
     const s = boss.def.boss.summon;
-    if (s) this.spawnGroup([{ unit: s, n: 2, from: 'sky' }]);
+    if (!s) return;
+    const alive = this.units.filter((u) => u.alive && u.id === s && !u.ally).length;
+    if (alive < 4) this.spawnGroup([{ unit: s, n: Math.min(2, 4 - alive), from: 'sky' }]);
   }
 
   // --- Arenas, checkpoints, effects ---------------------------------------------------

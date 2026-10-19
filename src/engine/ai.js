@@ -234,7 +234,10 @@ export const BEHAVIORS = {
     st.phaseT = (st.phaseT ?? 0) + dt;
     if (st.attack === 'barrage') {
       unit.setVelocityX(0);
-      if (Math.floor(st.phaseT * 6) !== Math.floor((st.phaseT - dt) * 6) && st.phaseT < 1.5) {
+      // Five-shot volleys; weapons with several pellets fire fewer volleys, so a barrage
+      // throws about the same number of shots whatever the weapon.
+      const rate = 6 / (unit.weapon?.pellets ?? 1);
+      if (Math.floor(st.phaseT * rate) !== Math.floor((st.phaseT - dt) * rate) && st.phaseT < 1.5) {
         const base = Math.atan2(unit.aim.y, unit.aim.x);
         for (let k = -2; k <= 2; k++) {
           unit.aim = { x: Math.cos(base + k * 0.18), y: Math.sin(base + k * 0.18) };

@@ -166,7 +166,8 @@ Add new entries through the `new-content` skill.
 
 **AI behaviors:** `shooter` (keeps distance, strafes, bursts), `charger` (rushes,
 melee), `swarm` (hops at targets, pops on contact), `idle` (story characters), `flyer` (hovers above), `walker` (patrols), `turret`, and `boss` (cycles
-`boss.attacks`: `barrage`, `charge`, `summon`, `leap`).
+`boss.attacks`: `barrage`, `charge`, `summon`, `leap`; a barrage is five-shot
+volleys, fewer for multi-pellet weapons; summons come two at a time, at most four alive).
 
 **Tech vs shields:** plasma strips shields, ballistic hurts health, hard-light is
 balanced, explosive and melee hit both (`src/engine/rules.js`).
