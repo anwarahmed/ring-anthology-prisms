@@ -15,11 +15,13 @@ export default {
         title: 'The Map Room', when: 'September 2552', where: 'Installation 04',
         text: 'Cortana learned that the ring held a map room, the Silent Cartographer, which could lead them to Halo\'s Control Room.',
         source: 'Halo: Combat Evolved',
+        scene: 'M=master-chief@0.3; M glow #7ad8ff; M talk; beam 0.74 #9ff4ff',
       },
       {
         title: 'Beach Landing', where: 'An island on Installation 04',
         text: 'The Chief and a team of Marines landed on the island\'s beach by Pelican, straight into the Covenant\'s defenses.',
         source: 'Halo: Combat Evolved',
+        scene: 'ship unsc -0.2>0.34 0.3; M=master-chief@0.34 & K=marine@0.22 & L=marine@0.44; G=grunt@0.72< & J=jackal@0.82< & H=hunter@0.93<; M fire H & K fire G & L fire J; G down & J down',
       },
     ],
     after: [
@@ -27,6 +29,7 @@ export default {
         title: 'The Way Forward', where: 'Installation 04',
         text: 'The Silent Cartographer showed the way to the Control Room. Captain Keyes, meanwhile, had gone looking for a Covenant weapons cache.',
         source: 'Halo: Combat Evolved',
+        scene: 'beam 0.62 #9ff4ff; M=master-chief@0.3; M face >; M>>0.82',
       },
     ],
   },

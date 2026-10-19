@@ -99,12 +99,16 @@ Tick boxes and commit after each step. Everything ticked is committed.
       docs/ENGINE.md once written). Cards without one keep the old motifs.
     - Canon only: stage what the card states; kid-friendly (defeats are light puffs,
       deaths never shown). Characters and units come from src/content.
+    - Tools: `node test-results/cards.mjs <ids>` prints cards + cast (recreate if
+      test-results was cleaned: it is a tiny script); scenes are inserted by
+      test-results/addscenes.py from a JSON of {id: {before: [...], after: [...]}}.
+      End each scene on a frame that still shows its subject.
     - Per part: write the scenes, run `node scripts/archive-sheet.mjs <ids>` (one frame
       per card at the end of its scene) and fix what reads wrong, commit, push, tick.
    - [x] Scene engine: script parser + actions in src/engine/vignette.js; one sample card
      (5a "The Firing"); docs; archive-sheet script
    - [x] Part I scenes (1a-1f)
-   - [ ] Part II scenes (2a-2f)
+   - [x] Part II scenes (2a-2f)
    - [ ] Part III scenes (3a-3m)
    - [ ] Part IV scenes (4a-4f)
    - [ ] Part V scenes (5a-5h)

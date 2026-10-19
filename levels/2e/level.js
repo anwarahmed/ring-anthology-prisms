@@ -15,11 +15,13 @@ export default {
         title: 'The Demon', when: 'September 2552', where: 'Pillar of Autumn',
         text: "Zuka 'Zamamee, a Special Operations Elite, was wounded by the human the Covenant called the Demon while boarding the Pillar of Autumn. Yayap's Grunts carried him to safety.",
         source: "Halo: The Flood; Halopedia: Zuka 'Zamamee",
+        scene: 'M=master-chief@0.18; Z=zamamee@0.62<; M fire Z; Z kneel; Y=yayap@0.95< & G=unggoy@1.05<; Y>0.72 & G>0.8; Z>1.2 & Y>1.25 & G>1.3',
       },
       {
         title: 'The Hunt', where: 'Installation 04',
         text: "After the Demon freed the human captain from the Truth and Reconciliation, the Covenant leaders let 'Zamamee hunt him. Yayap went with him.",
         source: "Halopedia: Zuka 'Zamamee",
+        scene: 'Z=zamamee@0.22 & Y=yayap@0.12; ship covenant 1.2>0.64 0.12 big; Z talk; Z>>0.62 & Y>0.52',
       },
     ],
     after: [
@@ -27,11 +29,13 @@ export default {
         title: 'Escape', where: 'Installation 04',
         text: "The trap at the Silent Cartographer failed, and the attack on the humans' Alpha Base found the Demon already gone. Yayap talked 'Zamamee into escaping in a Banshee.",
         source: "Halopedia: Zuka 'Zamamee",
+        scene: 'fire 0.82; Z=zamamee@0.4 & Y=yayap@0.3; Y talk; B=veh:banshee@0.58,0.55; Z hide & Y hide; B>1.3',
       },
       {
         title: 'The Last Hunt', where: 'Pillar of Autumn',
         text: "'Zamamee hunted the Demon one last time, aboard the Pillar of Autumn. He was still aboard when the ship exploded and Installation 04 was destroyed.",
         source: "Halopedia: Zuka 'Zamamee",
+        scene: 'bg space; A=ship:unsc-big@-0.2,0.45; A>0.5; boom 0.5 0.45 big & flash #ffe8c0; A down & boom 0.58 0.4 big',
       },
     ],
   },

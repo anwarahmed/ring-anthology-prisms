@@ -15,11 +15,13 @@ export default {
         title: 'Halo', when: 'September 2552', where: 'Installation 04',
         text: 'The ring was a world built on the inside of a band of metal 10,000 kilometers across. The Covenant called it Halo.',
         source: 'Halo: Combat Evolved; Halopedia: Installation 04',
+        scene: 'K=marine@0.16 & M=master-chief@0.26; M face >; ship covenant 1.2>0.72 0.14; K talk',
       },
       {
         title: 'Survivors', where: 'Installation 04',
         text: 'Lifeboats from the Pillar of Autumn had crashed all across the ring. The Chief set out to find the Marines before the Covenant did.',
         source: 'Halo: Combat Evolved',
+        scene: 'fire 0.6; K=marine@0.62 & L=marine@0.7; M=master-chief@-0.1; M>>0.44; E=elite@1.1< & G=grunt@1.2<; E>0.86 & G>0.94; M fire E & K fire G; E down & G down',
       },
     ],
     after: [
@@ -27,6 +29,7 @@ export default {
         title: 'Truth and Reconciliation', where: 'Installation 04',
         text: 'The survivors learned that Captain Keyes had been taken aboard the Covenant cruiser Truth and Reconciliation. The Chief went in and rescued him.',
         source: 'Halo: Combat Evolved',
+        scene: 'ship covenant -0.3>0.52 0.14 big; beam 0.52 #c890ff & M=master-chief@0.46 & K=marine@0.56; K face <; M face >',
       },
     ],
   },

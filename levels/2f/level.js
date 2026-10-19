@@ -15,6 +15,7 @@ export default {
         title: 'The Plan', when: 'September 2552', where: 'Pillar of Autumn',
         text: "To stop the Flood without firing Halo, Cortana planned to overload the Pillar of Autumn's engines and destroy the ring.",
         source: 'Halo: Combat Evolved',
+        scene: 'M=master-chief@0.3; M glow #7ad8ff; M talk; fire 0.76',
       },
     ],
     after: [
@@ -22,6 +23,7 @@ export default {
         title: 'The Maw', where: 'Installation 04',
         text: 'The Pillar of Autumn exploded and Installation 04 was destroyed, and the Flood on it with it. The Chief and Cortana escaped in a Longsword fighter.',
         source: 'Halo: Combat Evolved',
+        scene: 'bg space; ring 0.6 0.42; A=ship:unsc-big@0.44,0.46; boom 0.46 0.46 big & flash; A down; ringbreak; L=ship:unsc@0.5,0.25; L>0.86',
       },
     ],
   },

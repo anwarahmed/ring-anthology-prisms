@@ -5,8 +5,10 @@
 // joined with '&' run together. x and y are fractions of the window (y from the top;
 // actors stand on the ground unless given a y). Names are one letter or word.
 //
-//   C=master-chief@0.2       place an actor (character or unit id; veh:warthog for a
-//   E=elite@0.8<             vehicle); '<' faces left; @x,y floats it (flyers, ships)
+//   C=master-chief@0.2       place an actor: a character or unit id, veh:warthog for a
+//   E=elite@0.8<             vehicle, or ship:unsc / ship:covenant-big for a ship that
+//   A=ship:unsc-big@0.5,0.4  can move, leave or be destroyed. '<' faces left; @x,y
+//                            floats it (flyers, ships)
 //   C>0.5   C>>0.5           walk / run to x
 //   C^   C kneel   C stand   jump, crouch, stand up
 //   C face <   C face >      turn
@@ -21,7 +23,7 @@
 //                            forerunner, banished, flood, keyship)
 //   fleet covenant [n]       a fleet streams across the sky
 //   boom 0.6 0.4 [big]   fire 0.6   spark 0.6 0.4   a blast, flames, sparks
-//   ring 0.7 0.25   ringfire   a Halo in the sky; it fires (light wave)
+//   ring 0.7 0.25   ringfire   ringbreak   a Halo; it fires (light wave); it is destroyed
 //   planet 0.7 0.3 0.12 #hex  a world;  glass 0.6   glassing beam from orbit
 //   flood 0.6   infect E     Flood spores at x; an actor turns Flood-green
 //   pods 0.4 0.9 [n]         drop pods land between x0 and x1
@@ -89,6 +91,16 @@ export class Stage {
     const m = spec.match(/^([\w:-]+)@(-?[\d.]+)(?:,([\d.]+))?(<)?$/);
     if (!m) throw new Error(`scene: bad actor '${spec}'`);
     const [, id, xs, ys, left] = m;
+    if (id.startsWith('ship:')) {
+      // A ship as an actor (it can move, be destroyed or leave): ship:unsc, ship:covenant-big.
+      const [kind, size] = id.slice(5).split('-');
+      const img = this.s.add.image(this.X(Number(xs)), this.Y(Number(ys ?? 0.3)), SHIPS[kind] ?? SHIPS.unsc).setScale((size === 'big' ? 1.6 : 0.9) / HD).setFlipX(!!left);
+      if (kind === 'flood') img.setTint(0xb8e04a);
+      this.v.add(img);
+      this.cast[name] = { name, body: img, arm: null, flying: true, light: FACTION_LIGHT[kind] ?? 0xffc26a };
+      img.setAlpha(0);
+      return this.tween({ targets: img, alpha: 1, duration: 250 });
+    }
     const info = lookup(id);
     if (!info?.def) throw new Error(`scene: unknown actor '${id}'`);
     const key = bodyTexture(this.s, info.key, info.def);
@@ -114,7 +126,7 @@ export class Stage {
   }
 
   syncArm(a) {
-    if (!a.arm || !a.body.active) return;
+    if (!a.arm || !a.body.active || !a.meta) return;
     const sh = a.meta.shoulders[a.body.frame.name] ?? a.meta.shoulders[0];
     const f = a.body.flipX ? -1 : 1;
     a.arm.setPosition(a.body.x + (sh[0] - a.meta.w / 2) * f * a.k, a.body.y + (sh[1] - a.meta.h / 2) * a.k).setFlipX(a.body.flipX).setAlpha(a.body.alpha).setVisible(a.body.visible);
@@ -130,7 +142,7 @@ export class Stage {
     const to = this.X(x);
     a.body.setFlipX(to < a.body.x);
     if (!a.flying) this.anim(a, 'run');
-    const ms = (Math.abs(to - a.body.x) / this.v.rect.w) * (run ? 1400 : 2600) + 150;
+    const ms = (Math.abs(to - a.body.x) / this.v.rect.w) * (run ? 1400 : a.meta ? 2600 : 4200) + 150;
     await this.tween({ targets: a.body, x: to, duration: ms, ease: 'Sine.InOut' });
     if (!a.flying) this.anim(a, 'idle');
   }
@@ -279,9 +291,11 @@ export class Stage {
   ring(x, y) {
     const halo = ringHalves(this.s, 70, 0.2, 0.08, 'vig-ring');
     this.ringAt = { x: this.X(x), y: this.Y(y) };
+    this.ringImgs = [];
     for (const key of [halo.back, halo.front]) {
       const img = this.s.add.image(this.ringAt.x, this.ringAt.y, key).setScale(halo.scale).setAngle(-8).setAlpha(0);
       this.v.add(img);
+      this.ringImgs.push(img);
       this.s.tweens.add({ targets: img, alpha: 0.95, duration: 700 });
     }
     return this.wait(500);
@@ -296,6 +310,15 @@ export class Stage {
       await this.wait(260);
     }
     return this.flash('#ffffff');
+  }
+
+  // The ring breaks apart in a chain of blasts and fades away.
+  async ringbreak() {
+    const at = this.ringAt ?? { x: this.X(0.7), y: this.Y(0.25) };
+    const fx = (dx, dy) => this.boom((at.x + dx - this.v.rect.x) / this.v.rect.w, (at.y + dy - this.v.rect.y) / this.v.rect.h, true);
+    for (const [dx, dy] of [[-60, 4], [50, -6], [-20, 10], [66, 4], [0, -10]]) { fx(dx, dy); await this.wait(180); }
+    this.flash('#ffffff');
+    return this.tween({ targets: this.ringImgs ?? [], alpha: 0, duration: 900 });
   }
 
   planet(x, y, r, hex) {
@@ -419,6 +442,7 @@ export class Stage {
       case 'spark': { const d = this.v.dot(this.X(Number(args[0])), this.Y(Number(args[1])), 0xffffff, 1.2); return this.tween({ targets: d, alpha: 0, duration: 300 }); }
       case 'ring': return this.ring(Number(args[0] ?? 0.7), Number(args[1] ?? 0.25));
       case 'ringfire': return this.ringfire();
+      case 'ringbreak': return this.ringbreak();
       case 'planet': return this.planet(Number(args[0]), Number(args[1]), args[2] ?? '0.12', args[3]);
       case 'glass': return this.glass(Number(args[0]));
       case 'flood': return this.flood(this.X(Number(args[0])));

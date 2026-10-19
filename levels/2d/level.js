@@ -15,6 +15,7 @@ export default {
         title: 'The Swamp', when: 'September 2552', where: 'Installation 04',
         text: 'Captain Keyes and his team went into a swamp looking for Covenant weapons. They did not come back. The Chief went after them.',
         source: 'Halo: Combat Evolved',
+        scene: 'dark; K=marine@0.4 & L=marine@0.5; K>1.1 & L>1.2; M=master-chief@-0.1; M>0.4',
       },
     ],
     after: [
@@ -22,16 +23,19 @@ export default {
         title: 'The Flood', where: 'Installation 04',
         text: 'Keyes had found something worse than the Covenant: the Flood, which the ring had kept locked away for a hundred thousand years.',
         source: 'Halo: Combat Evolved',
+        scene: 'F=flood-marine@0.72< & I=flood-infection@0.6< & J=flood-infection@0.84<; flood 0.72; M=master-chief@0.2; M fire I; I down; M fire F',
       },
       {
         title: 'The Index', where: 'Installation 04',
         text: '343 Guilty Spark took the Chief to fetch the Index, the key to firing Halo, so the Flood could be stopped.',
         source: 'Halo: Combat Evolved',
+        scene: 'S=guilty-spark@0.56,0.34<; M=master-chief@0.28; S talk; beam 0.82 #9ff4ff; M>0.7; M glow #9ff4ff',
       },
       {
         title: 'Two Betrayals', where: 'Installation 04',
         text: 'Then Cortana learned the truth. Firing Halo would end all life big enough to feed the Flood, across the galaxy. The Chief refused to fire it.',
         source: 'Halo: Combat Evolved',
+        scene: 'S=guilty-spark@0.72,0.34<; M=master-chief@0.3; M glow #7ad8ff; M talk; S talk; M face <; S glow #ff6a6a',
       },
     ],
   },
