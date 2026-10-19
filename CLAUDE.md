@@ -49,5 +49,7 @@ must change. When the engine changes, update docs/ENGINE.md in the same change.
 - `node tests/smoke.mjs --level <id> --finish`: the bot plays the level to the end (no general checks)
 - `node tests/smoke.mjs --checks`: only the general checks (menus, controls, pause, spawns, ...)
 - `node tests/probe.mjs --level <id>`: state dump every 5 s
+- `node tests/perf.mjs [ids] [--seconds 90]`: the bot plays each level on the real GPU; frames over 50 ms and mid-level art go to test-results/perf.txt
+- `node tests/sheets.mjs [ids]`: screenshot contact sheet per level (bot playing) in test-results/sheets/, for visual review
 - `npm run soundtrack`: download the PRIVATE home soundtrack (Halo music, home play only) into public/home-soundtrack/private/. Never commit or publish it.
 - Screenshots and test output go to `test-results/` (gitignored)

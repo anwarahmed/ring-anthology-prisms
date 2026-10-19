@@ -25,6 +25,8 @@ export function parseNotes(str) {
 }
 
 const MUSIC_KEY = 'ring-anthology-prisms.music';
+const VOLUME_KEY = 'ring-anthology-prisms.volume';
+const HOME_LEVEL = 0.6; // home tracks are mastered louder than the synth
 
 class Audio {
   constructor() {
@@ -41,7 +43,28 @@ class Audio {
       this.useHome = true;
     }
     this.current = null; // [trackId, ctx] of the music playing, to switch it on a change
+    // Music and effects volume, 0 to 1 (SETTINGS screen). Saved in this browser.
+    this.volume = { music: 1, effects: 1 };
+    try {
+      Object.assign(this.volume, JSON.parse(window.localStorage.getItem(VOLUME_KEY)) ?? {});
+    } catch {
+      // Nothing saved, or storage unavailable: full volume.
+    }
     this.muted = false;
+  }
+
+  setVolume(kind, v) {
+    this.volume[kind] = Math.round(Math.min(1, Math.max(0, v)) * 10) / 10;
+    try {
+      window.localStorage.setItem(VOLUME_KEY, JSON.stringify(this.volume));
+    } catch {
+      // Storage unavailable: the volume lasts for this session only.
+    }
+    if (this.ctx) {
+      this.musicBus.gain.value = 0.9 * this.volume.music;
+      this.sfxBus.gain.value = this.volume.effects;
+    }
+    if (this.homeEl) this.homeEl.volume = HOME_LEVEL * this.volume.music;
   }
 
   setUseHome(on) {
@@ -68,9 +91,10 @@ class Audio {
       const comp = this.ctx.createDynamicsCompressor();
       this.master.connect(comp).connect(this.ctx.destination);
       this.musicBus = this.ctx.createGain();
-      this.musicBus.gain.value = 0.9;
+      this.musicBus.gain.value = 0.9 * this.volume.music;
       this.musicBus.connect(this.master);
       this.sfxBus = this.ctx.createGain();
+      this.sfxBus.gain.value = this.volume.effects;
       this.sfxBus.connect(this.master);
       this.noiseBuf = this.ctx.createBuffer(1, this.ctx.sampleRate, this.ctx.sampleRate);
       const d = this.noiseBuf.getChannelData(0);
@@ -277,8 +301,9 @@ class Audio {
     el.play().catch(() => {});
     this.homeEl = el;
     const fade = setInterval(() => {
-      el.volume = Math.min(0.6, el.volume + 0.05);
-      if (el.volume >= 0.6 || this.homeEl !== el) clearInterval(fade);
+      const full = HOME_LEVEL * this.volume.music;
+      el.volume = Math.min(full, el.volume + 0.05);
+      if (el.volume >= full || this.homeEl !== el) clearInterval(fade);
     }, 50);
   }
 

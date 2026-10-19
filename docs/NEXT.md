@@ -56,9 +56,10 @@ Tick boxes and commit after each step. Everything ticked is committed.
    browser, including intensity switches.
    `music-sources/` (sheet references) is no longer needed.
 8. **Polish (user, 2026-10-19: "continue with the rest of the tasks"):**
-   - [ ] Performance scan: every level on the real GPU path, log frame hitches (> 50 ms)
-     and fix the causes (prewarm gaps, heavy effects)
-   - [ ] Sound: MUSIC and EFFECTS volume sliders on the SETTINGS screen (saved)
+   - [x] Performance scan: every level on the real GPU path, log frame hitches (> 50 ms)
+     and fix the causes. `node tests/perf.mjs`: all 53 levels 60 fps, no slow frames
+     (2026-10-19), nothing to fix
+   - [x] Sound: MUSIC and EFFECTS volume sliders on the SETTINGS screen (saved)
    - [ ] Visual polish: a screenshot of every level's arenas; fix empty arenas, HUD
      overlaps, floating props, players off screen
 
@@ -84,7 +85,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
   sprites, props and tiles; painted backgrounds; scenery props, ground-standing
   pillars, light pools, vignette, ground shadows.
 - **SETTINGS screen** (title and pause menus): art style (saved; reloads), CRT presets
-  and individual effects (`src/engine/crt.js`), Show FPS, and MUSIC (home soundtrack
+  and individual effects (`src/engine/crt.js`), Show FPS, music and effects volume, and MUSIC (home soundtrack
   or built-in; only with a home soundtrack). Comparison shots:
   `node scripts/compare-graphics.mjs`.
 - **Playtest fixes (2026-10-18):** left half of the screen not drawn; CRT overlay

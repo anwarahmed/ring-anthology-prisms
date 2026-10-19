@@ -197,6 +197,9 @@ menus, `src/scenes/GraphicsScene.js`), saved in localStorage:
   0 to 1; presets are Off, Subtle, Arcade and Consumer TV. When every effect is 0,
   the pass is skipped and costs nothing. Scenes need no CRT code.
 - **Show FPS:** a small counter in the bottom-right corner.
+- **Music and effects volume** (0 to 10): `audio.setVolume('music' | 'effects', v)`,
+  saved (localStorage `ring-anthology-prisms.volume`); scales the synth's music and
+  effects buses and the home soundtrack.
 - **Music** (only when a home soundtrack is installed, `public/home-soundtrack/`): the
   home soundtrack or the built-in music. `audio.setUseHome()` saves the choice
   (localStorage `ring-anthology-prisms.music`) and switches the music playing at once.

@@ -1,5 +1,5 @@
-// Settings: art style, CRT emulation, the FPS counter, and (with a home soundtrack
-// installed) music. Opened from the title menu or
+// Settings: art style, CRT emulation, the FPS counter, music and effects volume, and
+// (with a home soundtrack installed) which music plays. Opened from the title menu or
 // the pause menu (data.returnTo). CRT changes show at once (the effect is drawn over
 // the whole screen, this menu included); a new art style reloads the page, because
 // the art is generated when the game starts.
@@ -34,6 +34,8 @@ const ROWS = [
   { label: 'NOISE', key: 'noise' },
   { label: 'SHOW FPS', kind: 'fps' },
   { label: 'MUSIC', kind: 'music', home: true },
+  { label: 'MUSIC VOLUME', kind: 'volume', key: 'music' },
+  { label: 'EFFECTS VOLUME', kind: 'volume', key: 'effects' },
   { label: 'BACK', kind: 'back' },
 ];
 
@@ -62,7 +64,7 @@ export class GraphicsScene extends Phaser.Scene {
     header(this, 'SETTINGS', 14, 0x45e6ff);
     // MUSIC only shows when a home soundtrack is installed (public/home-soundtrack/).
     const rows = ROWS.filter((r) => !r.home || audio.home);
-    this.gap = rows.length > 14 ? 12 : 13;
+    this.gap = Math.min(13, Math.floor(180 / rows.length));
     this.rows = rows.map((r, i) => ({
       ...r,
       name: txt(this, 60, 34 + i * this.gap, r.label, { size: 8 }),
@@ -89,8 +91,9 @@ export class GraphicsScene extends Phaser.Scene {
       else if (r.kind === 'fps') v = graphics.fps ? '< ON >' : '< OFF >';
       else if (r.kind === 'music') v = audio.useHome ? '< HOME SOUNDTRACK >' : '< BUILT-IN >';
       else if (r.key) {
-        v = `${Math.round(graphics[r.key] * 10)}`;
-        bar(this.bars, VIEW.w - 150, 36 + i * this.gap, 70, 4, graphics[r.key], on ? 0x45e6ff : 0x8899aa);
+        const level = r.kind === 'volume' ? audio.volume[r.key] : graphics[r.key];
+        v = `${Math.round(level * 10)}`;
+        bar(this.bars, VIEW.w - 150, 36 + i * this.gap, 70, 4, level, on ? 0x45e6ff : 0x8899aa);
       }
       r.value.setText(v).setColor(on ? '#ffffff' : '#9fb0d8');
     });
@@ -111,7 +114,11 @@ export class GraphicsScene extends Phaser.Scene {
       graphics.maskType = cycle(MASKS, graphics.maskType, d);
       graphics.preset = 'custom';
     } else if (r.kind === 'fps') graphics.fps = !graphics.fps;
-    else if (r.kind === 'music') {
+    else if (r.kind === 'volume') {
+      audio.setVolume(r.key, audio.volume[r.key] + d * 0.1);
+      audio.sfx('uiMove');
+      return this.refresh();
+    } else if (r.kind === 'music') {
       audio.setUseHome(!audio.useHome);
       audio.sfx('uiMove');
       return this.refresh();
