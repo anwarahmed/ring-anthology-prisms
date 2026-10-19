@@ -4,3 +4,6 @@ dist/
 public/home-soundtrack/*
 !public/home-soundtrack/README.md
 test-results/
+
+# Halo 3 sheet music / MIDI references from the user: private, never committed.
+music-sources/*

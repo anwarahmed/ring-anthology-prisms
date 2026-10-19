@@ -45,7 +45,12 @@ Tick boxes and commit after each step. Everything ticked is committed.
    in ~/Developer/GitHub/anwarahmed/; the user authorized creating the repo).
    - [x] Part IV (4a–4f)  - [x] Part V (5a–5h)  - [x] Part VI (6a–6g)
    - [x] Part VII (7a–7g)  - [x] Firefight  - [x] publish
-7. **Halo 3 chiptune arrangements:** blocked until the user supplies MIDI files
+7. **Halo 3 chiptune arrangements:** the user wants ALL tracks. No freely licensed
+   MIDI/score exists online; the user will get sheets (Alfred official, or Rampancy.net
+   fan transcriptions) and drop them in `music-sources/` (gitignored; README has the
+   track checklist). Write our own chiptune arrangements from them (never copy the
+   files), credit O'Donnell & Salvatori in CREDITS.md. Blocked until files arrive. Was:
+   blocked until the user supplies MIDI files
    (docs/LEGAL.md: Halo 3 music only, into the gitignored home-soundtrack folder).
    Ask when everything else is done.
 
