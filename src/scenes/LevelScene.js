@@ -186,7 +186,7 @@ export class LevelScene extends Phaser.Scene {
       // Nobody acts once the level is over, but physics still runs: stop walkers in
       // place and keep every arm on its body (they were left floating).
       for (const u of this.units) if (u.alive && !u.bodyDef.flying) u.setVelocityX(0);
-      for (const a of [...this.players, ...this.units]) if (a.alive) a.syncGun();
+      for (const a of [...this.players, ...this.units]) if (a.alive) { a.syncGun(); a.syncPilot?.(); }
       return;
     }
     const dt = Math.min(deltaMs, 50) / 1000;

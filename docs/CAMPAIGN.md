@@ -322,7 +322,7 @@ High Charity is built (851–791 BCE).
 - **Story:** Thel is spared execution and made Arbiter, the title of shame. He is sent to stop heretics who doubt the Prophets.
 - **Play:** Active camo.
 - **Enemies:** heretic Elites, Sentinels. **Vehicles:** Banshee. **Boss:** the Heretic Leader, Sesa 'Refumee.
-- **Status:** planned
+- **Status:** done
 
 ### 4c · Metropolis
 - **Era:** Covenant War · **When/where:** 2552, New Mombasa · **Source:** *Halo 2*
@@ -385,7 +385,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Master Chief · P2 the Arbiter
 - **Story:** Two Scarabs. The Arbiter ends the Prophet of Truth.
 - **Enemies:** Brutes, Flood. **Vehicles:** Hornet. **Boss:** two Scarabs.
-- **Status:** planned
+- **Status:** done
 
 ### 5e · Cortana
 - **Era:** Covenant War · **When/where:** High Charity · **Source:** *Halo 3*
@@ -495,7 +495,7 @@ High Charity is built (851–791 BCE).
 - **Players:** P1 Chakas · P2 Riser
 - **Story:** Chakas, stranded on Installation 07, searches for his companion Riser. The Primordial controls the ring and draws its human captives toward the Flood research facilities. Its secret: the Precursors, defeated by the Forerunners, had turned themselves into particles meant to re-form one day, and that dust became the Flood. The Primordial's body is destroyed, but its mind lives on in the Gravemind.
 - **Enemies:** the Flood, and Mendicant Bias's machines (Sentinels). **Boss:** none.
-- **Status:** planned
+- **Status:** done
 
 **Archive scenes:**
 - The Forerunners imprison the Endless on Zeta Halo. *(Source: Halo Infinite)*

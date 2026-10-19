@@ -4,6 +4,8 @@
 import Phaser from 'phaser';
 import { BODIES } from '../content/bodies.js';
 import { WEAPONS } from '../content/weapons.js';
+import { UNITS } from '../content/units.js';
+import { VEHICLES } from '../content/vehicles.js';
 import { applyDamage, aimFrom } from './rules.js';
 import { bodyTexture, armTexture, hexNum, META } from './textures.js';
 import { aimFrame } from './sprites.js';
@@ -118,6 +120,7 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
 
   die() {
     this.alive = false;
+    this.pilot?.setVisible(false);
     this.scene.fx.puff(this.x, this.y, this.def.puff ?? this.puffColor ?? '#ffffff', (this.def.scale ?? 1) > 1 || !!this.def.boss);
     if (this.gun) this.gun.setVisible(false);
     this.disableBody(true, true);
@@ -126,6 +129,7 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
 
   destroy(fromScene) {
     if (this.gun) this.gun.destroy();
+    this.pilot?.destroy();
     this.shadow?.destroy();
     super.destroy(fromScene);
   }
@@ -149,10 +153,27 @@ export class Unit extends Actor {
     this.brain = BEHAVIORS[def.ai] ?? BEHAVIORS.shooter;
     this.state = {};
     if (def.weapon) this.equip(def.weapon);
+    // Enemy vehicles show their pilot in the driver's seat (head and shoulders above
+    // the sides), so a crewed vehicle never looks empty.
+    const seat = def.pilot && VEHICLES[def.body]?.seatAt?.driver;
+    if (seat) {
+      const pd = UNITS[def.pilot];
+      this.pilotSeat = seat;
+      this.pilot = scene.add.sprite(x, y, bodyTexture(scene, def.pilot, pd), 14).setScale((pd.scale ?? 1) / HD).setDepth(this.depth - 0.5);
+    }
+  }
+
+  syncPilot() {
+    if (!this.pilot) return;
+    const [sx, sy] = this.pilotSeat;
+    this.pilot.setPosition(this.x + (sx - this.bodyDef.w / 2) * this.facing, this.y + (sy - this.bodyDef.h / 2));
+    this.pilot.setFlipX(this.facing < 0).setVisible(this.visible).setAlpha(this.alpha);
+    this.pilot.setCrop(0, 0, this.pilot.frame.width, this.pilot.frame.height * (this.pilotSeat[2] ?? 0.5));
   }
 
   tick(dt) {
     if (!this.alive) return;
+    this.syncPilot();
     this.brain(this, dt, this.scene);
     keepApart(this, this.scene);
     avoidHazards(this, this.scene);

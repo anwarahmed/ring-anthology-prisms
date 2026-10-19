@@ -77,6 +77,7 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
     if (this[p.seat] === p) this[p.seat] = null;
     p.vehicle = null;
     p.setDepth(20);
+    p.setCrop();
     p.body.enable = true;
     p.body.reset(this.x - this.facing * 30, this.y - 12);
     p.setVisible(true);
@@ -137,6 +138,8 @@ export class Vehicle extends Phaser.Physics.Arcade.Sprite {
       r.setPosition(this.x + (seat[0] - this.bodyDef.w / 2) * this.facing, this.y + (seat[1] - this.bodyDef.h / 2));
       r.setFlipX(this.facing < 0).setDepth(this.depth - 0.5).setVisible(true);
       r.playAnim(r.seat === 'gunner' && this.def.gunnerStands ? 'idle' : 'crouch');
+      // Only the head and shoulders: thin hulls would otherwise show dangling legs.
+      r.setCrop(0, 0, r.frame.width, r.frame.height * (seat[2] ?? 0.5));
     }
     if (this.y > this.scene.worldH + 60) this.hurt(9999, 'explosive');
     for (const u of this.scene.units) {

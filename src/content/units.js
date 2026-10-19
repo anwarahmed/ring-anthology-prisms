@@ -3,6 +3,7 @@
 // entrance: how a unit appears when spawned (teleport | drop | fly | walk).
 // puff: the color of the light puff a unit vanishes in when defeated.
 // boss.attacks: pattern names from src/engine/ai.js, cycled in order.
+// pilot: for vehicle units, the unit shown in the driver's seat (src/content/vehicles.js seatAt).
 
 export const UNITS = {
   'warrior-servant': {
@@ -116,13 +117,13 @@ export const UNITS = {
     name: 'Ghost', faction: 'covenant', body: 'ghost',
     pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7ad8ff' },
     health: 160, shields: 0, speed: 150, ai: 'charger', weapon: 'ghost-plasma',
-    range: 260, melee: 30, entrance: 'drop', puff: '#c8a8f0', score: 200,
+    range: 260, melee: 30, entrance: 'drop', puff: '#c8a8f0', score: 200, pilot: 'elite',
   },
   'banshee-enemy': {
     name: 'Banshee', faction: 'covenant', body: 'banshee',
     pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7aff5a' },
     health: 140, shields: 0, speed: 120, ai: 'flyer', weapon: 'banshee-plasma',
-    range: 260, entrance: 'fly', puff: '#c8a8f0', score: 220,
+    range: 260, entrance: 'fly', puff: '#c8a8f0', score: 220, pilot: 'elite',
   },
   // UNSC allies
   'marine-ally': {

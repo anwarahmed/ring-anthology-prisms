@@ -9,8 +9,8 @@
 //   kind: ground | hover | air
 //   seats: ['driver'] or ['driver', 'gunner'] (the gunner aims freely)
 //   speed, accel, jump (ground hop), health, weapon, splatter (run-over damage)
-//   seatAt: { driver: [x, y], gunner: [x, y] } where each rider shows (the rider's
-//   center in rig pixels); riders of vehicles without it are hidden inside. Riders
+//   seatAt: { driver: [x, y, crop], gunner: [x, y, crop] } where each rider shows (the rider's
+//   center in rig pixels; crop: how much of the rider shows from the top, default 0.5).
 //   sit, except a gunner on a vehicle with gunnerStands (the Warthog's turret)
 
 import { add, HOVER } from './rig.js';
@@ -196,7 +196,7 @@ export const VEHICLES = {
     name: 'Warthog', body: 'warthog', kind: 'ground', seats: ['driver', 'gunner'],
     pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
     speed: 250, accel: 520, jump: 300, health: 450, weapon: 'warthog-chaingun', splatter: 90,
-    seatAt: { driver: [41, 6], gunner: [15, 12] }, gunnerStands: true,
+    seatAt: { driver: [41, 6, 0.6], gunner: [15, 12, 0.62] }, gunnerStands: true,
   },
   ghost: {
     name: 'Ghost', body: 'ghost', kind: 'hover', seats: ['driver'],
@@ -208,6 +208,7 @@ export const VEHICLES = {
     name: 'Banshee', body: 'banshee', kind: 'air', seats: ['driver'],
     pal: { armor: '#8a5ac8', trim: '#c8a8f0', dark: '#3a2a5a', glow: '#7ad8ff' },
     speed: 220, accel: 500, jump: 0, health: 280, weapon: 'banshee-plasma', splatter: 0,
+    seatAt: { driver: [36, 2] },
   },
   chopper: {
     name: 'Chopper', body: 'chopper', kind: 'ground', seats: ['driver'],
@@ -219,6 +220,7 @@ export const VEHICLES = {
     name: 'Scorpion', body: 'scorpion', kind: 'ground', seats: ['driver'],
     pal: { armor: '#56663a', trim: '#8a8a70', dark: '#24241e', glow: '#fff4c0' },
     speed: 150, accel: 300, jump: 0, health: 900, weapon: 'scorpion-cannon', splatter: 140,
+    seatAt: { driver: [44, 2] },
   },
   mongoose: {
     name: 'Mongoose', body: 'mongoose', kind: 'ground', seats: ['driver', 'gunner'],
@@ -230,10 +232,12 @@ export const VEHICLES = {
     name: 'Hornet', body: 'hornet', kind: 'air', seats: ['driver'],
     pal: { armor: '#56663a', trim: '#a8a890', dark: '#24241e', glow: '#fff4c0' },
     speed: 220, accel: 520, jump: 0, health: 320, weapon: 'warthog-chaingun', splatter: 0,
+    seatAt: { driver: [46, 6] },
   },
   broadsword: {
     name: 'Broadsword', body: 'broadsword', kind: 'air', seats: ['driver'],
     pal: { armor: '#7a828a', trim: '#c8d0d8', dark: '#2a2e34', glow: '#9ad8ff' },
     speed: 280, accel: 640, jump: 0, health: 360, weapon: 'warthog-chaingun', splatter: 0,
+    seatAt: { driver: [54, 7] },
   },
 };
