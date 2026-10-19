@@ -85,6 +85,24 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Extras: best times and medals on the level select; Skulls menu (Grunt
      Birthday Party, Low Gravity, Thunderstorm). Firefight already offers all 53 maps
 
+10. **Epic art pass (user, 2026-10-19: "make the sprites larger and more detailed
+    throughout the game... improve the terrain and backgrounds... the halo rising
+    backgrounds [are] the standard"; "shave some of the below-the-floor imagery").**
+    Mock-ups: zoom matters most; resolution alone adds little without richer art.
+   - [ ] Bigger: level camera zoom (WORLD_ZOOM, ~1.35) with the floor framed near the
+     bottom edge; arenas wider than the view scroll inside their walls; co-op leash,
+     spawns and HUD checked
+   - [ ] Sharper: art generated at the zoomed resolution (load time and memory checked
+     with tests/perf.mjs)
+   - [ ] Detailed characters: armor plating, panel lines, visor reflections, rim light
+     for every body (humanoid, elite, brute, grunt, jackal, hunter, forerunner,
+     promethean, flood, sentinel); sprites sheet reviewed
+   - [ ] Detailed vehicles and weapons
+   - [ ] Terrain: richer tiles (surface lip, strata, rocks, roots, wear) per theme
+   - [ ] Backgrounds: every theme brought up to the ring-rise standard (layered depth,
+     atmosphere, light); ringrise skies unchanged
+   - [ ] Full review: tests/sheets.mjs on all levels, perf scan, smoke checks
+
 ## Published
 
 - Repo: https://github.com/anwarahmed/ring-anthology-prisms (public). Play:
