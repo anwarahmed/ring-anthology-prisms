@@ -92,7 +92,7 @@ Tick boxes and commit after each step. Everything ticked is committed.
    - [x] Bigger: level camera zoom (WORLD_ZOOM, ~1.35) with the floor framed near the
      bottom edge; arenas wider than the view scroll inside their walls; co-op leash,
      spawns and HUD checked
-   - [ ] Sharper: art generated at the zoomed resolution (load time and memory checked
+   - [x] Sharper: art generated at the zoomed resolution (ART = 3; loads 3-5 s, 60 fps) (load time and memory checked
      with tests/perf.mjs)
    - [ ] Detailed characters: armor plating, panel lines, visor reflections, rim light
      for every body (humanoid, elite, brute, grunt, jackal, hunter, forerunner,

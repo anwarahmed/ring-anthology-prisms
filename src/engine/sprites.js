@@ -4,16 +4,16 @@
 import { BODIES, armShapes } from '../content/bodies.js';
 import { gunShapes } from '../content/guns.js';
 import { render, material } from './raster.js';
-import { HD, STYLE } from './config.js';
+import { ART, STYLE } from './config.js';
 
-// Characters render smooth at HD, or (pixel style) outlined at 1× and scaled up.
+// Characters render smooth at ART, or (pixel style) outlined at 1× and scaled up.
 function draw(shapes, w, h, mats) {
-  if (STYLE !== 'pixel') return render(shapes, w * HD, h * HD, mats, { scale: HD, smooth: true });
+  if (STYLE !== 'pixel') return render(shapes, w * ART, h * ART, mats, { scale: ART, smooth: true });
   const lo = render(shapes, w, h, mats);
-  const out = new Uint8ClampedArray(w * HD * h * HD * 4);
-  for (let y = 0; y < h * HD; y++) for (let x = 0; x < w * HD; x++) {
-    const s = (((y / HD) | 0) * w + ((x / HD) | 0)) * 4;
-    out.set(lo.subarray(s, s + 4), (y * w * HD + x) * 4);
+  const out = new Uint8ClampedArray(w * ART * h * ART * 4);
+  for (let y = 0; y < h * ART; y++) for (let x = 0; x < w * ART; x++) {
+    const s = (((y / ART) | 0) * w + ((x / ART) | 0)) * 4;
+    out.set(lo.subarray(s, s + 4), (y * w * ART + x) * 4);
   }
   return out;
 }
@@ -57,7 +57,7 @@ export function bodyFrames(def) {
   const frames = [];
   for (let f = 0; f < body.frames; f++) {
     const { shapes, shoulder } = body.build(f, def);
-    frames.push({ rgba: draw(shapes, body.w, body.h, mats), w: body.w * HD, h: body.h * HD, shoulder: [shoulder[0] * HD, shoulder[1] * HD] });
+    frames.push({ rgba: draw(shapes, body.w, body.h, mats), w: body.w * ART, h: body.h * ART, shoulder: [shoulder[0] * ART, shoulder[1] * ART] });
   }
   return frames;
 }
@@ -71,8 +71,8 @@ export function armFrames(def, weapon) {
   for (let i = 0; i < AIM_STEPS; i++) {
     const a = -Math.PI / 2 + (i / (AIM_STEPS - 1)) * Math.PI;
     const { shapes, muzzle } = armShapes(body, def, a, gun, ARM_SIZE);
-    const S = ARM_SIZE * HD;
-    frames.push({ rgba: draw(shapes, ARM_SIZE, ARM_SIZE, mats), w: S, h: S, muzzle: [muzzle[0] * HD, muzzle[1] * HD], angle: a });
+    const S = ARM_SIZE * ART;
+    frames.push({ rgba: draw(shapes, ARM_SIZE, ARM_SIZE, mats), w: S, h: S, muzzle: [muzzle[0] * ART, muzzle[1] * ART], angle: a });
   }
   return frames;
 }
@@ -97,5 +97,5 @@ export function gunFrame(weapon) {
     return { ...s, pts: s.pts.map(m) };
   });
   const mats = materialsFor({ pal: { armor: '#888888', dark: '#333333', trim: '#aaaaaa' } }, weapon.gun);
-  return { rgba: draw(shapes, w, h, mats), w: w * HD, h: h * HD };
+  return { rgba: draw(shapes, w, h, mats), w: w * ART, h: h * ART };
 }

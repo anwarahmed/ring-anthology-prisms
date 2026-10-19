@@ -1,11 +1,11 @@
 // Pre-rendered tiles: the same tileset layout as tileset.js, but each tile is built
-// from bevelled 3D shapes and shaded smoothly by the sprite renderer at HD resolution.
+// from bevelled 3D shapes and shaded smoothly by the sprite renderer at ART resolution.
 
 import { render, material } from './raster.js';
 import { TILESET } from './tileset.js';
-import { TILE, HD } from './config.js';
+import { TILE, ART } from './config.js';
 
-const S = TILE * HD;
+const S = TILE * ART;
 
 function rng(seed) {
   let s = seed >>> 0;

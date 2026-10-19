@@ -194,6 +194,9 @@ Everything is drawn in code, in a 16-bit style:
   shadows chosen by which sides are exposed. Tile indices: solid 0–31, platform 32–34,
   hazard 35, background wall 36–38. Background walls fill in behind markers and
   platforms set into them, and hazards emit flames.
+- **Resolution:** world art (sprites, weapons, vehicles, tiles, props, decor) is drawn
+  at `ART` pixels per world unit (config.js, 3) to match the zoomed level camera, and
+  shown at scale `1 / ART`. Menus, the HUD and backdrops use `HD` (2).
 - **Preview:** `node scripts/preview-sprites.mjs [id ...]` renders every frame, plus
   arms at three angles, to `test-results/sprites.png`. Check new art there first.
 

@@ -6,7 +6,7 @@
 // Motifs are picked from the card's words, so no card needs animation data.
 
 import Phaser from 'phaser';
-import { HD, ERAS } from './config.js';
+import { HD, ART, ERAS } from './config.js';
 import { CHARACTERS } from '../content/characters.js';
 import { WEAPONS } from '../content/weapons.js';
 import { BODIES } from '../content/bodies.js';
@@ -119,17 +119,17 @@ export class Vignette {
       const def = CHARACTERS[id];
       const key = bodyTexture(this.scene, id, def);
       const meta = META.get(key);
-      const body = this.scene.add.sprite(-99, 0, key).setScale(this.scale / HD);
+      const body = this.scene.add.sprite(-99, 0, key).setScale(this.scale / ART);
       body.play(`${key}-idle`);
       const B = BODIES[def.body];
       let arm = null;
       if (B.reach && !B.flying) {
         const w = def.weapons?.[0] ?? null;
-        arm = this.scene.add.sprite(-99, 0, armTexture(this.scene, id, def, w ?? 'none', w ? WEAPONS[w] : null), aimFrame(1, 0.25).i).setScale(this.scale / HD);
+        arm = this.scene.add.sprite(-99, 0, armTexture(this.scene, id, def, w ?? 'none', w ? WEAPONS[w] : null), aimFrame(1, 0.25).i).setScale(this.scale / ART);
       }
       this.front.add(body);
       if (arm) this.front.add(arm);
-      return { key, meta, body, arm, home: this.rect.x + 54 * this.scale + i * 30 * this.scale, y: this.ground - (meta.h / 2 / HD) * this.scale };
+      return { key, meta, body, arm, home: this.rect.x + 54 * this.scale + i * 30 * this.scale, y: this.ground - (meta.h / 2 / ART) * this.scale };
     });
   }
 
@@ -139,7 +139,7 @@ export class Vignette {
       if (!h.arm) continue;
       const sh = h.meta.shoulders[h.body.frame.name] ?? h.meta.shoulders[0];
       const f = h.body.flipX ? -1 : 1;
-      const k = this.scale / HD;
+      const k = this.scale / ART;
       h.arm.setPosition(h.body.x + (sh[0] - h.meta.w / 2) * f * k, h.body.y + (sh[1] - h.meta.h / 2) * k).setFlipX(h.body.flipX);
     }
   }

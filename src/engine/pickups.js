@@ -7,7 +7,7 @@ import { WEAPONS } from '../content/weapons.js';
 import { gunTexture } from './textures.js';
 import { hexNum } from './textures.js';
 import { audio } from './audio.js';
-import { HD } from './config.js';
+import { ART } from './config.js';
 
 const DROP_LIFE = 12;
 const BLINK = 3;
@@ -15,7 +15,7 @@ const BLINK = 3;
 export function dropWeapon(scene, x, y, weaponId) {
   const w = WEAPONS[weaponId];
   if (!w?.gun) return;
-  const img = scene.add.image(x, y, gunTexture(scene, weaponId, w)).setDepth(19).setScale(1 / HD);
+  const img = scene.add.image(x, y, gunTexture(scene, weaponId, w)).setDepth(19).setScale(1 / ART);
   const glow = scene.add.image(x, y, 'glow').setTint(hexNum(w.color)).setBlendMode('ADD').setAlpha(0.5).setDepth(18);
   scene.pickups ??= [];
   scene.pickups.push({ weaponId, img, glow, x, y, vy: -120, born: scene.time.now, floor: null });

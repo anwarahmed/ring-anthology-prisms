@@ -11,7 +11,7 @@
 //          banners (cloth hanging from the top of a wall), glyphs (glowing panels)
 
 import { render, material, hexRgb } from './raster.js';
-import { TILE, VIEW, HD, STYLE } from './config.js';
+import { TILE, VIEW, ART, STYLE } from './config.js';
 import { TILES } from './mapparse.js';
 import { hexNum } from './textures.js';
 
@@ -90,9 +90,9 @@ function propTexture(scene, theme, kind, cfg, variant) {
   const key = `prop-${theme}-${kind}-${variant}`;
   if (!scene.textures.exists(key)) {
     const pr = PROPS[kind](cfg, variant);
-    const rgba = render(pr.shapes, pr.w * HD, pr.h * HD, pr.mats, STYLE === 'prerendered' ? { scale: HD, smooth: true } : { scale: HD });
-    const tex = scene.textures.createCanvas(key, pr.w * HD, pr.h * HD);
-    tex.getContext().putImageData(new ImageData(rgba, pr.w * HD, pr.h * HD), 0, 0);
+    const rgba = render(pr.shapes, pr.w * ART, pr.h * ART, pr.mats, STYLE === 'prerendered' ? { scale: ART, smooth: true } : { scale: ART });
+    const tex = scene.textures.createCanvas(key, pr.w * ART, pr.h * ART);
+    tex.getContext().putImageData(new ImageData(rgba, pr.w * ART, pr.h * ART), 0, 0);
     tex.refresh();
   }
   return key;
@@ -148,9 +148,9 @@ function decorTexture(scene, theme, kind, cfg, variant, len) {
   const key = `decor-${theme}-${kind}-${variant}-${len}`;
   if (!scene.textures.exists(key)) {
     const d = DECOR[kind](cfg, variant, len);
-    const rgba = render(d.shapes, d.w * HD, d.h * HD, d.mats, STYLE === 'prerendered' ? { scale: HD, smooth: true } : { scale: HD });
-    const tex = scene.textures.createCanvas(key, d.w * HD, d.h * HD);
-    tex.getContext().putImageData(new ImageData(rgba, d.w * HD, d.h * HD), 0, 0);
+    const rgba = render(d.shapes, d.w * ART, d.h * ART, d.mats, STYLE === 'prerendered' ? { scale: ART, smooth: true } : { scale: ART });
+    const tex = scene.textures.createCanvas(key, d.w * ART, d.h * ART);
+    tex.getContext().putImageData(new ImageData(rgba, d.w * ART, d.h * ART), 0, 0);
     tex.refresh();
   }
   return key;
@@ -172,18 +172,18 @@ function buildDecor(scene, themeId, decor, map, at) {
         const v = Math.floor(hash(x, y, i + 67) * 3);
         const px = x * TILE + 8, top = y * TILE;
         if (d.kind === 'pipes' && run >= 4) {
-          scene.add.image(px, top, decorTexture(scene, themeId, 'pipes', d, v, run * TILE)).setOrigin(0.5, 0).setScale(1 / HD).setDepth(6);
+          scene.add.image(px, top, decorTexture(scene, themeId, 'pipes', d, v, run * TILE)).setOrigin(0.5, 0).setScale(1 / ART).setDepth(6);
         } else if (d.kind === 'banners' && run >= 4) {
-          scene.add.image(px, top, decorTexture(scene, themeId, 'banners', d, v, Math.min(64, Math.round(run * TILE * 0.55)))).setOrigin(0.5, 0).setScale(1 / HD).setDepth(6);
+          scene.add.image(px, top, decorTexture(scene, themeId, 'banners', d, v, Math.min(64, Math.round(run * TILE * 0.55)))).setOrigin(0.5, 0).setScale(1 / ART).setDepth(6);
         } else if (d.kind === 'glyphs' && run >= 3) {
           const cy = Math.round((y + y1 + 1) / 2 * TILE);
-          scene.add.image(px, cy, decorTexture(scene, themeId, 'glyphs', d, v, 26)).setScale(1 / HD).setDepth(6);
+          scene.add.image(px, cy, decorTexture(scene, themeId, 'glyphs', d, v, 26)).setScale(1 / ART).setDepth(6);
           lightPool(scene, px, cy, hexNum(d.glow ?? '#7fd8ff'), 1.1, 6.5);
         } else if (d.kind === 'cables') {
           let span = 4 + v * 2;
           while (span > 2 && ![...Array(span + 1).keys()].every((k) => at(x + k, y) === TILES.back && at(x + k, y - 1) !== TILES.back)) span--;
           if (span <= 2) return;
-          scene.add.image(x * TILE + 4, top + 1, decorTexture(scene, themeId, 'cables', d, v, span * TILE)).setOrigin(0, 0).setScale(1 / HD).setDepth(6);
+          scene.add.image(x * TILE + 4, top + 1, decorTexture(scene, themeId, 'cables', d, v, span * TILE)).setOrigin(0, 0).setScale(1 / ART).setDepth(6);
         } else return;
         lastAt.set(y, x);
       });
@@ -209,7 +209,7 @@ export function buildScenery(scene, themeId, theme, map) {
         const variant = Math.floor(hash(x, y, i + 17) * 3);
         const key = propTexture(scene, themeId, p.kind, p, variant);
         const px = x * TILE + 8 + (hash(x, y, i + 29) - 0.5) * 10;
-        const img = scene.add.image(px, y * TILE + 1, key).setOrigin(0.5, 1).setScale(1 / HD).setDepth(p.front ? 24 : 12)
+        const img = scene.add.image(px, y * TILE + 1, key).setOrigin(0.5, 1).setScale(1 / ART).setDepth(p.front ? 24 : 12)
           .setFlipX(hash(x, y, i + 41) > 0.5);
         const pr = PROPS[p.kind](p, variant);
         if (pr.glow) lightPool(scene, px - pr.w / 2 + pr.glowAt[0], y * TILE + 1 - pr.h + pr.glowAt[1], hexNum(pr.glow), 1.2);
