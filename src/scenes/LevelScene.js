@@ -92,6 +92,8 @@ export class LevelScene extends Phaser.Scene {
 
     for (const e of this.map.entities) {
       if (e.vehicle) this.spawnVehicle(e.vehicle, e.x * TILE + 8, (e.y + 1) * TILE);
+      // After a checkpoint restart, ground already cleared stays clear.
+      if (e.unit && !e.ally && !e.neutral && this.cp && e.x * TILE + 8 < this.cp.x - 8) continue;
       if (e.unit) this.spawnUnit(e.unit, e.x * TILE + 8, (e.y + 1) * TILE, { ally: !!e.ally, team: e.neutral ? 'neutral' : null, entrance: 'none' });
     }
 
@@ -119,10 +121,11 @@ export class LevelScene extends Phaser.Scene {
     const at = (x, y) => (x < 0 || y < 0 || x >= m.width || y >= m.height ? TILES.solid : m.grid[y][x]);
     const open = (x, y) => at(x, y) !== TILES.solid;
     // Back walls continue behind platforms, markers and entities set into them: two
-    // passes fill any open cell with at least two wall neighbors.
+    // passes fill any such cell with at least two wall neighbors. Empty air ('.') is
+    // never filled, so windows cut into a wall stay rectangular.
     let backFill = m.grid.map((row) => row.map((t) => t === TILES.back));
     for (let pass = 0; pass < 2; pass++) {
-      backFill = backFill.map((row, y) => row.map((b, x) => b || (m.grid[y][x] !== TILES.solid &&
+      backFill = backFill.map((row, y) => row.map((b, x) => b || (m.grid[y][x] !== TILES.solid && this.level.map[y]?.[x] !== '.' &&
         [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => backFill[y + dy]?.[x + dx]).length >= 2)));
     }
     const main = [];
@@ -419,11 +422,15 @@ export class LevelScene extends Phaser.Scene {
     return spawn.x;
   }
 
-  checkpoint(index) {
+  // index: the script trigger a restart resumes from. quiet: the automatic one taken
+  // when an arena locks (index is that arena's own trigger, so the fight replays).
+  checkpoint(index, quiet = false) {
+    if (this.firefight || (quiet && this.cp && this.cp.index > index)) return;
     const p = this.players.find((pl) => pl.alive) ?? this.players[0];
     // Feet on solid ground: never mid-jump over a pit or on a drop-through platform.
     const spot = p.safeSpot ?? { x: p.x, y: p.body.bottom };
     this.cp = { index, x: spot.x, y: spot.y };
+    if (quiet) return;
     audio.sfx('checkpoint');
     this.hud.announce('CHECKPOINT', '#ffffff', true);
   }

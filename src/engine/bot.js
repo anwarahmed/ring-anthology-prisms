@@ -14,6 +14,10 @@ export function makeBot(scene, player) {
   // Progress check: where the bot was once a second for the last few seconds.
   const trail = [];
   let frame = 0;
+  // Forward progress in a vehicle: rocking against a rock looks like moving, but the
+  // furthest point reached stops growing.
+  let best = -Infinity;
+  let bestAt = 0;
   return () => {
     const s = { x: 1, y: 0, aimX: 0, aimY: 0, stick: false, jump: false, fire: false, ability: false, grenade: false, swap: false, melee: false, pause: false };
     if (!player.alive) return s;
@@ -50,7 +54,9 @@ export function makeBot(scene, player) {
       if (trail.length > 5) trail.shift();
     }
     const going = trail.length < 5 || Math.max(...trail) - Math.min(...trail) > 12;
-    if (player.vehicle && (stuck > 150 || !going)) {
+    if (!player.vehicle || here > best + 24) { best = player.vehicle ? here : -Infinity; bestAt = frame; }
+    const stalled = player.vehicle && !scene.arena && frame - bestAt > 480;
+    if (player.vehicle && (stuck > 150 || !going || stalled)) {
       trail.length = 0;
       abandoned.add(player.vehicle);
       s.swap = true;

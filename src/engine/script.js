@@ -71,7 +71,11 @@ export class ScriptRunner {
     if (a.music) return audio.playMusic(a.music, a.intensity ?? 0, { level: this.level.id, era: this.level.era });
     if (a.intensity !== undefined) return audio.setIntensity(a.intensity);
     if (a.wait) return this.wait(a.wait * 1000);
-    if (a.lock) return s.lockArena(this.map.markers[a.lock[0]].x, this.map.markers[a.lock[1]].x);
+    if (a.lock) {
+      // A quiet checkpoint as the fight starts: a wipe replays this trigger, not the walk.
+      s.checkpoint(index, true);
+      return s.lockArena(this.map.markers[a.lock[0]].x, this.map.markers[a.lock[1]].x);
+    }
     if (a.unlock) return s.unlockArena();
     if (a.checkpoint) return s.checkpoint(index + 1);
     if (a.fx) return s.scriptFx(a.fx);

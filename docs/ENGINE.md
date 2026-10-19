@@ -86,7 +86,7 @@ Blocking actions finish before the next action starts.
 | `{ music: 'track', intensity: 0 }` | no | Switches track |
 | `{ intensity: 0\|1\|2 }` | no | Calm, combat, or boss layers (the music swell) |
 | `{ wait: 2 }` | yes | Seconds |
-| `{ lock: ['B', 'C'] }` | no | Locks camera and players between two marker columns (arena). The camera glides to frame it; players outside are walked in |
+| `{ lock: ['B', 'C'] }` | no | Locks camera and players between two marker columns (arena). The camera glides to frame it; players outside are walked in. Also a quiet checkpoint: if everyone goes down, the arena's trigger replays from its start (placed enemies behind a checkpoint stay cleared) |
 | `{ unlock: true }` | no | Opens the arena; shows "GO >" |
 | `{ checkpoint: true }` | no | Respawn point if everyone goes down |
 | `{ fx: 'shake' \| 'flash' \| 'slowmo' }` | no | Screen effect |

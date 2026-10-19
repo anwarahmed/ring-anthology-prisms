@@ -459,8 +459,14 @@ export class ArchiveScene extends Phaser.Scene {
       // The heroes run off (into the level, or away from it) before the screen changes.
       this.leaving = true;
       this.vignette.exit(this.which);
-      this.time.addEvent({ delay: 16, loop: true, callback: () => this.vignette.update() });
-      this.time.delayedCall(this.which === 'before' ? 750 : 1100, () => { this.leaving = false; this.vignette.destroy(); this.vignette = null; this.next(); });
+      const anim = this.time.addEvent({ delay: 16, loop: true, callback: () => this.vignette?.update() });
+      this.time.delayedCall(this.which === 'before' ? 750 : 1100, () => {
+        anim.remove();
+        this.vignette.destroy();
+        this.vignette = null;
+        this.leaving = false;
+        this.next();
+      });
       return;
     }
     if (this.which === 'before') go(this, 'Level', { levelId: this.levelId });
