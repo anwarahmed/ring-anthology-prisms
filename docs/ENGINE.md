@@ -282,6 +282,13 @@ character can override the kit when its technology differs from the era's.
 | created | Thruster dash | Ground pound (hold down + ability in the air) |
 | banished | Grappleshot (walls pull you, enemies pull you into a melee) | — |
 
+## Players stand out
+
+Each player has a color (`PLAYER_COLORS` in actors.js: P1 cyan, P2 orange, as on the
+results screen), worn as a soft outline glow on the body and weapon, plus a bobbing
+"P1"/"P2" marker over the head (hidden in vehicles and while down). Generic roles
+(a Marine P2 among Marine allies) stay easy to find.
+
 ## Controls
 
 Every action can be rebound per keyboard layout or controller on the **Controls**

@@ -206,6 +206,11 @@ export class Unit extends Actor {
 
 // --- Players -----------------------------------------------------------------
 
+// Each player's color (the same as their panels on the results screen). Players wear a
+// soft outline in it and a "P1"/"P2" marker over their head, so they never get lost
+// among allies and enemies that share their look (a Marine among Marines).
+export const PLAYER_COLORS = [0x45e6ff, 0xffa23a];
+
 export class Player extends Actor {
   constructor(scene, x, y, index, charId, def, device, era) {
     super(scene, x, y, charId, def, 'players');
@@ -224,8 +229,36 @@ export class Player extends Actor {
     this.lastGround = -9999;
     this.jumpBuffer = -9999;
     this.kit = makeKit(def.kit ?? era.kit, this, def.extra);
+    this.color = PLAYER_COLORS[index % PLAYER_COLORS.length];
+    this.preFX?.addGlow(this.color, 1.6, 0, false, 0.1, 3);
     this.equip(this.weapons[0]?.id);
     this.setDepth(22 + index);
+    const css = `#${this.color.toString(16).padStart(6, '0')}`;
+    this.marker = scene.add.container(x, y).setDepth(30);
+    const arrow = scene.add.triangle(0, 0, -4, -2.5, 4, -2.5, 0, 2.5, this.color).setStrokeStyle(0.6, 0x000000, 0.8);
+    const tag = scene.add.text(0, -9, `P${index + 1}`, { fontFamily: '"Press Start 2P"', fontSize: '8px', color: css, stroke: '#000000', strokeThickness: 3 })
+      .setOrigin(0.5).setScale(0.75).setResolution(HD * 2);
+    this.marker.add([arrow, tag]);
+  }
+
+  equip(weaponId) {
+    super.equip(weaponId);
+    this.gun?.preFX?.addGlow(this.color, 1.6, 0, false, 0.1, 3);
+  }
+
+  // The marker rides above the player's head, with a gentle bob; hidden in a vehicle
+  // (the vehicle's seat shows them) and while down.
+  preUpdate(time, delta) {
+    super.preUpdate(time, delta);
+    const m = this.marker;
+    if (!m) return;
+    m.setVisible(this.alive && this.visible && !this.vehicle);
+    m.setPosition(this.x, this.y - this.displayHeight / 2 - 5 + Math.sin(time / 260) * 1);
+  }
+
+  destroy(fromScene) {
+    this.marker?.destroy();
+    super.destroy(fromScene);
   }
 
   get current() { return this.weapons[this.cur]; }
