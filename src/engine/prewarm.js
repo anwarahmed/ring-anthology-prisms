@@ -3,7 +3,7 @@
 // new kind of enemy showed up mid-fight. The Archive cards before a level work through
 // the jobs one per frame; the level finishes any that are left when it loads.
 
-import { CHARACTERS } from '../content/characters.js';
+import { playerCharacter } from '../content/characters.js';
 import { UNITS } from '../content/units.js';
 import { WEAPONS } from '../content/weapons.js';
 import { VEHICLES } from '../content/vehicles.js';
@@ -52,8 +52,7 @@ export function prewarmJobs(level) {
   const { units, vehicles } = levelContent(level);
   const jobs = [];
   const drops = units.map((id) => UNITS[id].weapon).filter((w) => WEAPONS[w]?.gun);
-  for (const charId of new Set(level.players ?? [])) {
-    const c = CHARACTERS[charId];
+  for (const { id: charId, def: c } of (level.players ?? []).map((_, i) => playerCharacter(level.players, i))) {
     if (!c) continue;
     jobs.push((s) => bodyTexture(s, charId, c));
     if (!armed(c)) continue;

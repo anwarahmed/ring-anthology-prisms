@@ -290,3 +290,31 @@ export const CHARACTERS = {
     weapons: [], grenade: 'frag', kit: 'covenant',
   },
 };
+
+// Player 2's look for generic roles (a Marine, a Spartan-IV, a warrior-servant...):
+// different armor colors, so P2 stands apart from P1 and from the allies and enemies
+// that share the role. Named heroes keep their canon colors.
+const P2_PALETTES = {
+  marine: { armor: '#9a7a4a', helmet: '#a8865a', trim: '#c88a3a' },
+  'spartan-iv': { armor: '#a8642a', helmet: '#b06c30', trim: '#e8e0d0' },
+  odst: { armor: '#5a4a3a', helmet: '#4a3e34', trim: '#e0782a' },
+  'forerunner-warrior': { armor: '#eedcb0', trim: '#e0902a', glow: '#ffc24a' },
+  'sangheili-warrior': { armor: '#3a6a8a', trim: '#ffa23a' },
+  'spec-ops-sangheili': { armor: '#3a2e24', trim: '#c87a3a' },
+  'red-team-spartan': { armor: '#c8862a', helmet: '#d0903a', trim: '#3a3a3a' },
+  'ancient-human-soldier': { armor: '#7a5a2a', helmet: '#8a6a34', trim: '#e8903a' },
+  sanshyuum: { armor: '#9a5a2a', cape: '#b06a30', trim: '#f0d080' },
+  unggoy: { armor: '#3a8a8a', trim: '#e0c890' },
+  jiralhanae: { armor: '#9a7a5a', trim: '#ff9a3a' },
+  'jiralhanae-warrior': { armor: '#6a4a3a', trim: '#ffa23a' },
+  'promethean-knight': { armor: '#5a4a3a', trim: '#c8783a', glow: '#ffb84a' },
+};
+
+// The character player i plays in a level: { id, def }. Player 2 in a generic role
+// gets that role's P2 colors (a separate art id, so both looks can be on screen).
+export function playerCharacter(players, i) {
+  const id = players[i] ?? players[0];
+  const def = CHARACTERS[id];
+  if (i !== 1 || !def || !P2_PALETTES[id]) return { id, def };
+  return { id: `${id}-p2`, def: { ...def, pal: { ...def.pal, ...P2_PALETTES[id] } } };
+}

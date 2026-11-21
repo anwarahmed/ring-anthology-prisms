@@ -288,6 +288,10 @@ Each player has a color (`PLAYER_COLORS` in actors.js: P1 cyan, P2 orange, as on
 results screen), worn as a soft outline glow on the body and weapon, plus a bobbing
 "P1"/"P2" marker over the head (hidden in vehicles and while down). Generic roles
 (a Marine P2 among Marine allies) stay easy to find.
+Player 2 in a generic role (Marine, ODST, Spartan-IV, warrior-servant, Sangheili...)
+also wears that role's P2 armor colors (`P2_PALETTES` in characters.js;
+`playerCharacter(players, i)` returns the id and def a player uses, art id `<id>-p2`).
+Named heroes keep their canon colors.
 
 ## Controls
 

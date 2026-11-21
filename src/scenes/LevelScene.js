@@ -4,7 +4,7 @@
 import Phaser from 'phaser';
 import { hdCamera } from '../engine/ui.js';
 import { LEVELS } from '../../levels/index.js';
-import { CHARACTERS } from '../content/characters.js';
+import { playerCharacter } from '../content/characters.js';
 import { UNITS } from '../content/units.js';
 import { BODIES } from '../content/bodies.js';
 import { THEMES } from '../content/themes.js';
@@ -85,8 +85,7 @@ export class LevelScene extends Phaser.Scene {
     // Positions are feet (ground) points; sprites are centered above them.
     const spawn = this.cp ?? { x: this.map.spawn.x * TILE + 8, y: (this.map.spawn.y + 1) * TILE };
     session.players.forEach((sp, i) => {
-      const charId = L.players[i] ?? L.players[0];
-      const ch = CHARACTERS[charId];
+      const { id: charId, def: ch } = playerCharacter(L.players, i);
       const p = new Player(this, this.besideSpawn(spawn, i), spawn.y - BODIES[ch.body].h / 2 - 1, i, charId, ch, sp.device, this.era);
       if (session.debug.god) p.invulnUntil = Infinity;
       this.players.push(p);
