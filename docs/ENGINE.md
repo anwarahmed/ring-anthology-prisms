@@ -286,7 +286,7 @@ character can override the kit when its technology differs from the era's.
 
 Each player has a color (`PLAYER_COLORS` in actors.js: P1 cyan, P2 orange, as on the
 results screen), worn as a soft outline glow on the body and weapon, plus a bobbing
-"P1"/"P2" marker over the head (hidden in vehicles and while down). Generic roles
+"P1"/"P2" marker over the head (hidden in vehicles and while down; under a HUD panel it moves below the feet, pointing up). Generic roles
 (a Marine P2 among Marine allies) stay easy to find.
 Player 2 in a generic role (Marine, ODST, Spartan-IV, warrior-servant, Sangheili...)
 also wears that role's P2 armor colors (`P2_PALETTES` in characters.js;

@@ -15,7 +15,7 @@ import { BEHAVIORS, avoidHazards, keepApart, catchUp } from './ai.js';
 import { audio } from './audio.js';
 import { skulls } from './skulls.js';
 import { isSolid } from './tileset.js';
-import { HD } from './config.js';
+import { HD, VIEW } from './config.js';
 import { dropShadow } from './fx.js';
 
 const GRENADE_COOLDOWN = 0.8;
@@ -253,7 +253,17 @@ export class Player extends Actor {
     const m = this.marker;
     if (!m) return;
     m.setVisible(this.alive && this.visible && !this.vehicle);
-    m.setPosition(this.x, this.y - this.displayHeight / 2 - 5 + Math.sin(time / 260) * 1);
+    const bob = Math.sin(time / 260) * 1;
+    const above = this.y - this.displayHeight / 2 - 5;
+    // Under a HUD panel (top corners of the screen) the marker would be hidden: it moves
+    // below the player's feet instead, pointing up.
+    const cam = this.scene.cameras.main;
+    const sx = this.x - cam.scrollX, sy = above - 10 - cam.scrollY;
+    const hidden = (this.scene.hud?.frameWidths ?? []).some((w, i) => sy < 62 && (i === 0 ? sx < 4 + w + 6 : sx > VIEW.w - 4 - w - 6));
+    m.setPosition(this.x, (hidden ? this.y + this.displayHeight / 2 + 14 : above) + bob);
+    const [arrow, tag] = m.list;
+    arrow.setScale(1, hidden ? -1 : 1).setY(hidden ? -9 : 0);
+    tag.setY(hidden ? 0 : -9);
   }
 
   destroy(fromScene) {
