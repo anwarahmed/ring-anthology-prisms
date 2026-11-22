@@ -95,7 +95,7 @@ Blocking actions finish before the next action starts.
 | `{ intensity: 0\|1\|2 }` | no | Calm, combat, or boss layers (the music swell) |
 | `{ wait: 2 }` | yes | Seconds |
 | `{ lock: ['B', 'C'] }` | no | Locks camera and players between two marker columns (arena). The camera glides to frame it; players outside are walked in. Also a quiet checkpoint: if everyone goes down, the arena's trigger replays from its start (placed enemies behind a checkpoint stay cleared) |
-| `{ unlock: true }` | no | Opens the arena; shows "GO >" |
+| `{ unlock: true }` | no | Opens the arena; shows "GO >". If the last enemy just fell, a beat of slow motion first |
 | `{ checkpoint: true }` | no | Respawn point if everyone goes down |
 | `{ fx: 'shake' \| 'flash' \| 'slowmo' }` | no | Screen effect |
 | `{ spawn: [group, ...] }` | no | Spawns enemies |
@@ -174,7 +174,8 @@ Add new entries through the `new-content` skill.
 
 **AI behaviors:** `shooter` (keeps distance, strafes, bursts), `charger` (rushes,
 melee), `swarm` (hops at targets, pops on contact), `idle` (story characters), `flyer` (hovers above), `walker` (patrols), `turret`, and `boss` (cycles
-`boss.attacks`: `barrage`, `charge`, `summon`, `leap`; a barrage is five-shot
+`boss.attacks`: `barrage`, `charge`, `summon`, `leap`; at half health a boss enters
+phase 2 (slow motion, flash, PHASE 2 on its bar, quicker attacks); a barrage is five-shot
 volleys, fewer for multi-pellet weapons; summons come two at a time, at most four alive).
 
 **Tech vs shields:** plasma strips shields, ballistic hurts health, hard-light is

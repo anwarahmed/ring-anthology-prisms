@@ -411,6 +411,11 @@ export class LevelScene extends Phaser.Scene {
   }
 
   unlockArena() {
+    // The fight's last enemy just fell: a beat of slow motion before GO.
+    if (this.lastKill && this.time.now - this.lastKill < 700) {
+      this.fx.slowmo(0.3, 900);
+      this.fx.flash(0xffffff, 180);
+    }
     this.arena = null;
     this.arenaWalls.forEach((w) => w.destroy());
     this.arenaWalls = [];
@@ -446,7 +451,18 @@ export class LevelScene extends Phaser.Scene {
     if (name === 'slowmo') this.fx.slowmo(0.3, 1500);
   }
 
+  // A boss at half health: slow motion, a flash, and the bar shows PHASE 2.
+  onBossPhase(boss) {
+    this.fx.slowmo(0.35, 900);
+    this.fx.flash(0xffd27a, 250);
+    this.fx.shake(0.02, 500);
+    this.fx.glow(boss.x, boss.y, hexNum(boss.def.pal?.glow ?? '#ff8a3a'), 3, 600);
+    audio.sfx('boss');
+    this.hud.bossPhase2();
+  }
+
   onUnitDefeated(unit, from) {
+    if (unit.team === 'enemies') this.lastKill = this.time.now;
     if (unit.team === 'enemies' && unit.weapon?.gun) dropWeapon(this, unit.x, unit.y, unit.def.weapon);
     if (unit.def.boss) {
       this.fx.slowmo(0.25, 1600);

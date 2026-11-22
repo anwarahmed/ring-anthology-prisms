@@ -222,11 +222,16 @@ export const BEHAVIORS = {
     aimAt(unit, n.t);
     st.timer = (st.timer ?? 2) - dt;
     st.i = st.i ?? 0;
+    // Phase 2 at half health: a dramatic beat, then quicker attacks.
+    if (!unit.phase2 && unit.health <= unit.stats.health * 0.5) {
+      unit.phase2 = true;
+      scene.onBossPhase?.(unit);
+    }
     const attacks = unit.def.boss.attacks;
     if (st.timer <= 0) {
       st.attack = attacks[st.i % attacks.length];
       st.i++;
-      st.timer = 3 + Math.random();
+      st.timer = (unit.phase2 ? 2 : 3) + Math.random();
       st.phaseT = 0;
       if (st.attack === 'summon') scene.summonFor(unit);
       if (st.attack === 'leap' && unit.body.blocked.down) unit.setVelocity(unit.facing * 200, -420);

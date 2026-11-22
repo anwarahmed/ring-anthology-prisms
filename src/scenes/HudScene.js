@@ -39,7 +39,9 @@ export class HudScene extends Phaser.Scene {
     this.timerText = txt(this, VIEW.w / 2, 74, '', { size: 8, color: '#ffd27a' }).setOrigin(0.5, 0);
     this.timerEnd = null;
     this.boss = null;
-    this.bossName = txt(this, VIEW.w / 2, VIEW.h - 30, '', { size: 8, color: '#ff6a6a' }).setOrigin(0.5, 1);
+    this.bossG = this.add.graphics();
+    this.bossName = txt(this, VIEW.w / 2 - 110, VIEW.h - 38, '', { size: 8, color: '#ff8a7a' }).setOrigin(0, 0);
+    this.bossPhase = txt(this, VIEW.w / 2 + 110, VIEW.h - 38, '', { size: 8, color: '#ffd27a' }).setOrigin(1, 0);
     this.bars = [this.add.rectangle(0, 0, VIEW.w, 0, 0x000000).setOrigin(0, 0).setDepth(50),
       this.add.rectangle(0, VIEW.h, VIEW.w, 0, 0x000000).setOrigin(0, 1).setDepth(50)];
     this.level.events.emit('hud-ready');
@@ -72,16 +74,7 @@ export class HudScene extends Phaser.Scene {
       const left = Math.max(0, Math.ceil((this.timerEnd - this.time.now) / 1000));
       this.timerText.setText(`${this.timerLabel} ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`);
     }
-    if (this.boss) {
-      if (!this.boss.alive) {
-        this.boss = null;
-        this.bossName.setText('');
-      } else {
-        const b = this.boss;
-        bar(g, VIEW.w / 2 - 100, VIEW.h - 26, 200, 4, b.shields / Math.max(1, b.stats.shields), this.color);
-        bar(g, VIEW.w / 2 - 100, VIEW.h - 20, 200, 5, b.health / b.stats.health, 0xff4040);
-      }
-    }
+    this.drawBossBar();
   }
 
   // Framed panels behind each player's readout, sized to fit their text. Redrawn
@@ -173,8 +166,48 @@ export class HudScene extends Phaser.Scene {
     });
   }
 
+  // The boss bar: a framed panel with the boss's name and phase, a shield bar, and a
+  // health bar that fills in when the boss arrives, ticks at each quarter, and leaves
+  // a white trail where damage was just done. It flashes when the boss enters phase 2.
   bossBar(unit) {
     this.boss = unit;
+    this.bossShown = 0;
+    this.bossTrail = 0;
+    this.bossFlash = 0;
     this.bossName.setText(unit.def.name.toUpperCase());
+    this.bossPhase.setText('');
+  }
+
+  bossPhase2() {
+    this.bossFlash = this.time.now + 700;
+    this.bossPhase.setText('PHASE 2');
+    this.tweens.add({ targets: this.bossPhase, scale: { from: 1.6, to: 1 }, duration: 400, ease: 'Back.Out' });
+  }
+
+  drawBossBar() {
+    const g = this.bossG.clear();
+    const b = this.boss;
+    if (!b) return;
+    if (!b.alive) {
+      this.boss = null;
+      this.bossName.setText('');
+      this.bossPhase.setText('');
+      return;
+    }
+    const frac = Math.max(0, b.health / b.stats.health);
+    // Fills in on arrival, then follows the health; the trail drains behind it.
+    this.bossShown += (frac - this.bossShown) * (this.bossShown < frac ? 0.06 : 0.35);
+    this.bossTrail = Math.max(this.bossShown, this.bossTrail - 0.006);
+    const x = VIEW.w / 2 - 110, w = 220, y = VIEW.h - 26;
+    g.fillStyle(0x0a0614, 0.72).fillRoundedRect(x - 6, y - 15, w + 12, 27, 3);
+    g.lineStyle(1, 0xff6a5a, 0.85).strokeRoundedRect(x - 5.5, y - 14.5, w + 11, 26, 3);
+    if (b.stats.shields) bar(g, x, y - 2, w, 2, b.shields / b.stats.shields, this.color);
+    g.fillStyle(0x000000, 0.6).fillRect(x - 1, y + 2, w + 2, 8);
+    g.fillStyle(0xffffff, 0.85).fillRect(x, y + 3, Math.round(w * this.bossTrail), 6);
+    const flash = this.time.now < this.bossFlash && Math.floor(this.time.now / 90) % 2 === 0;
+    const col = flash ? 0xffffff : b.phase2 ? 0xff7a2a : 0xe03a3a;
+    g.fillStyle(col, 1).fillRect(x, y + 3, Math.round(w * this.bossShown), 6);
+    g.fillStyle(0xffffff, 0.35).fillRect(x, y + 3, Math.round(w * this.bossShown), 1);
+    for (const q of [0.25, 0.5, 0.75]) g.fillStyle(0x000000, q === 0.5 ? 0.8 : 0.5).fillRect(x + Math.round(w * q), y + 2, 1, 8);
   }
 }
