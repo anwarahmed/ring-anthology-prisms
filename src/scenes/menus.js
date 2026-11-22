@@ -6,7 +6,7 @@ import { VIEW, ERAS, DIFFICULTY, LEGAL_NOTICE } from '../engine/config.js';
 import { txt, go, hdCamera } from '../engine/ui.js';
 import { Controls, bindingStore } from '../engine/input.js';
 import { audio } from '../engine/audio.js';
-import { session } from '../engine/session.js';
+import { session, SLOTS } from '../engine/session.js';
 import { baseTextures, hexNum } from '../engine/textures.js';
 import { spaceSky, ringHalves, planetHorizon, prismTexture, logoText, ERA_COLORS } from '../engine/titleart.js';
 import { buildBackdrop } from '../engine/backdrop.js';
@@ -101,10 +101,10 @@ export class TitleScene extends Phaser.Scene {
     });
 
     // Menu.
-    panel(this, VIEW.w / 2 - 66, 156, 132, 68);
+    panel(this, VIEW.w / 2 - 75, 155, 150, 70);
     this.bar = selectBar(this, 0x45e6ff);
-    this.labels = ['PLAY', 'FIREFIGHT', 'CONTROLS', 'SETTINGS', 'SKULLS', 'NEW GAME'];
-    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 165 + i * 10, label, { size: 8 }).setOrigin(0.5));
+    this.labels = ['PLAY', 'FIREFIGHT', 'CONTROLS', 'SETTINGS', 'SKULLS', 'SAVE', 'NEW GAME'];
+    this.items = this.labels.map((label, i) => txt(this, VIEW.w / 2, 163 + i * 9, label, { size: 8 }).setOrigin(0.5));
     this.sel = 0;
     this.confirmNew = false;
     this.refreshMenu();
@@ -114,10 +114,21 @@ export class TitleScene extends Phaser.Scene {
     this.input.once('pointerdown', () => audio.unlock());
     audio.playMusic('title', 0).catch(() => {});
   }
+  switchSlot(d) {
+    session.useSlot(((session.slot - 1 + d + SLOTS) % SLOTS) + 1);
+    // The level select starts at this slot's first level again.
+    this.registry.set('partIndex', 0);
+    this.registry.set('levelIndex', 0);
+    audio.sfx('uiMove');
+    this.refreshMenu();
+  }
   refreshMenu() {
     this.items.forEach((t, i) => t.setColor(i === this.sel ? '#ffffff' : '#9fb0d8'));
-    this.bar.place(VIEW.w / 2 - 60, 165 + this.sel * 10 - 6, 120, 12);
-    this.items[5].setText(this.confirmNew ? 'SURE? AGAIN=YES' : 'NEW GAME').setColor(this.confirmNew ? '#ff8a6a' : this.sel === 5 ? '#ffffff' : '#9fb0d8');
+    this.bar.place(VIEW.w / 2 - 69, 163 + this.sel * 9 - 6, 138, 11);
+    // The save slot: left/right (or a button) picks another; shows levels finished.
+    const n = session.slotDone(session.slot);
+    this.items[5].setText(`SAVE ${session.slot} · ${n ? `${n} DONE` : 'NEW'}`);
+    this.items[6].setText(this.confirmNew ? 'SURE? AGAIN=YES' : 'NEW GAME').setColor(this.confirmNew ? '#ff8a6a' : this.sel === 6 ? '#ffffff' : '#9fb0d8');
   }
   drawBeams(t) {
     const g = this.beams;
@@ -146,6 +157,8 @@ export class TitleScene extends Phaser.Scene {
         this.confirmNew = false;
         audio.sfx('uiMove');
         this.refreshMenu();
+      } else if (this.sel === 5 && (hit.s.pressed.left || hit.s.pressed.right)) {
+        this.switchSlot(hit.s.pressed.right ? 1 : -1);
       }
       return;
     }
@@ -153,8 +166,10 @@ export class TitleScene extends Phaser.Scene {
     if (this.sel === 2) return go(this, 'Controls', { returnTo: 'Title' });
     if (this.sel === 3) return go(this, 'Graphics', { returnTo: 'Title' });
     if (this.sel === 4) return go(this, 'Skulls');
-    // NEW GAME asks once more before erasing progress, then starts from the first level.
-    if (this.sel === 5) {
+    if (this.sel === 5) return this.switchSlot(1);
+    // NEW GAME asks once more before erasing this slot's progress, then starts from the
+    // first level.
+    if (this.sel === 6) {
       if (!this.confirmNew) { this.confirmNew = true; return this.refreshMenu(); }
       session.reset();
       this.registry.set('partIndex', 0);

@@ -237,6 +237,11 @@ modifiers: Grunt Birthday Party (confetti and a cheer on every defeat, in `fx.pu
 Low Gravity (world gravity × 0.55 in LevelScene) and Thunderstorm (enemies get 1.5×
 health and shields, in the Unit constructor).
 
+**Save slots:** three, one per player (`session.slot`, `SLOTS` in session.js; title
+menu SAVE row, left/right or a button cycles). Each slot keeps its own finished
+levels, records and seen prologue; NEW GAME clears only the current slot. Slot 1 uses
+the original storage key, so earlier progress is kept there.
+
 **Records:** finishing a level saves its best time and most medals
 (`session.record`); the level select shows them for finished levels.
 

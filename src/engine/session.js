@@ -1,14 +1,28 @@
 // Who is playing, at what difficulty, and what has been completed. Progress is saved in
 // this browser only (localStorage); nothing ever leaves the machine (docs/LEGAL.md).
+//
+// Three save slots, one per player (chosen on the title screen). Slot 1 uses the
+// original key, so progress from before slots existed lands there.
 
-const KEY = 'ring-anthology-prisms.progress';
+export const SLOTS = 3;
+const SLOT_KEY = 'ring-anthology-prisms.slot';
+const keyFor = (slot) => (slot === 1 ? 'ring-anthology-prisms.progress' : `ring-anthology-prisms.progress.${slot}`);
 
-function load() {
+function store(fn, fallback) {
   try {
-    return JSON.parse(window.localStorage.getItem(KEY)) ?? { done: {} };
+    return fn(window.localStorage);
   } catch {
-    return { done: {} };
+    return fallback; // storage unavailable (private windows): progress just isn't kept
   }
+}
+
+function loadSlot(slot) {
+  return store((ls) => JSON.parse(ls.getItem(keyFor(slot))), null) ?? { done: {} };
+}
+
+function savedSlot() {
+  const n = Number(store((ls) => ls.getItem(SLOT_KEY), 1));
+  return n >= 1 && n <= SLOTS ? n : 1;
 }
 
 const params = new URLSearchParams(window.location.search);
@@ -16,7 +30,8 @@ const params = new URLSearchParams(window.location.search);
 export const session = {
   players: [{ device: 'kb1' }],
   difficulty: params.get('difficulty') ?? 'normal',
-  progress: load(),
+  slot: savedSlot(),
+  progress: loadSlot(savedSlot()),
   // Debug and test switches: ?level=1a ?saga=prologue|epilogue ?p2=kb2 ?bot=1 ?god=1 ?all=1 ?difficulty=easy
   debug: {
     level: params.get('level'),
@@ -43,8 +58,8 @@ export const session = {
     return this.progress.best?.[id] ?? null;
   },
 
-  // NEW GAME: forget every finished level, record and seen prologue. Controls, settings
-  // and skulls are kept (they are saved separately).
+  // NEW GAME: forget the current slot's finished levels, records and seen prologue.
+  // Other slots, controls, settings and skulls are kept.
   reset() {
     this.progress = { done: {} };
     this.save();
@@ -61,11 +76,19 @@ export const session = {
   },
 
   save() {
-    try {
-      window.localStorage.setItem(KEY, JSON.stringify(this.progress));
-    } catch {
-      // Storage can be unavailable (private windows); progress just isn't kept.
-    }
+    store((ls) => ls.setItem(keyFor(this.slot), JSON.stringify(this.progress)));
+  },
+
+  // Switches to another save slot and loads its progress.
+  useSlot(n) {
+    this.slot = n;
+    this.progress = loadSlot(n);
+    store((ls) => ls.setItem(SLOT_KEY, String(n)));
+  },
+
+  // How many levels a slot has finished (for the title menu).
+  slotDone(n) {
+    return Object.keys(loadSlot(n).done ?? {}).length;
   },
 
   isDone(id) {
